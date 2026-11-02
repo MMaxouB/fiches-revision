@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="fr">
+<title>Frise chronologique 1814-1848</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@500;700&display=swap">
+<style>
+/* Frise : axe proportionnel de 1814 à 1848, voies de régimes en haut, événements en cartes reliées à leur date par un trait. */
+:root{
+  --ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  --bg:#e9edf3; --paper:#ffffff; --ink:#18202f; --muted:#57617a; --line:#d5dbe6; --soft:#f3f5f9; --grid:#e3e8f0;
+  --fr:#2f62c9; --eu:#7240c0; --gr:#0e7c77; --rev:#c42f45; --nat:#bf5b08; --cul:#94650f;
+  --r1:#3d6fd6; --r2:#1d4aa6; --r3:#c42f45; --r4:#7a8aa6;
+  --band:rgba(196,47,69,.08);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532; --grid:#232b3a;
+  --fr:#7fa8ff; --eu:#bf9bff; --gr:#5fd6cf; --rev:#ff8d9b; --nat:#ffb061; --cul:#e5b75f;
+  --r1:#4a7be0; --r2:#2f5cbf; --r3:#d4455a; --r4:#6b7a96;
+  --band:rgba(255,141,155,.1); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532; --grid:#232b3a;
+  --fr:#7fa8ff; --eu:#bf9bff; --gr:#5fd6cf; --rev:#ff8d9b; --nat:#ffb061; --cul:#e5b75f;
+  --r1:#4a7be0; --r2:#2f5cbf; --r3:#d4455a; --r4:#6b7a96;
+  --band:rgba(255,141,155,.1); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 3rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.wrap{max-width:1500px;margin:0 auto}
+.top{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-end;justify-content:space-between;margin-bottom:1rem}
+.top h1{font:700 clamp(1.5rem,3.6vw,2.1rem)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.top p{margin:.35rem 0 0;color:var(--muted);max-width:46rem}
+.ctl{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.ctl button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem .95rem}
+.leg{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;margin:.2rem 0 1rem;font-size:.88rem;color:var(--muted)}
+.leg i{display:inline-block;width:.75rem;height:.75rem;border-radius:50%;margin-right:.35rem;vertical-align:-.05rem;background:var(--c)}
+
+.scroller{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow-x:auto;overflow-y:hidden;cursor:grab;-webkit-overflow-scrolling:touch}
+.scroller.drag{cursor:grabbing;user-select:none}
+.chart{position:relative}
+.chart svg{position:absolute;left:0;top:0;pointer-events:none}
+.band{position:absolute;top:0;background:var(--band)}
+.bt{position:absolute;top:6px;font:700 .72rem var(--ui);letter-spacing:.07em;text-transform:uppercase;color:var(--rev);white-space:nowrap}
+.lane{position:absolute;left:0;height:30px}
+.lane .lb{position:sticky;left:8px;display:inline-block;z-index:6;font:700 .72rem/30px var(--ui);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--paper);padding:0 .6rem;border-radius:6px;box-shadow:0 0 0 1px var(--line)}
+.bar{position:absolute;top:2px;height:26px;border-radius:7px;color:#fff;font:700 .78rem/26px var(--ui);padding:0 .55rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:2}
+.tick{position:absolute;font:.72rem var(--ui);color:var(--muted);transform:translateX(-50%);font-variant-numeric:tabular-nums}
+.tick.m{font-weight:700;color:var(--ink);font-size:.8rem}
+.card{position:absolute;z-index:3;background:var(--paper);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:10px;padding:.5rem .7rem .6rem;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.card h3{margin:0 0 .3rem;font:700 1rem var(--display);color:var(--c)}
+.it{font-size:.84rem;line-height:1.35;margin:.3rem 0 0;padding-left:.9rem;position:relative}
+.it::before{content:"";position:absolute;left:0;top:.42em;width:.5rem;height:.5rem;border-radius:50%;background:var(--ic)}
+.it b{font-variant-numeric:tabular-nums}
+.axisdot{position:absolute;width:14px;height:14px;border-radius:50%;border:3px solid var(--paper);transform:translate(-50%,-50%);z-index:4;background:var(--c)}
+.hint{margin:.5rem 0 0;font-size:.85rem;color:var(--muted)}
+
+.dates{margin-top:2rem}
+.dates h2{font:700 1.4rem var(--display);margin:0 0 .3rem}
+.dates ul{list-style:none;margin:1rem 0 0;padding:0;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+.dates li{padding:.6rem 1rem;display:grid;grid-template-columns:11.5rem 1fr;gap:.2rem 1rem;border-top:1px solid var(--line);position:relative;padding-left:1.6rem}
+.dates li:first-child{border-top:0}
+.dates li::before{content:"";position:absolute;left:.6rem;top:1.05rem;width:.55rem;height:.55rem;border-radius:50%;background:var(--ic)}
+.dates li b{font-variant-numeric:tabular-nums}
+.dates .note{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;margin-top:1rem;font-size:.9rem;color:var(--muted)}
+.dates .note b{color:var(--ink)}
+@media (max-width:620px){.dates li{grid-template-columns:1fr}}
+/* version téléphone : régimes en barres pleine largeur, événements en frise verticale */
+.vt{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:1rem 1rem 1.3rem}
+.vt h2{font:700 1.05rem var(--display);margin:0 0 .5rem}
+.rg{margin-bottom:1.4rem}
+.rg .lbl{font:700 .66rem var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:.5rem 0 .2rem}
+.rg .row{position:relative;height:30px;background:var(--soft);border-radius:7px;overflow:hidden}
+.rg .seg{position:absolute;top:0;bottom:0;color:#fff;font:700 .66rem/30px var(--ui);padding:0 .3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rg .ax{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:.25rem}
+.tl{list-style:none;margin:0 0 0 .5rem;padding:0 0 0 1.3rem;border-left:3px solid var(--line)}
+.tl>li{position:relative;margin:0 0 1.1rem}
+.tl>li::before{content:"";position:absolute;left:calc(-1.3rem - 8.5px);top:.3rem;width:14px;height:14px;border-radius:50%;background:var(--c);border:3px solid var(--paper);box-sizing:border-box}
+.tl .yr{font:700 1.05rem var(--display);color:var(--c)}
+.tl .wave{display:inline-block;margin-left:.5rem;font:700 .62rem var(--ui);letter-spacing:.06em;text-transform:uppercase;background:var(--band);color:var(--rev);border-radius:999px;padding:.1rem .5rem;vertical-align:.1rem}
+.tl .tc{margin-top:.25rem;border-left:4px solid var(--c);background:var(--soft);border-radius:0 8px 8px 0;padding:.1rem .7rem .5rem}
+.tl .tc .it{font-size:.9rem;line-height:1.4}
+/* mode intégré (Notion) : pas d'en-tête, la frise remplit la fenêtre */
+.emb body{padding:6px 8px}
+.emb .top,.emb .hint,.emb .dates{display:none}
+.emb .leg{margin:0 0 6px;font-size:.78rem;gap:.2rem .9rem}
+.emb .scroller,.emb .vt{border-radius:8px}
+</style>
+<style>.back{display:block;position:sticky;top:0;z-index:50;padding:.55rem 16px;background:#18202f;color:#fff;font:700 .9rem system-ui,sans-serif;text-decoration:none}.back:active{background:#27486b}</style><a class="back" href="./">‹ Retour à la fiche · L’Europe entre Restauration et Révolution</a>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Frise chronologique · 1814 → 1848</h1>
+      <p>Chapitre 2 : L'Europe entre Restauration et Révolution. Les régimes en haut, les événements sur l'axe, puis la liste des dates.</p>
+    </div>
+    <div class="ctl" id="zc">
+      <button id="zo" aria-label="Rétrécir la frise">−</button>
+      <span id="zl" style="min-width:3.5rem;text-align:center;color:var(--muted)">100 %</span>
+      <button id="zi" aria-label="Agrandir la frise">+</button>
+    </div>
+  </header>
+  <div class="leg" id="leg"></div>
+  <div class="scroller" id="sc"><div class="chart" id="ch"></div></div>
+  <div class="vt" id="vt" hidden></div>
+  <p class="hint" id="hint">Fais glisser la frise pour la parcourir. † = absent de ton cours.</p>
+
+  <section class="dates" id="dates">
+    <h2>Les dates à retenir</h2>
+    <div class="ctl" style="margin-top:.5rem"><button id="cp">Copier la liste</button><span id="cpm" style="color:var(--muted);font-size:.88rem"></span></div>
+    <ul id="dl"></ul>
+    <div class="note"><b>À vérifier :</b> ton cours place la fin du Congrès de Vienne en juillet 1815 ; l'acte final date de juin 1815 †. Ton cours place aussi la création de la Sainte-Alliance pendant les Cent-Jours : elle est en fait signée en septembre 1815 †, après eux.</div>
+  </section>
+</div>
+
+<script id="ev" type="application/json">
+{
+ "cats": {
+  "fr": [
+   "France",
+   "--fr"
+  ],
+  "eu": [
+   "Europe",
+   "--eu"
+  ],
+  "nat": [
+   "Nations",
+   "--nat"
+  ],
+  "gr": [
+   "Grèce",
+   "--gr"
+  ],
+  "rev": [
+   "Révolutions",
+   "--rev"
+  ],
+  "cul": [
+   "Culture",
+   "--cul"
+  ]
+ },
+ "clusters": [
+  {
+   "x": 1814.35,
+   "h": "1814",
+   "s": "u",
+   "items": [
+    {
+     "d": "1814",
+     "t": "Napoléon abdique au profit de Louis XVIII.",
+     "c": "fr"
+    },
+    {
+     "d": "30 mai 1814",
+     "t": "Traité de Paris : les vainqueurs de Napoléon remettent Louis XVIII sur le trône et se donnent rendez-vous à Vienne.",
+     "c": "eu"
+    },
+    {
+     "d": "4 juin 1814",
+     "t": "Charte de Louis XVIII : début de la Restauration.",
+     "c": "fr"
+    }
+   ]
+  },
+  {
+   "x": 1815.0,
+   "h": "1814 – 1815",
+   "s": "d",
+   "items": [
+    {
+     "d": "Oct. 1814 – juil. 1815",
+     "t": "Congrès de Vienne : l’Europe des monarchies.",
+     "c": "eu"
+    },
+    {
+     "d": "1815 †",
+     "t": "Cent-Jours : ton cours place la création de la Sainte-Alliance à cette période.",
+     "c": "eu"
+    }
+   ]
+  },
+  {
+   "x": 1817.5,
+   "h": "1817 – 1818",
+   "s": "u",
+   "items": [
+    {
+     "d": "1817 †",
+     "t": "Des jeunes Allemands brûlent des livres anti-libéraux et les actes du Congrès de Vienne.",
+     "c": "nat"
+    },
+    {
+     "d": "1818",
+     "t": "La France intègre la Sainte-Alliance avec l’Angleterre (« Quadruple Alliance »).",
+     "c": "eu"
+    }
+   ]
+  },
+  {
+   "x": 1820.5,
+   "h": "1820",
+   "s": "d",
+   "items": [
+    {
+     "d": "1820",
+     "t": "Premières révolutions.",
+     "c": "rev"
+    }
+   ]
+  },
+  {
+   "x": 1822.0,
+   "h": "1820 – 1829",
+   "s": "u",
+   "items": [
+    {
+     "d": "Années 1820",
+     "t": "Philhellénisme : l’opinion européenne soutient les Grecs.",
+     "c": "gr"
+    },
+    {
+     "d": "1821 † – 1829",
+     "t": "Guerre d’indépendance grecque.",
+     "c": "gr"
+    },
+    {
+     "d": "1822 †",
+     "t": "Massacre de Chios.",
+     "c": "gr"
+    }
+   ]
+  },
+  {
+   "x": 1829.7,
+   "h": "1829",
+   "s": "d",
+   "items": [
+    {
+     "d": "Sept. 1829",
+     "t": "Traité d’Andrinople.",
+     "c": "gr"
+    }
+   ]
+  },
+  {
+   "x": 1830.5,
+   "h": "1830 – 1831",
+   "s": "d",
+   "items": [
+    {
+     "d": "Juil. 1830",
+     "t": "Ordonnances de Saint-Cloud.",
+     "c": "rev"
+    },
+    {
+     "d": "27-29 juil. 1830",
+     "t": "Les Trois Glorieuses.",
+     "c": "rev"
+    },
+    {
+     "d": "1830",
+     "t": "Louis-Philippe roi (Charte de 1830) : Monarchie de Juillet.",
+     "c": "fr"
+    },
+    {
+     "d": "1830",
+     "t": "La Grèce est reconnue indépendante.",
+     "c": "gr"
+    },
+    {
+     "d": "25 août 1830",
+     "t": "Révolution à Bruxelles.",
+     "c": "rev"
+    },
+    {
+     "d": "1830-1831",
+     "t": "Delacroix peint La Liberté guidant le peuple.",
+     "c": "cul"
+    },
+    {
+     "d": "1831",
+     "t": "Indépendance de la Belgique.",
+     "c": "rev"
+    }
+   ]
+  },
+  {
+   "x": 1835.0,
+   "h": "1835",
+   "s": "u",
+   "items": [
+    {
+     "d": "1835",
+     "t": "Tentative d’assassinat de Louis-Philippe : le règne devient plus conservateur et autoritaire.",
+     "c": "fr"
+    }
+   ]
+  },
+  {
+   "x": 1848.1,
+   "h": "1848",
+   "s": "u",
+   "items": [
+    {
+     "d": "Janv. 1848",
+     "t": "Milan : début du Printemps des peuples.",
+     "c": "rev"
+    },
+    {
+     "d": "Fév. – juin 1848",
+     "t": "Révolution en France.",
+     "c": "rev"
+    },
+    {
+     "d": "1848 †",
+     "t": "Louis-Philippe s’exile en Angleterre : fin de la Monarchie de Juillet.",
+     "c": "fr"
+    }
+   ]
+  }
+ ],
+ "lanes": [
+  {
+   "n": "Régime",
+   "bars": [
+    {
+     "a": 1814.3,
+     "b": 1830.6,
+     "t": "Restauration",
+     "c": "--r1"
+    },
+    {
+     "a": 1830.6,
+     "b": 1848.15,
+     "t": "Monarchie de Juillet",
+     "c": "--r2"
+    }
+   ]
+  },
+  {
+   "n": "Roi",
+   "bars": [
+    {
+     "a": 1814.3,
+     "b": 1824.7,
+     "t": "Louis XVIII",
+     "c": "--r1"
+    },
+    {
+     "a": 1824.7,
+     "b": 1830.6,
+     "t": "Charles X",
+     "c": "--r4"
+    },
+    {
+     "a": 1830.6,
+     "b": 1848.15,
+     "t": "Louis-Philippe",
+     "c": "--r2"
+    }
+   ]
+  },
+  {
+   "n": "Durées",
+   "bars": [
+    {
+     "a": 1814.8,
+     "b": 1815.5,
+     "t": "Vienne",
+     "c": "--eu"
+    },
+    {
+     "a": 1821,
+     "b": 1829.7,
+     "t": "Guerre d’indépendance grecque",
+     "c": "--gr"
+    }
+   ]
+  }
+ ],
+ "bands": [
+  {
+   "a": 1820,
+   "b": 1821,
+   "t": "1820"
+  },
+  {
+   "a": 1830.4,
+   "b": 1831.6,
+   "t": "1830"
+  },
+  {
+   "a": 1847.95,
+   "b": 1848.7,
+   "t": "Printemps des peuples"
+  }
+ ],
+ "hors_frise": [
+  {
+   "k": 1791.7,
+   "d": "Sept. 1791",
+   "t": "Constitution de 1791 : la Charte de 1814 s’en inspire.",
+   "c": "fr"
+  },
+  {
+   "k": 1814.3525,
+   "d": "1814 – 1830",
+   "t": "La Restauration en France : retour de la monarchie.",
+   "c": "fr"
+  },
+  {
+   "k": 1814.353,
+   "d": "1814 – 1824 †",
+   "t": "Règne de Louis XVIII.",
+   "c": "fr"
+  },
+  {
+   "k": 1824.7,
+   "d": "1824 † – 1830",
+   "t": "Règne de Charles X.",
+   "c": "fr"
+  },
+  {
+   "k": 1830.6,
+   "d": "1830 – 1848 †",
+   "t": "Règne de Louis-Philippe (Monarchie de Juillet).",
+   "c": "fr"
+  }
+ ]
+}
+</script>
+<script>
+(function(){
+"use strict";
+var D=JSON.parse(document.getElementById('ev').textContent),Y0=1814,Y1=1849;
+var sc=document.getElementById('sc'),ch=document.getElementById('ch');
+var EMB=false,zoom=100,X0=130,CW=210,embppy=90,tries=0;
+if(EMB)document.documentElement.classList.add('emb');
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+var leg=document.getElementById('leg');
+Object.keys(D.cats).forEach(function(k){var s=el('span');var i=el('i');i.style.setProperty('--c','var('+D.cats[k][1]+')');s.appendChild(i);s.appendChild(document.createTextNode(D.cats[k][0]));leg.appendChild(s)});
+
+function build(){
+  ch.innerHTML='';ch.style.zoom='';
+  var ppy=EMB?embppy:76*zoom/100,W=X0+(Y1-Y0)*ppy+90;
+  var X=function(y){return X0+(y-Y0)*ppy};
+  ch.style.width=W+'px';
+  /* vagues */
+  var LANES_TOP=EMB?26:34,LANE_H=EMB?31:36,lanesBottom=LANES_TOP+D.lanes.length*LANE_H;
+  /* cartes : placement */
+  var cards=D.clusters.map(function(c){
+    var d=el('div','card');d.style.setProperty('--c','var('+D.cats[c.items[0].c][1]+')');d.style.width=CW+'px';
+    if(c.items.length>1)d.appendChild(el('h3','',c.h));
+    c.items.forEach(function(it){var p=el('p','it');p.style.setProperty('--ic','var('+D.cats[it.c][1]+')');var b=el('b','',it.d);p.appendChild(b);p.appendChild(document.createTextNode(' : '+it.t));d.appendChild(p)});
+    d.style.visibility='hidden';ch.appendChild(d);
+    var x=X(c.x),cx=Math.max(CW/2+8,Math.min(W-CW/2-8,x));
+    return {c:c,el:d,x:x,l:cx-CW/2,r:cx+CW/2,h:d.offsetHeight};
+  });
+  var placed=[],G=10;
+  cards.forEach(function(k,i){
+    var pref=i%2?'d':'u',other=pref==='u'?'d':'u',found=null;
+    for(var lv=0;lv<6&&!found;lv++){
+      [pref,other].forEach(function(s){
+        if(found)return;
+        var ok=placed.every(function(p){
+          if(p.s!==s)return true;
+          if(p.lv===lv&&!(k.r+G<p.k.l||k.l-G>p.k.r))return false;
+          if(p.lv<lv&&k.x>p.k.l-6&&k.x<p.k.r+6)return false;
+          if(p.lv>lv&&p.k.x>k.l-6&&p.k.x<k.r+6)return false;
+          return true;
+        });
+        if(ok)found={s:s,lv:lv};
+      });
+    }
+    if(!found)found={s:pref,lv:6};
+    k.s=found.s;k.lv=found.lv;placed.push({s:k.s,lv:k.lv,k:k});
+  });
+  function levH(s){var m=[];cards.forEach(function(k){if(k.s===s)m[k.lv]=Math.max(m[k.lv]||0,k.h)});return m}
+  var uH=levH('u'),dH=levH('d'),GAP=16;
+  var upTot=0;uH.forEach(function(h){if(h)upTot+=h+GAP});
+  var aboveTop=lanesBottom+26,axisY=aboveTop+upTot+18;
+  var upY=[];var acc=axisY-18;for(var i=0;i<uH.length;i++){if(!uH[i]){upY[i]=acc;continue}acc-=uH[i]+GAP;upY[i]=acc+GAP}
+  var downY=[];acc=axisY+44;for(var j=0;j<dH.length;j++){downY[j]=acc;if(dH[j])acc+=dH[j]+GAP}
+  var H=Math.max(acc+10,axisY+90);
+  ch.style.height=H+'px';
+  /* svg : grille, axe, traits */
+  var NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');svg.setAttribute('width',W);svg.setAttribute('height',H);svg.style.zIndex=1;
+  function ln(x1,y1,x2,y2,col,w,dash){var l=document.createElementNS(NS,'line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);l.setAttribute('stroke',col);l.setAttribute('stroke-width',w);if(dash)l.setAttribute('stroke-dasharray',dash);l.setAttribute('stroke-linecap','round');svg.appendChild(l)}
+  D.bands.forEach(function(b){var r=el('div','band');r.style.left=X(b.a)+'px';r.style.width=(X(b.b)-X(b.a))+'px';r.style.height=H+'px';ch.appendChild(r);var t=el('div','bt',b.t);t.style.left=(X(b.a)+3)+'px';ch.appendChild(t)});
+  for(var y=Y0;y<=Y1;y++)ln(X(y),LANES_TOP,X(y),axisY,css('--grid'),1);
+  ln(X0-20,axisY,W-30,axisY,css('--ink'),3);
+  ch.appendChild(svg);
+  /* ticks */
+  for(var yy=Y0;yy<=Y1;yy++){var t=el('div','tick'+(yy%5===0?' m':''),String(yy));t.style.left=X(yy)+'px';t.style.top=(axisY+10)+'px';ch.appendChild(t);ln(X(yy),axisY-5,X(yy),axisY+5,css('--ink'),yy%5===0?2.5:1.5)}
+  /* voies */
+  D.lanes.forEach(function(l,i){
+    var lane=el('div','lane');lane.style.top=(LANES_TOP+i*LANE_H+3)+'px';lane.style.width=W+'px';lane.appendChild(el('span','lb',l.n));
+    l.bars.forEach(function(b){var r=el('div','bar',b.t);r.style.left=X(b.a)+'px';r.style.width=Math.max(8,X(b.b)-X(b.a)-2)+'px';r.style.background='var('+b.c+')';r.title=b.t;lane.appendChild(r)});
+    ch.appendChild(lane);
+  });
+  /* cartes + traits + points */
+  cards.forEach(function(k){
+    var col=css(D.cats[k.c.items[0].c][1]);
+    var top=k.s==='u'?upY[k.lv]:downY[k.lv];
+    k.el.style.left=k.l+'px';k.el.style.top=top+'px';k.el.style.visibility='visible';
+    var yEdge=k.s==='u'?top+k.h:top;
+    ln(k.x,axisY,k.x,yEdge,col,2.5);
+    var dot=el('div','axisdot');dot.style.left=k.x+'px';dot.style.top=axisY+'px';dot.style.setProperty('--c',col);ch.appendChild(dot);
+  });
+  document.getElementById('zl').textContent=zoom+' %';
+  if(EMB){var av=window.innerHeight-document.getElementById('leg').offsetHeight-24;
+    if(ch.offsetHeight>av&&embppy<170&&tries<3){tries++;embppy*=1.18;build();return}
+    if(ch.offsetHeight>av)ch.style.zoom=Math.max(.86,av/ch.offsetHeight)}
+}
+document.getElementById('zi').onclick=function(){zoom=Math.min(160,zoom+20);build()};
+document.getElementById('zo').onclick=function(){zoom=Math.max(60,zoom-20);build()};
+/* glisser pour défiler */
+var drag=null;
+sc.addEventListener('pointerdown',function(e){if(e.pointerType==='touch')return;drag={x:e.clientX,l:sc.scrollLeft};sc.classList.add('drag')});
+window.addEventListener('pointermove',function(e){if(drag)sc.scrollLeft=drag.l-(e.clientX-drag.x)});
+window.addEventListener('pointerup',function(){drag=null;sc.classList.remove('drag')});
+
+/* liste des dates */
+var dl=document.getElementById('dl'),plain=[],all=[];
+D.clusters.forEach(function(c){c.items.forEach(function(it,i){all.push({k:c.x+i*.001,it:it})})});
+(D.hors_frise||[]).forEach(function(it){all.push({k:it.k,it:it})});
+all.sort(function(a,b){return a.k-b.k});
+all.forEach(function(o){var it=o.it;
+  var li=el('li');li.style.setProperty('--ic','var('+D.cats[it.c][1]+')');
+  li.appendChild(el('b','',it.d));li.appendChild(el('span','',it.t));dl.appendChild(li);
+  plain.push('**'+it.d+'** : '+it.t);
+});
+document.getElementById('cp').onclick=function(){
+  var txt=plain.join('\n'),m=document.getElementById('cpm');
+  function ok(){m.textContent='Liste copiée.'}
+  function fb(){var r=document.createRange();r.selectNodeContents(dl);var s=getSelection();s.removeAllRanges();s.addRange(r);m.textContent='Liste sélectionnée : copie-la avec Ctrl+C.'}
+  try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(e){fb()}
+};
+var vt=document.getElementById('vt'),narrowMQ=window.matchMedia('(max-width:720px)');
+function buildV(){
+  vt.innerHTML='';
+  vt.appendChild(el('h2','','Les régimes'));
+  var rg=el('div','rg');
+  D.lanes.slice(0,2).forEach(function(l){
+    rg.appendChild(el('div','lbl',l.n));var row=el('div','row');
+    l.bars.forEach(function(b){var s=el('div','seg',b.t.replace('Charles X','Ch. X'));s.style.left=((b.a-Y0)/(Y1-Y0)*100)+'%';s.style.width=((b.b-b.a)/(Y1-Y0)*100)+'%';s.style.background='var('+b.c+')';s.title=b.t;row.appendChild(s)});
+    rg.appendChild(row);
+  });
+  var ax=el('div','ax');ax.appendChild(el('span','','1814'));ax.appendChild(el('span','','1848'));rg.appendChild(ax);
+  vt.appendChild(rg);
+  vt.appendChild(el('h2','','Les événements'));
+  var tl=el('ul','tl');
+  D.clusters.forEach(function(c){
+    var li=el('li');li.style.setProperty('--c','var('+D.cats[c.items[0].c][1]+')');
+    var single=c.items.length===1,yr=el('div','yr',single?c.items[0].d:c.h);
+    if(D.bands.some(function(b){return c.x>=b.a-.1&&c.x<=b.b}))yr.appendChild(el('span','wave','vague révolutionnaire'));
+    li.appendChild(yr);
+    var tc=el('div','tc');
+    c.items.forEach(function(it){
+      var p=el('p','it');p.style.setProperty('--ic','var('+D.cats[it.c][1]+')');
+      if(single)p.appendChild(document.createTextNode(it.t));
+      else{p.appendChild(el('b','',it.d));p.appendChild(document.createTextNode(' : '+it.t))}
+      tc.appendChild(p);
+    });
+    li.appendChild(tc);tl.appendChild(li);
+  });
+  vt.appendChild(tl);
+}
+function layout(){
+  var n=narrowMQ.matches;
+  document.getElementById('sc').hidden=n;vt.hidden=!n;document.getElementById('zc').hidden=n;
+  document.getElementById('hint').textContent=n?'† = absent de ton cours. Fais défiler vers le bas pour suivre la chronologie.':'Fais glisser la frise pour la parcourir. † = absent de ton cours.';
+  if(n)buildV();else build();
+}
+layout();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layout);
+narrowMQ.addEventListener('change',layout);
+if(EMB)window.addEventListener('resize',function(){tries=0;embppy=90;layout()});
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',layout);
+})();
+</script>
