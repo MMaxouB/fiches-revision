@@ -92,6 +92,30 @@ button{font:inherit;color:inherit;cursor:pointer}
 .emb .leg{margin:0 0 6px;font-size:.78rem;gap:.2rem .9rem}
 .emb .scroller,.emb .vt{border-radius:8px}
 </style>
+<style>@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
+@media print{
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--paper:#fff;--ink:#111;--muted:#444;--line:#bbb;--soft:#f3f3f3;
+  --core1:#1b2a41;--core2:#27486b;--l1:#2f62c9;--l2:#7240c0;--l3:#0e7c77;--l4:#bf5b08;--l5:#c42f45;--l6:#566176;--l7:#94650f;color-scheme:light}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:#fff!important;padding:0!important;font-size:10pt}
+.back,.ctl,svg.lines{display:none!important}
+.top{display:none!important}
+.map{page:land;display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px 11px;max-width:none!important;align-items:start;font-size:9pt}
+.col{display:contents!important}
+.core{grid-column:1/-1;order:-3;margin:0!important;padding:.45rem 1rem!important}
+.core h2{font-size:1.15rem!important;margin:.1rem 0!important}.core p{display:none!important}
+.br{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;margin:0!important;break-inside:avoid}
+.hub{order:-1;width:auto!important;height:auto!important;border-radius:10px!important;display:block!important;text-align:left!important;padding:.4rem .8rem!important}
+.lv{gap:6px!important}
+.leaf{break-inside:avoid;padding:.3rem .65rem .35rem!important}.leaf b{font-size:.9rem!important}.leaf p{font-size:.78rem!important;margin-top:.1rem!important}
+.rev .leaf p{display:block!important}
+.rev .leaf:not(.open) b::after{content:""!important}
+.detail{page:port;break-before:page;margin:0!important;max-width:none!important}
+.dg,.dg article{break-inside:avoid}
+.dg h3{break-after:avoid}
+.foot{page:port;margin-top:.8rem!important}
+}
+</style>
 <style>.back{display:block;position:sticky;top:0;z-index:50;padding:.55rem 16px;background:#18202f;color:#fff;font:700 .9rem system-ui,sans-serif;text-decoration:none}.back:active{background:#27486b}</style><a class="back" href="./">‹ Retour à la fiche · L’Europe entre Restauration et Révolution</a>
 
 <div class="wrap">
