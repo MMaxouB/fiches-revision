@@ -7,7 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@500;700&display=swap">
 <style>
-/* Frise : axe proportionnel de 1814 à 1848, voies de régimes en haut, événements en cartes reliées à leur date par un trait. */
+/* Frise : axe proportionnel de 1814 à 1848, événements en ronds numérotés au-dessus de l'axe, régimes et rois dessous, liste numérotée en légende. */
 :root{
   --ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
   --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
@@ -33,34 +33,23 @@ body{background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.4
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 3rem}
 button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-.wrap{max-width:1500px;margin:0 auto}
-.top{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-end;justify-content:space-between;margin-bottom:1rem}
+.wrap{max-width:1200px;margin:0 auto}
+.top{margin-bottom:1rem}
 .top h1{font:700 clamp(1.5rem,3.6vw,2.1rem)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
 .top p{margin:.35rem 0 0;color:var(--muted);max-width:46rem}
 .ctl{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
 .ctl button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem .95rem}
 .leg{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;margin:.2rem 0 1rem;font-size:.88rem;color:var(--muted)}
 .leg i{display:inline-block;width:.75rem;height:.75rem;border-radius:50%;margin-right:.35rem;vertical-align:-.05rem;background:var(--c)}
-
-.scroller{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow-x:auto;overflow-y:hidden;cursor:grab;-webkit-overflow-scrolling:touch}
-.scroller.drag{cursor:grabbing;user-select:none}
-.chart{position:relative}
-.chart svg{position:absolute;left:0;top:0;pointer-events:none}
-.band{position:absolute;top:0;background:var(--band)}
-.bt{position:absolute;top:6px;font:700 .72rem var(--ui);letter-spacing:.07em;text-transform:uppercase;color:var(--rev);white-space:nowrap}
-.lane{position:absolute;left:0;height:30px}
-.lane .lb{position:sticky;left:8px;display:inline-block;z-index:6;font:700 .72rem/30px var(--ui);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--paper);padding:0 .6rem;border-radius:6px;box-shadow:0 0 0 1px var(--line)}
-.bar{position:absolute;top:2px;height:26px;border-radius:7px;color:#fff;font:700 .78rem/26px var(--ui);padding:0 .55rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:2}
-.tick{position:absolute;font:.72rem var(--ui);color:var(--muted);transform:translateX(-50%);font-variant-numeric:tabular-nums}
-.tick.m{font-weight:700;color:var(--ink);font-size:.8rem}
-.card{position:absolute;z-index:3;background:var(--paper);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:10px;padding:.5rem .7rem .6rem;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.card h3{margin:0 0 .3rem;font:700 1rem var(--display);color:var(--c)}
-.it{font-size:.84rem;line-height:1.35;margin:.3rem 0 0;padding-left:.9rem;position:relative}
-.it::before{content:"";position:absolute;left:0;top:.42em;width:.5rem;height:.5rem;border-radius:50%;background:var(--ic)}
-.it b{font-variant-numeric:tabular-nums}
-.axisdot{position:absolute;width:14px;height:14px;border-radius:50%;border:3px solid var(--paper);transform:translate(-50%,-50%);z-index:4;background:var(--c)}
-.hint{margin:.5rem 0 0;font-size:.85rem;color:var(--muted)}
-
+.gr{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.5rem .3rem .3rem;overflow:hidden}
+.gr svg{display:block;font-family:var(--ui)}
+.lg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 1.8rem;margin-top:1.4rem}
+.lg h3{font:700 1rem var(--display);color:var(--muted);margin:0 0 .7rem;padding-bottom:.35rem;border-bottom:1px solid var(--line)}
+.li{display:flex;gap:.65rem;margin:0 0 .75rem;font-size:.95rem;line-height:1.4}
+.nn{flex:none;width:1.55rem;height:1.55rem;border-radius:50%;background:var(--c);color:var(--paper);font:700 .8rem/1.55rem var(--ui);text-align:center;margin-top:.05rem}
+.li b{font-variant-numeric:tabular-nums}
+@media (max-width:720px){.lg{grid-template-columns:1fr}}
+.hint{margin:.6rem 0 0;font-size:.85rem;color:var(--muted)}
 .dates{margin-top:2rem}
 .dates h2{font:700 1.4rem var(--display);margin:0 0 .3rem}
 .dates ul{list-style:none;margin:1rem 0 0;padding:0;background:var(--paper);border:1px solid var(--line);border-radius:12px}
@@ -71,26 +60,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 .dates .note{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;margin-top:1rem;font-size:.9rem;color:var(--muted)}
 .dates .note b{color:var(--ink)}
 @media (max-width:620px){.dates li{grid-template-columns:1fr}}
-/* version téléphone : régimes en barres pleine largeur, événements en frise verticale */
-.vt{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:1rem 1rem 1.3rem}
-.vt h2{font:700 1.05rem var(--display);margin:0 0 .5rem}
-.rg{margin-bottom:1.4rem}
-.rg .lbl{font:700 .66rem var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:.5rem 0 .2rem}
-.rg .row{position:relative;height:30px;background:var(--soft);border-radius:7px;overflow:hidden}
-.rg .seg{position:absolute;top:0;bottom:0;color:#fff;font:700 .66rem/30px var(--ui);padding:0 .3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rg .ax{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:.25rem}
-.tl{list-style:none;margin:0 0 0 .5rem;padding:0 0 0 1.3rem;border-left:3px solid var(--line)}
-.tl>li{position:relative;margin:0 0 1.1rem}
-.tl>li::before{content:"";position:absolute;left:calc(-1.3rem - 8.5px);top:.3rem;width:14px;height:14px;border-radius:50%;background:var(--c);border:3px solid var(--paper);box-sizing:border-box}
-.tl .yr{font:700 1.05rem var(--display);color:var(--c)}
-.tl .wave{display:inline-block;margin-left:.5rem;font:700 .62rem var(--ui);letter-spacing:.06em;text-transform:uppercase;background:var(--band);color:var(--rev);border-radius:999px;padding:.1rem .5rem;vertical-align:.1rem}
-.tl .tc{margin-top:.25rem;border-left:4px solid var(--c);background:var(--soft);border-radius:0 8px 8px 0;padding:.1rem .7rem .5rem}
-.tl .tc .it{font-size:.9rem;line-height:1.4}
-/* mode intégré (Notion) : pas d'en-tête, la frise remplit la fenêtre */
+/* mode intégré (Notion) : pas d'en-tête ni de liste des dates */
 .emb body{padding:6px 8px}
 .emb .top,.emb .hint,.emb .dates{display:none}
 .emb .leg{margin:0 0 6px;font-size:.78rem;gap:.2rem .9rem}
-.emb .scroller,.emb .vt{border-radius:8px}
 </style>
 <style>@page{size:A4;margin:11mm}@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
 @media print{
@@ -120,20 +93,13 @@ body{background:#fff!important;padding:0!important;font-size:10pt}
 
 <div class="wrap">
   <header class="top">
-    <div>
-      <h1>Frise chronologique · 1814 → 1848</h1>
-      <p>Chapitre 2 : L'Europe entre Restauration et Révolution. Les régimes en haut, les événements sur l'axe, puis la liste des dates.</p>
-    </div>
-    <div class="ctl" id="zc">
-      <button id="zo" aria-label="Rétrécir la frise">−</button>
-      <span id="zl" style="min-width:3.5rem;text-align:center;color:var(--muted)">100 %</span>
-      <button id="zi" aria-label="Agrandir la frise">+</button>
-    </div>
+    <h1>Frise chronologique · 1814 → 1848</h1>
+    <p>Chapitre 2 : L'Europe entre Restauration et Révolution. Les numéros des ronds renvoient à la liste sous la frise, puis viennent toutes les dates.</p>
   </header>
   <div class="leg" id="leg"></div>
-  <div class="scroller" id="sc"><div class="chart" id="ch"></div></div>
-  <div class="vt" id="vt" hidden></div>
-  <p class="hint" id="hint">Fais glisser la frise pour la parcourir. † = absent de ton cours.</p>
+  <div class="gr" id="gr"></div>
+  <div class="lg" id="lg"></div>
+  <p class="hint">† = absent de ton cours.</p>
 
   <section class="dates" id="dates">
     <h2>Les dates à retenir</h2>
@@ -465,93 +431,64 @@ body{background:#fff!important;padding:0!important;font-size:10pt}
 (function(){
 "use strict";
 var D=JSON.parse(document.getElementById('ev').textContent),Y0=1814,Y1=1849;
-var sc=document.getElementById('sc'),ch=document.getElementById('ch');
-var EMB=false,zoom=100,X0=130,CW=210,embppy=90,tries=0;
+var EMB=false;
 if(EMB)document.documentElement.classList.add('emb');
-function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+var V=function(k){return 'var('+D.cats[k][1]+')'};
 var leg=document.getElementById('leg');
-Object.keys(D.cats).forEach(function(k){var s=el('span');var i=el('i');i.style.setProperty('--c','var('+D.cats[k][1]+')');s.appendChild(i);s.appendChild(document.createTextNode(D.cats[k][0]));leg.appendChild(s)});
+Object.keys(D.cats).forEach(function(k){var s=el('span');var i=el('i');i.style.setProperty('--c',V(k));s.appendChild(i);s.appendChild(document.createTextNode(D.cats[k][0]));leg.appendChild(s)});
 
-function build(){
-  ch.innerHTML='';ch.style.zoom='';
-  var ppy=EMB?embppy:76*zoom/100,W=X0+(Y1-Y0)*ppy+90;
-  var X=function(y){return X0+(y-Y0)*ppy};
-  ch.style.width=W+'px';
-  /* vagues */
-  var LANES_TOP=EMB?26:34,LANE_H=EMB?31:36,lanesBottom=LANES_TOP+D.lanes.length*LANE_H;
-  /* cartes : placement */
-  var cards=D.clusters.map(function(c){
-    var d=el('div','card');d.style.setProperty('--c','var('+D.cats[c.items[0].c][1]+')');d.style.width=CW+'px';
-    if(c.items.length>1)d.appendChild(el('h3','',c.h));
-    c.items.forEach(function(it){var p=el('p','it');p.style.setProperty('--ic','var('+D.cats[it.c][1]+')');var b=el('b','',it.d);p.appendChild(b);p.appendChild(document.createTextNode(' : '+it.t));d.appendChild(p)});
-    d.style.visibility='hidden';ch.appendChild(d);
-    var x=X(c.x),cx=Math.max(CW/2+8,Math.min(W-CW/2-8,x));
-    return {c:c,el:d,x:x,l:cx-CW/2,r:cx+CW/2,h:d.offsetHeight};
+/* numérotation : tous les événements de la frise, dans l'ordre */
+var items=[],stacks=[];
+D.clusters.forEach(function(c){var s={x:c.x,list:[]};c.items.forEach(function(it){items.push(it);it.n=items.length;s.list.push(it)});stacks.push(s)});
+
+/* légende : trois colonnes de périodes consécutives, de hauteur équilibrée */
+var cb=[0];stacks.forEach(function(s){cb.push(cb[cb.length-1]+s.list.length)});
+function cost(a,b){var t=0;for(var i=a;i<b;i++)t+=1+Math.floor((items[i].d.length+items[i].t.length)/34);return t}
+var bi=1,bj=2,bc=1e9;
+for(var i=1;i<cb.length-1;i++)for(var j=i+1;j<cb.length-1;j++){var m=Math.max(cost(0,cb[i]),cost(cb[i],cb[j]),cost(cb[j],items.length));if(m<bc){bc=m;bi=i;bj=j}}
+var groups=[[0,cb[bi]],[cb[bi],cb[bj]],[cb[bj],items.length]];
+var lg=document.getElementById('lg');
+groups.forEach(function(g){
+  var a=items[g[0]].d.match(/\d{4}/g),b=items[g[1]-1].d.match(/\d{4}/g),y1=a[0],y2=b[b.length-1];
+  var col=el('div');col.appendChild(el('h3','',y1===y2?y1:y1+' – '+y2));
+  for(var k=g[0];k<g[1];k++){var it=items[k],r=el('div','li'),n=el('span','nn',String(it.n));n.style.setProperty('--c',V(it.c));r.appendChild(n);
+    var tx=el('span');tx.appendChild(el('b','',it.d));tx.appendChild(document.createTextNode(' · '+it.t));r.appendChild(tx);col.appendChild(r)}
+  lg.appendChild(col);
+});
+
+/* graphique : s'adapte à la largeur disponible */
+var gr=document.getElementById('gr');
+function draw(){
+  var w=Math.max(300,gr.clientWidth-10),nar=w<720,r=nar?11:15,fs=nar?11:13,sp=2*r+5,M=nar?10:20,bh=nar?20:24;
+  var L0=M+r+2,L1=w-M-r-2,px=function(y){return L0+(y-Y0)*(L1-L0)/(Y1-Y0)},n=stacks.length,mn=2*r+7;
+  var cx=stacks.map(function(s){return px(s.x)}),i;
+  if(cx[0]<M+r)cx[0]=M+r;
+  for(i=1;i<n;i++)cx[i]=Math.max(cx[i],cx[i-1]+mn);
+  if(cx[n-1]>w-M-r){cx[n-1]=w-M-r;for(i=n-2;i>=0;i--)cx[i]=Math.min(cx[i],cx[i+1]-mn)}
+  var maxN=Math.max.apply(null,stacks.map(function(s){return s.list.length}));
+  var top=6,AY=top+r+(maxN-1)*sp+r+14,by=AY+30,H=by+2*bh+10,s='',yl='';
+  s+='<line x1="'+(L0-12)+'" y1="'+AY+'" x2="'+(L1+12)+'" y2="'+AY+'" style="stroke:var(--ink)" stroke-width="2"/>';
+  for(var y=Y0+1;y<=Y1-1;y++){var big=y%5===0;
+    s+='<line x1="'+px(y)+'" y1="'+(AY-(big?5:3))+'" x2="'+px(y)+'" y2="'+(AY+(big?5:3))+'" style="stroke:var(--ink)" stroke-width="'+(big?1.5:1)+'"/>';
+    if(big)yl+='<rect x="'+(px(y)-fs*1.35)+'" y="'+(AY+7)+'" width="'+(fs*2.7)+'" height="'+(fs+5)+'" style="fill:var(--paper)"/><text x="'+px(y)+'" y="'+(AY+19)+'" text-anchor="middle" font-size="'+fs+'" style="fill:var(--muted)">'+y+'</text>'}
+  stacks.forEach(function(st,k){
+    s+='<path d="M'+cx[k]+' '+(top+r+(maxN-1)*sp+r+2)+' L'+px(st.x)+' '+AY+'" style="stroke:var(--muted)" stroke-width="1" fill="none"/><circle cx="'+px(st.x)+'" cy="'+AY+'" r="2.6" style="fill:var(--ink)"/>';
+    st.list.forEach(function(it,j){var cy=top+r+(maxN-1)*sp-j*sp;
+      s+='<circle cx="'+cx[k]+'" cy="'+cy+'" r="'+r+'" style="fill:'+V(it.c)+'"><title>'+esc(it.d+' : '+it.t)+'</title></circle><text x="'+cx[k]+'" y="'+(cy+fs*.36)+'" text-anchor="middle" font-size="'+fs+'" font-weight="700" style="fill:var(--paper)">'+it.n+'</text>'});
   });
-  var placed=[],G=10;
-  cards.forEach(function(k,i){
-    var pref=i%2?'d':'u',other=pref==='u'?'d':'u',found=null;
-    for(var lv=0;lv<6&&!found;lv++){
-      [pref,other].forEach(function(s){
-        if(found)return;
-        var ok=placed.every(function(p){
-          if(p.s!==s)return true;
-          if(p.lv===lv&&!(k.r+G<p.k.l||k.l-G>p.k.r))return false;
-          if(p.lv<lv&&k.x>p.k.l-6&&k.x<p.k.r+6)return false;
-          if(p.lv>lv&&p.k.x>k.l-6&&p.k.x<k.r+6)return false;
-          return true;
-        });
-        if(ok)found={s:s,lv:lv};
-      });
-    }
-    if(!found)found={s:pref,lv:6};
-    k.s=found.s;k.lv=found.lv;placed.push({s:k.s,lv:k.lv,k:k});
-  });
-  function levH(s){var m=[];cards.forEach(function(k){if(k.s===s)m[k.lv]=Math.max(m[k.lv]||0,k.h)});return m}
-  var uH=levH('u'),dH=levH('d'),GAP=16;
-  var upTot=0;uH.forEach(function(h){if(h)upTot+=h+GAP});
-  var aboveTop=lanesBottom+26,axisY=aboveTop+upTot+18;
-  var upY=[];var acc=axisY-18;for(var i=0;i<uH.length;i++){if(!uH[i]){upY[i]=acc;continue}acc-=uH[i]+GAP;upY[i]=acc+GAP}
-  var downY=[];acc=axisY+44;for(var j=0;j<dH.length;j++){downY[j]=acc;if(dH[j])acc+=dH[j]+GAP}
-  var H=Math.max(acc+10,axisY+90);
-  ch.style.height=H+'px';
-  /* svg : grille, axe, traits */
-  var NS='http://www.w3.org/2000/svg',svg=document.createElementNS(NS,'svg');svg.setAttribute('width',W);svg.setAttribute('height',H);svg.style.zIndex=1;
-  function ln(x1,y1,x2,y2,col,w,dash){var l=document.createElementNS(NS,'line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);l.setAttribute('stroke',col);l.setAttribute('stroke-width',w);if(dash)l.setAttribute('stroke-dasharray',dash);l.setAttribute('stroke-linecap','round');svg.appendChild(l)}
-  D.bands.forEach(function(b){var r=el('div','band');r.style.left=X(b.a)+'px';r.style.width=(X(b.b)-X(b.a))+'px';r.style.height=H+'px';ch.appendChild(r);var t=el('div','bt',b.t);t.style.left=(X(b.a)+3)+'px';ch.appendChild(t)});
-  for(var y=Y0;y<=Y1;y++)ln(X(y),LANES_TOP,X(y),axisY,css('--grid'),1);
-  ln(X0-20,axisY,W-30,axisY,css('--ink'),3);
-  ch.appendChild(svg);
-  /* ticks */
-  for(var yy=Y0;yy<=Y1;yy++){var t=el('div','tick'+(yy%5===0?' m':''),String(yy));t.style.left=X(yy)+'px';t.style.top=(axisY+10)+'px';ch.appendChild(t);ln(X(yy),axisY-5,X(yy),axisY+5,css('--ink'),yy%5===0?2.5:1.5)}
-  /* voies */
-  D.lanes.forEach(function(l,i){
-    var lane=el('div','lane');lane.style.top=(LANES_TOP+i*LANE_H+3)+'px';lane.style.width=W+'px';lane.appendChild(el('span','lb',l.n));
-    l.bars.forEach(function(b){var r=el('div','bar',b.t);r.style.left=X(b.a)+'px';r.style.width=Math.max(8,X(b.b)-X(b.a)-2)+'px';r.style.background='var('+b.c+')';r.title=b.t;lane.appendChild(r)});
-    ch.appendChild(lane);
-  });
-  /* cartes + traits + points */
-  cards.forEach(function(k){
-    var col=css(D.cats[k.c.items[0].c][1]);
-    var top=k.s==='u'?upY[k.lv]:downY[k.lv];
-    k.el.style.left=k.l+'px';k.el.style.top=top+'px';k.el.style.visibility='visible';
-    var yEdge=k.s==='u'?top+k.h:top;
-    ln(k.x,axisY,k.x,yEdge,col,2.5);
-    var dot=el('div','axisdot');dot.style.left=k.x+'px';dot.style.top=axisY+'px';dot.style.setProperty('--c',col);ch.appendChild(dot);
-  });
-  document.getElementById('zl').textContent=zoom+' %';
-  if(EMB){var av=window.innerHeight-document.getElementById('leg').offsetHeight-24;
-    if(ch.offsetHeight>av&&embppy<170&&tries<3){tries++;embppy*=1.18;build();return}
-    if(ch.offsetHeight>av)ch.style.zoom=Math.max(.86,av/ch.offsetHeight)}
+  s+=yl;
+  D.lanes.slice(0,2).forEach(function(l,li){l.bars.forEach(function(b){
+    var x=px(b.a)-r*.6,wd=Math.max(6,px(b.b)-px(b.a)-2),y=by+li*(bh+4),t=b.t;
+    if(t.length*fs*.52>wd-8)t=t.replace('Charles X','Ch. X');
+    if(t.length*fs*.52>wd-8)t='';
+    s+='<rect x="'+x+'" y="'+y+'" width="'+wd+'" height="'+bh+'" rx="4" style="fill:var('+b.c+')"/>'+(t?'<text x="'+(x+wd/2)+'" y="'+(y+bh/2+fs*.36)+'" text-anchor="middle" font-size="'+fs+'" font-weight="700" fill="#fff">'+t+'</text>':'')})});
+  gr.innerHTML='<svg width="'+w+'" height="'+H+'" viewBox="0 0 '+w+' '+H+'" role="img" aria-label="Frise chronologique de 1814 à 1848 : événements numérotés, régimes et rois"><title>Frise chronologique 1814-1848</title>'+s+'</svg>';
 }
-document.getElementById('zi').onclick=function(){zoom=Math.min(160,zoom+20);build()};
-document.getElementById('zo').onclick=function(){zoom=Math.max(60,zoom-20);build()};
-/* glisser pour défiler */
-var drag=null;
-sc.addEventListener('pointerdown',function(e){if(e.pointerType==='touch')return;drag={x:e.clientX,l:sc.scrollLeft};sc.classList.add('drag')});
-window.addEventListener('pointermove',function(e){if(drag)sc.scrollLeft=drag.l-(e.clientX-drag.x)});
-window.addEventListener('pointerup',function(){drag=null;sc.classList.remove('drag')});
+draw();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
+window.addEventListener('resize',draw);
 
 /* liste des dates */
 var dl=document.getElementById('dl'),plain=[],all=[];
@@ -559,7 +496,7 @@ D.clusters.forEach(function(c){c.items.forEach(function(it,i){all.push({k:c.x+i*
 (D.hors_frise||[]).forEach(function(it){all.push({k:it.k,it:it})});
 all.sort(function(a,b){return a.k-b.k});
 all.forEach(function(o){var it=o.it;
-  var li=el('li');li.style.setProperty('--ic','var('+D.cats[it.c][1]+')');
+  var li=el('li');li.style.setProperty('--ic',V(it.c));
   li.appendChild(el('b','',it.d));li.appendChild(el('span','',it.t));dl.appendChild(li);
   plain.push('**'+it.d+'** : '+it.t);
 });
@@ -569,46 +506,5 @@ document.getElementById('cp').onclick=function(){
   function fb(){var r=document.createRange();r.selectNodeContents(dl);var s=getSelection();s.removeAllRanges();s.addRange(r);m.textContent='Liste sélectionnée : copie-la avec Ctrl+C.'}
   try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(e){fb()}
 };
-var vt=document.getElementById('vt'),narrowMQ=window.matchMedia('(max-width:720px)');
-function buildV(){
-  vt.innerHTML='';
-  vt.appendChild(el('h2','','Les régimes'));
-  var rg=el('div','rg');
-  D.lanes.slice(0,2).forEach(function(l){
-    rg.appendChild(el('div','lbl',l.n));var row=el('div','row');
-    l.bars.forEach(function(b){var s=el('div','seg',b.t.replace('Charles X','Ch. X'));s.style.left=((b.a-Y0)/(Y1-Y0)*100)+'%';s.style.width=((b.b-b.a)/(Y1-Y0)*100)+'%';s.style.background='var('+b.c+')';s.title=b.t;row.appendChild(s)});
-    rg.appendChild(row);
-  });
-  var ax=el('div','ax');ax.appendChild(el('span','','1814'));ax.appendChild(el('span','','1848'));rg.appendChild(ax);
-  vt.appendChild(rg);
-  vt.appendChild(el('h2','','Les événements'));
-  var tl=el('ul','tl');
-  D.clusters.forEach(function(c){
-    var li=el('li');li.style.setProperty('--c','var('+D.cats[c.items[0].c][1]+')');
-    var single=c.items.length===1,yr=el('div','yr',single?c.items[0].d:c.h);
-    if(D.bands.some(function(b){return c.x>=b.a-.1&&c.x<=b.b}))yr.appendChild(el('span','wave','vague révolutionnaire'));
-    li.appendChild(yr);
-    var tc=el('div','tc');
-    c.items.forEach(function(it){
-      var p=el('p','it');p.style.setProperty('--ic','var('+D.cats[it.c][1]+')');
-      if(single)p.appendChild(document.createTextNode(it.t));
-      else{p.appendChild(el('b','',it.d));p.appendChild(document.createTextNode(' : '+it.t))}
-      tc.appendChild(p);
-    });
-    li.appendChild(tc);tl.appendChild(li);
-  });
-  vt.appendChild(tl);
-}
-function layout(){
-  var n=narrowMQ.matches;
-  document.getElementById('sc').hidden=n;vt.hidden=!n;document.getElementById('zc').hidden=n;
-  document.getElementById('hint').textContent=n?'† = absent de ton cours. Fais défiler vers le bas pour suivre la chronologie.':'Fais glisser la frise pour la parcourir. † = absent de ton cours.';
-  if(n)buildV();else build();
-}
-layout();
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(layout);
-narrowMQ.addEventListener('change',layout);
-if(EMB)window.addEventListener('resize',function(){tries=0;embppy=90;layout()});
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',layout);
 })();
 </script>
