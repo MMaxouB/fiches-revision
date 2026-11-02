@@ -98,7 +98,7 @@ svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;o
 .emb .core p{display:none}
 @media (min-width:620px){.emb .map{grid-template-columns:1fr 1fr}}
 </style>
-<style>@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
+<style>@page{size:A4;margin:11mm}@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
 @media print{
 :root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--paper:#fff;--ink:#111;--muted:#444;--line:#bbb;--soft:#f3f3f3;
   --core1:#1b2a41;--core2:#27486b;--l1:#2f62c9;--l2:#7240c0;--l3:#0e7c77;--l4:#bf5b08;--l5:#c42f45;--l6:#566176;--l7:#94650f;color-scheme:light}
@@ -106,7 +106,7 @@ svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;o
 body{background:#fff!important;padding:0!important;font-size:10pt}
 .back,.ctl,svg.lines{display:none!important}
 .top{display:none!important}
-.map{page:land;display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px 11px;max-width:none!important;align-items:start;font-size:9pt}
+.map{page:land;display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px 11px;max-width:none!important;align-items:start;font-size:9pt;zoom:.88}
 .col{display:contents!important}
 .core{grid-column:1/-1;order:-3;margin:0!important;padding:.45rem 1rem!important}
 .core h2{font-size:1.15rem!important;margin:.1rem 0!important}.core p{display:none!important}
