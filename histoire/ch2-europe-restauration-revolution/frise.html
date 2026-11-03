@@ -109,8 +109,14 @@ body{background:#fff!important;padding:0!important;font-size:10pt}
   </section>
 </div>
 
-<script id="ev" type="application/json">
-{
+<script id="ev" type="application/json">{
+ "meta": {
+  "titre": "Frise chronologique",
+  "debut": 1814,
+  "fin": 1848,
+  "chap": "Ch. 2",
+  "sujet": "L’Europe entre Restauration et Révolution"
+ },
  "cats": {
   "fr": [
    "France",
@@ -425,12 +431,11 @@ body{background:#fff!important;padding:0!important;font-size:10pt}
    "c": "fr"
   }
  ]
-}
-</script>
+}</script>
 <script>
 (function(){
 "use strict";
-var D=JSON.parse(document.getElementById('ev').textContent),Y0=1814,Y1=1849;
+var D=JSON.parse(document.getElementById('ev').textContent),MT=D.meta||{debut:1814,fin:1848},Y0=MT.debut,Y1=MT.fin+1;
 var EMB=false;
 if(EMB)document.documentElement.classList.add('emb');
 function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
