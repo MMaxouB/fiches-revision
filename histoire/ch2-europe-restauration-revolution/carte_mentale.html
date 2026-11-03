@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@500;700&display=swap">
 <style>
 /* Carte mentale : un noyau au centre, sept branches colorées de chaque côté ; sur téléphone elle se lit comme un plan en cartes. */
 :root{
@@ -41,7 +40,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .map{position:relative;max-width:1500px;margin:0 auto}
 .col{display:flex;flex-direction:column;gap:22px}
 .br{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
-.hub{--c:var(--c1);border-radius:14px;background:var(--c);color:#fff;padding:.7rem 1rem;position:relative;z-index:1}
+.hub{border-radius:14px;background:var(--c);color:#fff;padding:.7rem 1rem;position:relative;z-index:1}
 .hub small{display:block;font:700 .7rem var(--ui);letter-spacing:.09em;text-transform:uppercase;opacity:.85}
 .hub b{display:block;font:700 1.02rem/1.2 var(--display)}
 .lv{display:flex;flex-direction:column;gap:9px}
@@ -98,6 +97,24 @@ svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;o
 .emb .core p{display:none}
 @media (min-width:620px){.emb .map{grid-template-columns:1fr 1fr}}
 </style>
+<style id="veilleuse">@font-face{font-family:Figtree;src:url(../../assets/figtree-latin.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@media screen{:root{--ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;--display:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+ --bg:#F4F6FB;--paper:#FFFFFF;--ink:#161C2D;--muted:#586380;--line:#D9DFEC;--soft:#EBEFF7;--grid:#E3E8F2;--core1:#17233D;--core2:#2D4A7A;
+ --c1:#2D5FA8;--c2:#5E4BB0;--c3:#1F7A5A;--c4:#B85A14;--c5:#B03A5E;--c6:#4E5A74;--c7:#8A6410;
+ --l1:#2D5FA8;--l2:#5E4BB0;--l3:#1F7A5A;--l4:#B85A14;--l5:#B03A5E;--l6:#4E5A74;--l7:#8A6410;
+ --fr:#2D5FA8;--eu:#5E4BB0;--gr:#1F7A5A;--rev:#B03A5E;--nat:#B85A14;--cul:#8A6410;
+ --r1:#2D5FA8;--r2:#1E4A8C;--r3:#B03A5E;--r4:#6B7A96;--band:rgba(176,58,94,.08);--ok:#E5F4EA;--okl:#1C7A3D}}
+@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#131A2B;--paper:#1B2438;--ink:#ECEFF6;--muted:#9AA6BF;--line:#2A3650;--soft:#222D45;--grid:#232E47;--core1:#1E2A47;--core2:#33466E;
+ --l1:#7FB2F0;--l2:#B8A6F0;--l3:#7FD0A8;--l4:#F2A56B;--l5:#E58FA9;--l6:#A9B4CC;--l7:#E5C06B;
+ --fr:#7FB2F0;--eu:#B8A6F0;--gr:#7FD0A8;--rev:#E58FA9;--nat:#F2A56B;--cul:#E5C06B;
+ --r1:#4A7BE0;--r2:#2F5CBF;--r3:#D4455A;--r4:#6B7A96;--band:rgba(229,143,169,.1);--ok:#16301F;--okl:#6FD694;color-scheme:dark}}
+@media screen{body{margin:0;padding-top:0}
+.hub small,.core small,.dg h3 small,section.s>h2 small,.tag,.concl .h,.box h2,th{text-transform:none;letter-spacing:0}}
+.back{display:block;position:sticky;top:0;z-index:50;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 1rem;padding:.7rem max(16px,env(safe-area-inset-left,0px));background:var(--paper,#1B2438);color:var(--ink,#ECEFF6);border-bottom:1px solid var(--line,#2A3650);font:600 .9rem var(--ui,system-ui),sans-serif;text-decoration:none}
+.back:active{background:var(--soft,#222D45)}
+.back:focus-visible{outline:2px solid var(--ink,#F2C46B);outline-offset:-2px}
+</style>
 <style>@page{size:A4;margin:11mm}@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
 @media print{
 :root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--paper:#fff;--ink:#111;--muted:#444;--line:#bbb;--soft:#f3f3f3;
@@ -122,7 +139,7 @@ body{background:#fff!important;padding:0!important;font-size:10pt}
 .foot{page:port;margin-top:.8rem!important}
 }
 </style>
-<style>.back{display:block;position:sticky;top:0;z-index:50;padding:.55rem 16px;background:#18202f;color:#fff;font:700 .9rem system-ui,sans-serif;text-decoration:none}.back:active{background:#27486b}</style><a class="back" href="./">‹ Retour à la fiche · L’Europe entre Restauration et Révolution</a>
+<a class="back" href="./">‹ Retour à la fiche, L’Europe entre Restauration et Révolution</a>
 
 <header class="top">
   <div>
