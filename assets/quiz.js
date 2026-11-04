@@ -25,10 +25,16 @@
 
   /* ---------- texte mathématique : mini-syntaxe -> MathML ---------- */
   var FONCTIONS = { ln: 1, log: 1, exp: 1, cos: 1, sin: 1, tan: 1, lim: 1, max: 1, min: 1, pgcd: 1, ppcm: 1 };
+  var OPS = { cup: '∪', setminus: '∖', pm: '±', in: '∈' };
   var GREC = { Delta: 'Δ', alpha: 'α', beta: 'β', pi: 'π', lambda: 'λ', theta: 'θ', inf: '∞', vide: '∅', RR: 'ℝ', NN: 'ℕ' };
   function mathml(s) {
-    var t = [], re = /\s*(\d+(?:[.,]\d+)?|[A-Za-z]+|<=|>=|!=|[-+*\/=<>(){}^_,;|!])/g, m, i = 0;
+    var t = [], re = /\s*(\d+(?:\.\d+)?|[A-Za-z]+|<=|>=|!=|[-+*\/=<>(){}\[\]^_,;|!])/g, m, i = 0;
     while ((m = re.exec(s))) t.push(m[1]);
+    var MOTS = { frac: 1, sqrt: 1, set: 1 };
+    t = t.reduce(function (o, x) {        // un mot inconnu (« ax », « ac ») devient des lettres séparées, pour que ^ et _ visent la dernière
+      if (/^[A-Za-z]{2,}$/.test(x) && !MOTS[x] && !OPS[x] && !GREC[x] && !FONCTIONS[x]) return o.concat(x.split(''));
+      o.push(x); return o;
+    }, []);
     function seq(stop) { var o = ''; while (i < t.length && stop.indexOf(t[i]) < 0) { var k = i; o += atom(); if (i === k) i++; } return o; }
     function script() {
       var x = t[i];
@@ -43,6 +49,7 @@
       if ((x === 'frac') && t[i] === '(') { i++; var a = seq([',']); i++; var b = seq([')']); i++; return '<mfrac><mrow>' + a + '</mrow><mrow>' + b + '</mrow></mfrac>'; }
       if ((x === 'sqrt') && t[i] === '(') { i++; r = seq([')']); i++; return '<msqrt>' + r + '</msqrt>'; }
       if ((x === 'set') && t[i] === '(') { i++; r = seq([')']); i++; return '<mrow><mo>{</mo>' + r + '<mo>}</mo></mrow>'; }
+      if (OPS[x]) return '<mo>' + OPS[x] + '</mo>';
       if (GREC[x]) return '<mi>' + GREC[x] + '</mi>';
       if (/^[A-Za-z]+$/.test(x)) {
         if (x.length === 1) return '<mi>' + x + '</mi>';
@@ -66,8 +73,15 @@
   }
   function fmt(s) {
     var p = String(s).split('$'), o = '';
-    for (var k = 0; k < p.length; k++) o += k % 2 ? mathml(p[k]) : esc(p[k]);
+    for (var k = 0; k < p.length; k++) o += k % 2 ? '<span class="qz-m">' + mathml(p[k]) + '</span>' : esc(p[k]);
     return o;
+  }
+  function ajuster() {               // une formule plus large que son bloc défile dans son propre cadre au lieu d'élargir la page
+    root.querySelectorAll('.qz-m').forEach(function (s) {
+      s.classList.remove('lg');
+      var h = s.parentElement, mm = s.firstChild;
+      if (mm && h && mm.getBoundingClientRect().width > h.getBoundingClientRect().width - 2) s.classList.add('lg');
+    });
   }
 
   /* ---------- réponses ---------- */
@@ -190,6 +204,7 @@
     corps += '</div><div class="qz-fb" id="qz-fb" role="status" aria-live="polite" hidden></div>' +
       '<div class="row2"><button type="button" class="btn qz-pri" id="qz-next" hidden>Question suivante</button></div>';
     root.innerHTML = corps;
+    ajuster();
     var h = $('#qz-text'); if (h) h.focus({ preventScroll: false });
     root.querySelectorAll('.qz-ch').forEach(function (b) { b.onclick = function () { repondreChoix(parseInt(b.dataset.k, 10)); }; });
     var f = $('#qz-form'); if (f) f.onsubmit = function (e) { e.preventDefault(); repondreSaisie($('#qz-in').value); };
@@ -216,6 +231,7 @@
       '. <a href="' + esc(RETOUR) + '">Ouvrir la fiche</a></p>';
     fb.className = 'qz-fb ' + (bon ? 'ok' : 'ko');
     fb.innerHTML = html; fb.hidden = false;
+    ajuster();
     var nx = $('#qz-next');
     nx.hidden = false;
     nx.textContent = (S.n && S.i >= S.n) ? 'Voir le résultat' : 'Question suivante';
@@ -262,6 +278,7 @@
       '<div class="row2">' + (faux.length ? '<button type="button" class="btn qz-pri" id="qz-redo">Refaire les questions ratées</button>' : '') +
       '<button type="button" class="btn' + (faux.length ? '' : ' qz-pri') + '" id="qz-new">Nouvelle série</button>' +
       '<a class="btn" href="' + esc(RETOUR) + '">Retour à la fiche</a></div>';
+    ajuster();
     var redo = $('#qz-redo'); if (redo) redo.onclick = function () { demarrer(0, faux.slice()); };
     $('#qz-new').onclick = accueil;
     var h = root.querySelector('h1'); if (h) { h.tabIndex = -1; h.focus(); }
