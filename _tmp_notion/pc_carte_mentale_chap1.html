@@ -1,0 +1,200 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Carte mentale · chapitre 1</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@500;700&display=swap">
+<style>
+/* Carte mentale : un noyau au centre, sept branches colorées de chaque côté ; sur téléphone elle se lit comme un plan en cartes. */
+:root{
+  --ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  --bg:#e9edf3; --paper:#ffffff; --ink:#18202f; --muted:#57617a; --line:#d5dbe6; --soft:#f3f5f9;
+  --core1:#1b2a41; --core2:#27486b;
+  --c1:#2f62c9; --c2:#7240c0; --c3:#0e7c77; --c4:#bf5b08; --c5:#c42f45; --c6:#566176; --c7:#94650f;
+  --l1:#2f62c9; --l2:#7240c0; --l3:#0e7c77; --l4:#bf5b08; --l5:#c42f45; --l6:#566176; --l7:#94650f;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532;
+  --core1:#0b1220; --core2:#1f3a5c;
+  --l1:#7fa8ff; --l2:#bf9bff; --l3:#5fd6cf; --l4:#ffb061; --l5:#ff8d9b; --l6:#b3bdd2; --l7:#e5b75f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532;
+  --core1:#0b1220; --core2:#1f3a5c;
+  --l1:#7fa8ff; --l2:#bf9bff; --l3:#5fd6cf; --l4:#ffb061; --l5:#ff8d9b; --l6:#b3bdd2; --l7:#e5b75f; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 3rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.top{max-width:1500px;margin:0 auto 1.4rem;display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-end;justify-content:space-between}
+.top h1{font:700 clamp(1.5rem,3.6vw,2.1rem)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.top p{margin:.35rem 0 0;color:var(--muted);max-width:44rem}
+.ctl{display:flex;flex-wrap:wrap;gap:.5rem}
+.ctl button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem .95rem}
+.ctl button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:700}
+
+.map{position:relative;max-width:1500px;margin:0 auto}
+.col{display:flex;flex-direction:column;gap:22px}
+.br{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.hub{border-radius:14px;background:var(--c);color:#fff;padding:.7rem 1rem;position:relative;z-index:1}
+.hub small{display:block;font:700 .7rem var(--ui);letter-spacing:.09em;text-transform:uppercase;opacity:.85}
+.hub b{display:block;font:700 1.02rem/1.2 var(--display)}
+.lv{display:flex;flex-direction:column;gap:9px}
+.leaf{--cl:var(--l1);position:relative;z-index:1;border:2px solid var(--cl);border-radius:16px;background:var(--paper);padding:.5rem .85rem .55rem}
+.leaf b{display:block;font-size:.95rem;line-height:1.25}
+.leaf>b math{font-size:1em}
+.leaf p{margin:.2rem 0 0;font-size:.86rem;color:var(--muted)}
+.leaf .dg{color:var(--cl);font-weight:700}
+.rev .leaf{cursor:pointer}
+.rev .leaf p{display:none}
+.rev .leaf.open p{display:block}
+.rev .leaf:not(.open) b::after{content:" +";color:var(--cl);font-weight:700}
+.core{position:relative;z-index:1;background:radial-gradient(circle at 30% 25%,var(--core2),var(--core1));color:#fff;border-radius:18px;padding:1.2rem 1.3rem;margin-bottom:1.6rem;text-align:center}
+.core small{display:block;font:700 .72rem var(--ui);letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.core h2{font:700 1.5rem/1.15 var(--display);margin:.35rem 0 .5rem;text-wrap:balance}
+.core .yr{display:inline-block;border:1.5px solid rgba(255,255,255,.55);border-radius:999px;padding:.1rem .8rem;font-weight:700}
+.core p{margin:.7rem 0 0;font-size:.9rem;opacity:.9}
+svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0}
+.foot{max-width:1500px;margin:1.6rem auto 0;color:var(--muted);font-size:.88rem}
+
+.b1{--c:var(--c1);--cl:var(--l1)}.b2{--c:var(--c2);--cl:var(--l2)}.b3{--c:var(--c3);--cl:var(--l3)}.b4{--c:var(--c4);--cl:var(--l4)}
+.b5{--c:var(--c5);--cl:var(--l5)}.b6{--c:var(--c6);--cl:var(--l6)}.b7{--c:var(--c7);--cl:var(--l7)}
+
+@media (min-width:1100px){
+  .map{display:grid;grid-template-columns:1fr minmax(250px,290px) 1fr;gap:0 clamp(60px,7vw,110px);align-items:center}
+  .core{margin:0;border-radius:50%;aspect-ratio:1;display:flex;flex-direction:column;justify-content:center;padding:1.8rem}
+  .col{gap:30px}
+  .br{flex-direction:row;align-items:center;gap:clamp(40px,4.5vw,70px);margin:0}
+  .col.r .br{flex-direction:row}
+  .hub{flex:none;width:136px;height:136px;border-radius:50%;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:.6rem}
+  .hub b{font-size:.9rem}
+  .lv{flex:1;min-width:0}
+}
+@media (max-width:1099px){svg.lines{display:none}.map{display:flex;flex-direction:column}.core{order:-1;margin-bottom:1.2rem}.hub{order:-1}.br{margin-bottom:12px}}
+
+.detail{max-width:46rem;margin:3rem auto 0}
+.detail h2{font:700 1.5rem var(--display);letter-spacing:-.01em;margin:0 0 .3rem}
+.detail>p{margin:0 0 1.6rem;color:var(--muted)}
+.dg{margin:0 0 1.8rem}
+.dg h3{display:flex;gap:.6rem;align-items:baseline;margin:0 0 .6rem;padding:.55rem .9rem;border-radius:10px;background:var(--c);color:#fff;font:700 1.05rem var(--display)}
+.dg h3 small{font:700 .7rem var(--ui);letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.dg article{border-left:3px solid var(--cl);padding:.1rem 0 .1rem .9rem;margin:0 0 1rem}
+.dg article h4{margin:0 0 .15rem;font-size:1rem}
+.dg article p{margin:.15rem 0 0;line-height:1.6}
+/* mode intégré (Notion) : liste compacte sur deux colonnes, sans le détail (il est dans la page) */
+.emb body{padding:8px}
+.emb .top h1,.emb .top p,.emb #detail,.emb .foot,.emb svg.lines{display:none}
+.emb .top{margin-bottom:.6rem}
+.emb .map{display:grid;grid-template-columns:1fr;gap:12px;align-items:start;max-width:none}
+.emb .col{display:contents}
+.emb .br{flex-direction:column;align-items:stretch;gap:8px;margin:0}
+.emb .hub{order:-1;width:auto;height:auto;border-radius:12px;display:block;text-align:left;padding:.55rem .9rem}
+.emb .core{order:-2;grid-column:1/-1;margin:0;aspect-ratio:auto;border-radius:12px;display:block;padding:.7rem 1rem}
+.emb .core h2{font-size:1.2rem;margin:.2rem 0 .3rem}
+.emb .core p{display:none}
+@media (min-width:620px){.emb .map{grid-template-columns:1fr 1fr}}
+
+math{font-size:1.06em}
+math.big{math-style:normal}
+.leaf p math{color:var(--ink)}
+.leaf p{font-size:.92rem;line-height:1.7}
+.dg article p{line-height:1.8}
+.leaf{overflow-wrap:anywhere}
+</style></head><body>
+
+<header class="top">
+  <div>
+    <h1>Physique-Chimie · Chapitre 1 : l'essentiel à retenir</h1>
+    <p>Images et couleurs : l'essentiel à retenir, en une carte.</p>
+  </div>
+  <div class="ctl">
+    <button id="rev" aria-pressed="false">Mode révision : cacher les formules</button>
+    <button id="all">Tout ouvrir</button>
+  </div>
+</header>
+<main class="map" id="map">
+  <svg class="lines" id="lines" aria-hidden="true"></svg>
+  <div class="col l" id="cl"></div>
+  <section class="core" id="core">
+    <small>Physique-Chimie · Première</small>
+    <h2>Images et couleurs</h2>
+    <span class="yr">Chapitre 1</span>
+    <p>Former l'image d'un objet avec une lentille convergente, et comprendre les couleurs par synthèse additive et soustractive.</p>
+  </section>
+  <div class="col r" id="cr"></div>
+</main>
+<section class="detail" id="detail"><h2>Pour bien comprendre</h2><p>Relis ces détails pour comprendre chaque bulle, puis apprends seulement la carte par cœur.</p></section>
+<p class="foot">† = ajout absent du cours. En mode révision, touche une bulle pour afficher sa formule et teste-toi à voix haute.</p>
+
+<script>
+(function(){
+"use strict";
+var B=[{"n": 1, "side": "l", "small": "Ch1 · I", "t": "Lentille convergente", "leaves": [["Lentille mince", "faisceau émergent plus convergent"], ["Points et axe", "<math><mi>O<\/mi><\/math>, <math><mi>F<\/mi><\/math>, <math><msup><mi>F<\/mi><mi>′<\/mi><\/msup><\/math> sur l&#x27;axe optique <math><mo stretchy=\"false\">(<\/mo><mi>Δ<\/mi><mo stretchy=\"false\">)<\/mo><\/math>"], ["Trois rayons particuliers", "par <math><mi>O<\/mi><\/math> ; parallèle à l&#x27;axe ; par <math><mi>F<\/mi><\/math>"], ["Focale et vergence", "<math><msup><mi>f<\/mi><mi>′<\/mi><\/msup><mo>=<\/mo><mover><mrow><mi>O<\/mi><msup><mi>F<\/mi><mi>′<\/mi><\/msup><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/math> et <math><mi>C<\/mi><mo>=<\/mo><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><msup><mi>f<\/mi><mi>′<\/mi><\/msup><\/mrow><\/mfrac><\/mstyle><\/math>"]], "det": ["Une lentille mince modélise un système optique de faible épaisseur, fait d&#x27;un matériau transparent à faces sphériques. Elle est convergente si le faisceau qui en émerge est plus convergent (ou moins divergent) que le faisceau incident. Une loupe est une lentille convergente.", "Le centre optique <math><mi>O<\/mi><\/math> est le centre de la lentille. Le foyer objet <math><mi>F<\/mi><\/math> et le foyer image <math><msup><mi>F<\/mi><mi>′<\/mi><\/msup><\/math> sont sur l&#x27;axe optique <math><mo stretchy=\"false\">(<\/mo><mi>Δ<\/mi><mo stretchy=\"false\">)<\/mo><\/math>, de part et d&#x27;autre de <math><mi>O<\/mi><\/math>. Les plans perpendiculaires à l&#x27;axe qui passent par <math><mi>F<\/mi><\/math> et <math><msup><mi>F<\/mi><mi>′<\/mi><\/msup><\/math> sont le plan focal objet et le plan focal image.", "Pour tracer l&#x27;image d&#x27;un objet <math><mi>A<\/mi><mi>B<\/mi><\/math>, on trace trois rayons issus de <math><mi>B<\/mi><\/math>. Celui qui passe par le centre optique <math><mi>O<\/mi><\/math> n&#x27;est pas dévié. Celui qui arrive parallèlement à l&#x27;axe repart en passant par le foyer image <math><msup><mi>F<\/mi><mi>′<\/mi><\/msup><\/math>. Celui qui passe par le foyer objet <math><mi>F<\/mi><\/math> repart parallèlement à l&#x27;axe. Ils se coupent en <math><msup><mi>B<\/mi><mi>′<\/mi><\/msup><\/math> ; <math><msup><mi>A<\/mi><mi>′<\/mi><\/msup><\/math> est sous <math><msup><mi>B<\/mi><mi>′<\/mi><\/msup><\/math>, sur l&#x27;axe.", "La distance focale <math><msup><mi>f<\/mi><mi>′<\/mi><\/msup><mo>=<\/mo><mover><mrow><mi>O<\/mi><msup><mi>F<\/mi><mi>′<\/mi><\/msup><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/math> s&#x27;exprime en mètres. La vergence <math><mi>C<\/mi><\/math> est l&#x27;inverse de la distance focale : elle s&#x27;exprime en dioptries (<math><mn>1<\/mn><mtext> <\/mtext><mi>δ<\/mi><mo>=<\/mo><mn>1<\/mn><mtext> <\/mtext><msup><mtext>m<\/mtext><mrow><mo>−<\/mo><mn>1<\/mn><\/mrow><\/msup><\/math>). Pour une lentille convergente, <math><msup><mi>f<\/mi><mi>′<\/mi><\/msup><\/math> et <math><mi>C<\/mi><\/math> sont positives. Exemple : une vergence de <math><mn>1<\/mn><mrow><mo>,<\/mo><\/mrow><mn>5<\/mn><mtext> <\/mtext><mi>δ<\/mi><\/math> donne <math><msup><mi>f<\/mi><mi>′<\/mi><\/msup><mo>=<\/mo><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><mn>1<\/mn><mrow><mo>,<\/mo><\/mrow><mn>5<\/mn><\/mrow><\/mfrac><mo>≈<\/mo><mn>0<\/mn><mrow><mo>,<\/mo><\/mrow><mn>67<\/mn><mtext> <\/mtext><mtext>m<\/mtext><\/math>."]}, {"n": 2, "side": "l", "small": "Ch1 · I", "t": "Formation d'une image", "leaves": [["Objet à l&#x27;infini", "image dans le plan focal image"], ["Objet avant le foyer objet", "image réelle, renversée, après <math><msup><mi>F<\/mi><mi>′<\/mi><\/msup><\/math>"], ["Objet sur le foyer objet", "image à l&#x27;infini"], ["Objet entre <math><mi>F<\/mi><\/math> et <math><mi>O<\/mi><\/math>", "image virtuelle, avant la lentille"]], "det": ["Les rayons issus d&#x27;un point situé à l&#x27;infini forment un faisceau de rayons parallèles. Après la lentille, ils convergent dans le plan focal image. L&#x27;image peut être recueillie sur un écran : elle est réelle et renversée.", "L&#x27;image d&#x27;un objet situé avant le foyer objet <math><mi>F<\/mi><\/math> est réelle et renversée. Elle se situe après le foyer image <math><msup><mi>F<\/mi><mi>′<\/mi><\/msup><\/math>. Elle peut être plus grande ou plus petite que l&#x27;objet, selon sa position.", "Les rayons issus d&#x27;un point du plan focal objet ressortent de la lentille parallèles entre eux : ils ne se croisent pas, l&#x27;image est donc située à l&#x27;infini.", "L&#x27;image d&#x27;un objet placé entre le foyer objet <math><mi>F<\/mi><\/math> et le centre optique <math><mi>O<\/mi><\/math> ne peut pas être projetée sur un écran : elle est virtuelle et se situe avant la lentille. Les rayons qui sortent divergent : on prolonge leur trajet en pointillés, et l&#x27;image <math><msup><mi>A<\/mi><mi>′<\/mi><\/msup><msup><mi>B<\/mi><mi>′<\/mi><\/msup><\/math> se trace en pointillés. C&#x27;est le principe de la loupe : pour un œil placé après la lentille, tout se passe comme si les rayons venaient de <math><msup><mi>B<\/mi><mi>′<\/mi><\/msup><\/math>."]}, {"n": 3, "side": "l", "small": "Ch1 · I", "t": "Grandissement", "leaves": [["Mesure algébrique", "<math><mover><mrow><mi>M<\/mi><mi>N<\/mi><\/mrow><mo accent=\"true\">―<\/mo><\/mover><mo>&gt;<\/mo><mn>0<\/mn><\/math> dans le sens de l&#x27;axe"], ["Grandissement", "<math><mi>γ<\/mi><mo>=<\/mo><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mover><mrow><msup><mi>A<\/mi><mi>′<\/mi><\/msup><msup><mi>B<\/mi><mi>′<\/mi><\/msup><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><mrow><mover><mrow><mi>A<\/mi><mi>B<\/mi><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><\/mfrac><\/mstyle><mo>=<\/mo><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mover><mrow><mi>O<\/mi><msup><mi>A<\/mi><mi>′<\/mi><\/msup><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><mrow><mover><mrow><mi>O<\/mi><mi>A<\/mi><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><\/mfrac><\/mstyle><\/math>"], ["Sens de l&#x27;image", "<math><mi>γ<\/mi><mo>&lt;<\/mo><mn>0<\/mn><\/math> renversée ; <math><mi>γ<\/mi><mo>&gt;<\/mo><mn>0<\/mn><\/math> droite"], ["Taille de l&#x27;image", "<math><mo stretchy=\"false\">|<\/mo><mi>γ<\/mi><mo stretchy=\"false\">|<\/mo><mo>&gt;<\/mo><mn>1<\/mn><\/math> agrandie ; <math><mo stretchy=\"false\">|<\/mo><mi>γ<\/mi><mo stretchy=\"false\">|<\/mo><mo>&lt;<\/mo><mn>1<\/mn><\/math> rétrécie"]], "det": ["La mesure algébrique <math><mover><mrow><mi>M<\/mi><mi>N<\/mi><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/math> est positive, égale à la distance <math><mi>M<\/mi><mi>N<\/mi><\/math>, si <math><mi>M<\/mi><\/math> et <math><mi>N<\/mi><\/math> sont placés dans le sens de l&#x27;axe. Elle est négative, égale à <math><mo>−<\/mo><mi>M<\/mi><mi>N<\/mi><\/math>, dans le sens inverse. L&#x27;axe optique est souvent orienté de gauche à droite ; l&#x27;axe transversal, de bas en haut.", "Le grandissement <math><mi>γ<\/mi><\/math> n&#x27;a pas d&#x27;unité : il compare l&#x27;image à l&#x27;objet. La seconde écriture vient du théorème de Thalès dans les triangles formés par l&#x27;objet, l&#x27;image et le centre optique.", "Si <math><mi>γ<\/mi><mo>&lt;<\/mo><mn>0<\/mn><\/math>, l&#x27;image est dans le sens contraire de l&#x27;objet : elle est renversée. Si <math><mi>γ<\/mi><mo>&gt;<\/mo><mn>0<\/mn><\/math>, elle est dans le même sens : elle est droite.", "Si <math><mo stretchy=\"false\">|<\/mo><mi>γ<\/mi><mo stretchy=\"false\">|<\/mo><mo>&gt;<\/mo><mn>1<\/mn><\/math>, l&#x27;image est plus grande que l&#x27;objet : elle est agrandie. Si <math><mo stretchy=\"false\">|<\/mo><mi>γ<\/mi><mo stretchy=\"false\">|<\/mo><mo>&lt;<\/mo><mn>1<\/mn><\/math>, elle est plus petite : elle est rétrécie."]}, {"n": 4, "side": "r", "small": "Ch1 · I", "t": "Conjugaison", "leaves": [["Relation de Descartes", "<math><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><mover><mrow><mi>O<\/mi><msup><mi>A<\/mi><mi>′<\/mi><\/msup><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><\/mfrac><\/mstyle><mo>−<\/mo><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><mover><mrow><mi>O<\/mi><mi>A<\/mi><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><\/mfrac><\/mstyle><mo>=<\/mo><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><msup><mi>f<\/mi><mi>′<\/mi><\/msup><\/mrow><\/mfrac><\/mstyle><\/math>"], ["Autres écritures", "<math><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><mover><mrow><mi>O<\/mi><msup><mi>F<\/mi><mi>′<\/mi><\/msup><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><\/mfrac><\/mstyle><\/math> ou <math><mi>C<\/mi><\/math> à droite du signe <math><mo>=<\/mo><\/math>"], ["Banc optique", "objet à gauche, écran à droite"], ["Modèle réduit de l&#x27;œil", "cristallin <math><mo>≈<\/mo><\/math> lentille, rétine <math><mo>≈<\/mo><\/math> écran †"]], "det": ["Les positions de l&#x27;objet et de l&#x27;image sont reliées par la relation de conjugaison de Descartes. Elle remplace la construction géométrique, longue à mettre en œuvre et entachée d&#x27;erreurs. Toutes les valeurs sont algébriques : un objet réel placé avant la lentille a <math><mover><mrow><mi>O<\/mi><mi>A<\/mi><\/mrow><mo accent=\"true\">―<\/mo><\/mover><mo>&lt;<\/mo><mn>0<\/mn><\/math>.", "On peut écrire <math><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><mover><mrow><mi>O<\/mi><msup><mi>A<\/mi><mi>′<\/mi><\/msup><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><\/mfrac><\/mstyle><mo>−<\/mo><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><mover><mrow><mi>O<\/mi><mi>A<\/mi><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><\/mfrac><\/mstyle><mo>=<\/mo><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><mover><mrow><mi>O<\/mi><msup><mi>F<\/mi><mi>′<\/mi><\/msup><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><\/mfrac><\/mstyle><\/math> ou <math><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><mover><mrow><mi>O<\/mi><msup><mi>A<\/mi><mi>′<\/mi><\/msup><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><\/mfrac><\/mstyle><mo>−<\/mo><mstyle displaystyle=\"true\" scriptlevel=\"0\"><mfrac><mrow><mn>1<\/mn><\/mrow><mrow><mover><mrow><mi>O<\/mi><mi>A<\/mi><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/mrow><\/mfrac><\/mstyle><mo>=<\/mo><mi>C<\/mi><\/math> : la seule grandeur de la lentille est sa distance focale, ou sa vergence.", "Dans l&#x27;activité, la lentille de vergence <math><mi>C<\/mi><mo>=<\/mo><mn>10<\/mn><mrow><mo>,<\/mo><\/mrow><mn>0<\/mn><mtext> <\/mtext><mi>δ<\/mi><\/math> reste fixe, l&#x27;objet est à gauche et l&#x27;écran à droite ; on déplace l&#x27;écran jusqu&#x27;à une image nette, puis on relève <math><mover><mrow><mi>O<\/mi><msup><mi>A<\/mi><mi>′<\/mi><\/msup><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/math>. Toutes les valeurs sont algébriques. On ne mesure pas pour <math><mover><mrow><mi>O<\/mi><mi>A<\/mi><\/mrow><mo accent=\"true\">―<\/mo><\/mover><\/math> entre <math><mo>−<\/mo><mn>10<\/mn><\/math> cm et <math><mn>0<\/mn><\/math> : l&#x27;objet est alors entre le foyer objet et la lentille, et l&#x27;image est virtuelle.", "Le cours demande de mettre en correspondance le montage de laboratoire (lentille, diaphragme, écran, axe optique) et l&#x27;œil (cristallin, iris, rétine). † Correspondance ajoutée : le cristallin joue le rôle de la lentille, l&#x27;iris celui du diaphragme et la rétine celui de l&#x27;écran."]}, {"n": 5, "side": "r", "small": "Ch1 · II", "t": "Lumière et synthèse additive", "leaves": [["Lumière blanche", "superposition de radiations monochromatiques"], ["Cônes de l&#x27;œil", "trois types : R, V, B (ou L, M, S)"], ["Synthèse additive", "R + V + B <math><mo>=<\/mo><\/math> blanc"], ["Couleurs complémentaires", "leur mélange peut produire du blanc"]], "det": ["Une lumière « naturelle » (émission par effet thermique) vue blanche est composée d&#x27;une infinité de radiations monochromatiques superposées : c&#x27;est le spectre de la lumière blanche, que le prisme permet de séparer. Chaque radiation, vue seule, est perçue avec une couleur donnée.", "Parmi les cellules de la rétine, les cônes réagissent différemment selon la longueur d&#x27;onde. Les trois types de cônes (R, V, B ou L, M, S) permettent de recevoir toutes les radiations du spectre de la lumière blanche.", "La synthèse additive consiste à associer les lumières de plusieurs sources colorées pour obtenir une autre lumière colorée. Les couleurs primaires sont le rouge, le vert et le bleu (modèle de la trichromie). Le magenta, le jaune et le cyan sont les couleurs secondaires ; leur mélange donne du blanc.", "Deux couleurs sont complémentaires quand leur mélange peut produire du blanc, si l&#x27;intensité des sources est suffisante. Ce sont les couleurs diamétralement opposées sur le cercle chromatique."]}, {"n": 6, "side": "r", "small": "Ch1 · II", "t": "Objets et synthèse soustractive", "leaves": [["Interaction avec l&#x27;objet", "transmise, diffusée ou absorbée"], ["Synthèse soustractive", "on retire des lumières par absorption"], ["Couleur d&#x27;un objet", "couleur de la lumière qu&#x27;il diffuse"], ["Exemple du citron", "jaune en lumière blanche, noir en lumière bleue"]], "det": ["Une lumière monochromatique qui arrive sur un objet est transmise si l&#x27;objet n&#x27;interagit pas avec elle, diffusée si elle est renvoyée dans toutes les directions, ou absorbée (partiellement ou totalement) : l&#x27;objet s&#x27;échauffe. Pour des lumières non monochromatiques, les trois phénomènes ont lieu à la fois. La réflexion est une diffusion selon une unique direction.", "Elle consiste à supprimer d&#x27;une lumière polychromatique une ou plusieurs lumières colorées par absorption, grâce à des filtres, des encres ou des peintures. Ses couleurs primaires et secondaires sont inversées par rapport à la synthèse additive. Le mélange des couleurs primaires donne du noir.", "La couleur perçue d&#x27;un objet est celle de la lumière qu&#x27;il diffuse. Elle dépend de la lumière reçue et des lumières absorbées : elle s&#x27;obtient par synthèse soustractive.", "Un citron jaune éclairé en lumière blanche est perçu jaune : selon la trichromie, il diffuse le rouge et le vert. Éclairé en lumière bleue, il est perçu noir, car il ne diffuse pas le bleu (il l&#x27;absorbe). Une veste rouge éclairée en lumière blanche diffuse le rouge, est opaque (rien n&#x27;est transmis) et absorbe les autres radiations."]}];
+var cl=document.getElementById('cl'),cr=document.getElementById('cr');
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
+B.forEach(function(b){
+  var br=el('div','br b'+b.n);br.dataset.n=b.n;
+  var hub=el('div','hub');hub.appendChild(el('small','',b.small));hub.appendChild(el('b','',b.t));
+  var lv=el('div','lv');
+  b.leaves.forEach(function(l){
+    var f=el('div','leaf');f.tabIndex=0;f.setAttribute('role','button');
+    f.appendChild(el('b','',l[0]));f.appendChild(el('p','',l[1]));
+    lv.appendChild(f);
+  });
+  if(b.side==='l'){br.appendChild(lv);br.appendChild(hub)}else{br.appendChild(hub);br.appendChild(lv)}
+  (b.side==='l'?cl:cr).appendChild(br);
+});
+var dsec=document.getElementById('detail');
+B.forEach(function(b){
+  var g=el('div','dg b'+b.n),h=el('h3','',b.t);h.insertBefore(el('small','',b.small),h.firstChild);g.appendChild(h);
+  b.leaves.forEach(function(l,i){
+    var a=el('article');a.appendChild(el('h4','',l[0]));
+    a.appendChild(el('p','',b.det[i]));
+    g.appendChild(a);
+  });
+  dsec.appendChild(g);
+});
+var EMB=true;
+if(EMB)document.documentElement.classList.add('emb');
+var map=document.getElementById('map'),svg=document.getElementById('lines'),core=document.getElementById('core');
+function box(e){var r=e.getBoundingClientRect(),m=map.getBoundingClientRect();return{l:r.left-m.left,t:r.top-m.top,w:r.width,h:r.height}}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function draw(){
+  svg.innerHTML='';
+  if(EMB)return;
+  if(!window.matchMedia('(min-width:1100px)').matches)return;
+  var m=map.getBoundingClientRect();svg.setAttribute('viewBox','0 0 '+m.width+' '+m.height);
+  var c=box(core),cx=c.l+c.w/2,cy=c.t+c.h/2,cr_=c.w/2;
+  document.querySelectorAll('.br').forEach(function(br){
+    var n=br.dataset.n,col=css('--l'+n),h=box(br.querySelector('.hub')),hx=h.l+h.w/2,hy=h.t+h.h/2,hr=h.w/2;
+    var left=hx<cx,ax=left?hx+hr:hx-hr;
+    var ang=Math.atan2(hy-cy,hx-cx),bx=cx+Math.cos(ang)*cr_,by=cy+Math.sin(ang)*cr_;
+    var dx=bx-ax;
+    path('M'+ax+' '+hy+' C'+(ax+dx*.5)+' '+hy+' '+(bx-dx*.5)+' '+by+' '+bx+' '+by,col,4);
+    br.querySelectorAll('.leaf').forEach(function(lf){
+      var q=box(lf),ly=q.t+q.h/2,lx=left?q.l+q.w:q.l,hxe=left?hx-hr:hx+hr;
+      var d=hxe-lx;
+      path('M'+hxe+' '+hy+' C'+(hxe-d*.5)+' '+hy+' '+(lx+d*.5)+' '+ly+' '+lx+' '+ly,col,2);
+    });
+  });
+}
+function path(d,col,w){
+  var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',col);p.setAttribute('stroke-width',w);p.setAttribute('stroke-linecap','round');
+  svg.appendChild(p);
+}
+function redraw(){requestAnimationFrame(draw)}
+var rev=document.getElementById('rev'),all=document.getElementById('all');
+rev.onclick=function(){var on=rev.getAttribute('aria-pressed')!=='true';rev.setAttribute('aria-pressed',on);map.classList.toggle('rev',on);
+  if(!on)document.querySelectorAll('.leaf.open').forEach(function(l){l.classList.remove('open')});redraw()};
+all.onclick=function(){var open=all.dataset.o!=='1';all.dataset.o=open?'1':'';all.textContent=open?'Tout refermer':'Tout ouvrir';
+  if(open){map.classList.add('rev');rev.setAttribute('aria-pressed','true')}
+  document.querySelectorAll('.leaf').forEach(function(l){l.classList.toggle('open',open)});redraw()};
+function tog(e){var l=e.target.closest('.leaf');if(l&&map.classList.contains('rev')){l.classList.toggle('open');redraw()}}
+map.addEventListener('click',tog);
+map.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e)}});
+window.addEventListener('resize',redraw);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(redraw);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redraw);
+redraw();
+})();
+</script>
+</body></html>
