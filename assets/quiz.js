@@ -2,7 +2,7 @@
    Page : <div id="quiz" data-banque="quiz.json" data-gens="nom1,nom2" data-slug="..." data-retour="./"></div> + assets/generateurs.js + assets/quiz.js.
    Questions : { id?, type:'qcm'|'vf'|'saisie'|'multi'|'ordre', niveau?(1 rappel, 2 application, 3 type DS), q, choix?, rep, items?, nombre?, tol?, ordre?, expl?, source?, hors_cours? } (voir references/quiz.md du skill).
    multi : plusieurs bonnes réponses (rep = liste d'indices) ; ordre : remettre dans l'ordre (items = ordre correct).
-   Texte mathématique entre $...$ : mini-syntaxe convertie en MathML (x^2, u_n, u_{n+1}, frac(a,b), sqrt(a), set(1;2), Delta, RR, inf, vide). */
+   Texte mathématique entre $...$ : mini-syntaxe convertie en MathML (x^2, u_n, u_{n+1}, frac(a,b), sqrt(a), set(1;2), bar(A) (barre), cap, cup, Delta, RR, inf, vide ; un décimal s'écrit avec un point, 0.6, et s'affiche 0,6). */
 (function () {
   'use strict';
   var root = document.getElementById('quiz');
@@ -26,12 +26,12 @@
 
   /* ---------- texte mathématique : mini-syntaxe -> MathML ---------- */
   var FONCTIONS = { ln: 1, log: 1, exp: 1, cos: 1, sin: 1, tan: 1, lim: 1, max: 1, min: 1, pgcd: 1, ppcm: 1 };
-  var OPS = { cup: '∪', setminus: '∖', pm: '±', in: '∈' };
+  var OPS = { cup: '∪', cap: '∩', setminus: '∖', pm: '±', in: '∈' };
   var GREC = { Delta: 'Δ', alpha: 'α', beta: 'β', pi: 'π', lambda: 'λ', theta: 'θ', inf: '∞', vide: '∅', RR: 'ℝ', NN: 'ℕ' };
   function mathml(s) {
     var t = [], re = /\s*(\d+(?:\.\d+)?|[A-Za-z]+|<=|>=|!=|[-+*\/=<>(){}\[\]^_,;|!])/g, m, i = 0;
     while ((m = re.exec(s))) t.push(m[1]);
-    var MOTS = { frac: 1, sqrt: 1, set: 1 };
+    var MOTS = { frac: 1, sqrt: 1, set: 1, bar: 1 };
     t = t.reduce(function (o, x) {        // un mot inconnu (« ax », « ac ») devient des lettres séparées, pour que ^ et _ visent la dernière
       if (/^[A-Za-z]{2,}$/.test(x) && !MOTS[x] && !OPS[x] && !GREC[x] && !FONCTIONS[x]) return o.concat(x.split(''));
       o.push(x); return o;
@@ -46,7 +46,8 @@
     function prim() {
       var x = t[i++], r;
       if (x === undefined) return '';
-      if (/^\d/.test(x)) return '<mn>' + x + '</mn>';
+      if (/^\d/.test(x)) return '<mn>' + x.replace('.', ',') + '</mn>';          // décimal : point dans la source, virgule à l'écran
+      if ((x === 'bar') && t[i] === '(') { i++; r = seq([')']); i++; return '<mover accent="true"><mrow>' + r + '</mrow><mo>¯</mo></mover>'; }   // bar(A) : événement contraire
       if ((x === 'frac') && t[i] === '(') { i++; var a = seq([',']); i++; var b = seq([')']); i++; return '<mfrac><mrow>' + a + '</mrow><mrow>' + b + '</mrow></mfrac>'; }
       if ((x === 'sqrt') && t[i] === '(') { i++; r = seq([')']); i++; return '<msqrt>' + r + '</msqrt>'; }
       if ((x === 'set') && t[i] === '(') { i++; r = seq([')']); i++; return '<mrow><mo>{</mo>' + r + '<mo>}</mo></mrow>'; }

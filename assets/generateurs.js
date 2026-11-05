@@ -709,6 +709,145 @@
       expl: 'Dans l\'ordre croissant : ' + ordre.map(function (k) { return m('u_' + k + '=' + u(k)); }).join(', ') + '.', source: 'Définie explicitement', _b: b, _c: c, _ordre: ordre };
   };
 
+
+  /* ================= Chapitre 3 : probabilités conditionnelles =================
+     Un décimal s'écrit avec un point dans la mini-syntaxe (0.6) et s'affiche avec une virgule ; bar(A) est l'événement contraire. */
+  function dstr(f) {                                /* fraction -> décimal exact écrit avec un point, ou null s'il n'est pas fini en 4 décimales */
+    var q = f.q, a = 0, b = 0;
+    while (q % 2 === 0) { q /= 2; a++; }
+    while (q % 5 === 0) { q /= 5; b++; }
+    if (q !== 1 || Math.max(a, b) > 4) return null;
+    return (Math.round(fval(f) * 10000) / 10000).toString();
+  }
+  function dec(x) { return (Math.round(x * 10000) / 10000).toString(); }
+  function fc(p, q) { return fr(p, q); }
+  function sortieP(q, f, expl, source, extra) {      /* réponse saisie : décimal exact, sinon fraction ou valeur arrondie à 0,01 */
+    var d = dstr(f), o = { type: 'saisie', nombre: true, expl: expl, source: source };
+    if (d) { o.q = q; o.rep = [Math.round(fval(f) * 1e6) / 1e6]; o.tol = 1e-6; o.aff = m(d); }
+    else { o.q = q + ' (fraction ou valeur arrondie à 0,01)'; o.rep = [fval(f)]; o.tol = 0.006; o.aff = m(ftxt(f)); }
+    for (var k in extra) o[k] = extra[k];
+    return o;
+  }
+  function qcmP(q, f, pool, expl, source, extra) {   /* QCM : la valeur exacte et trois erreurs classiques (valeurs différentes, comprises entre 0 et 1) ; null si le tirage ne s'y prête pas */
+    var ch = [f], vus = [fval(f)];
+    shuffle(pool).forEach(function (g) {
+      if (ch.length < 4 && fval(g) > 0 && fval(g) <= 1 && vus.every(function (v) { return Math.abs(v - fval(g)) > 1e-9; })) { vus.push(fval(g)); ch.push(g); }
+    });
+    if (ch.length < 4) return null;
+    var tous = ch.every(function (g) { return dstr(g); });
+    return qcm(q, ch.map(function (g) { return m(tous ? dstr(g) : ftxt(g)); }), 0, expl, source, extra);
+  }
+  function vP(label, f) { return m(label + '=' + dstr(f)); }                 /* « P(A)=0.6 » prêt à insérer (f doit être un décimal fini) */
+  function cent(x) { return fc(x, 100); }                                    /* x centièmes -> fraction */
+
+  G['maths-proba-reunion'] = function () {
+    var v = pick(['reunion', 'reunion', 'inter', 'incomp', 'contraire-union', 'contraire-inter']), A, B, C, U;
+    var n = 0;
+    do { A = ri(4, 18) * 5; B = ri(4, 18) * 5; C = ri(1, Math.floor(Math.min(A, B) / 5)) * 5; U = A + B - C; n++; } while (n < 500 && (U > 100 || U <= Math.max(A, B)));
+    var a = cent(A), b = cent(B), c = cent(C), u = cent(U), pA = vP('P(A)', a), pB = vP('P(B)', b);
+    if (v === 'reunion') return sortieP('Soient ' + m('A') + ' et ' + m('B') + ' deux événements tels que ' + pA + ', ' + pB + ' et ' + vP('P(A cap B)', c) + '. Calculer ' + m('P(A cup B)') + '.', u,
+      m('P(A cup B)=P(A)+P(B)-P(A cap B)=' + dec(A / 100) + '+' + dec(B / 100) + '-' + dec(C / 100) + '=' + dec(U / 100)) + '.', 'Réunion', { _v: v });
+    if (v === 'inter') return sortieP('Soient ' + m('A') + ' et ' + m('B') + ' deux événements tels que ' + pA + ', ' + pB + ' et ' + vP('P(A cup B)', u) + '. Calculer ' + m('P(A cap B)') + '.', c,
+      m('P(A cap B)=P(A)+P(B)-P(A cup B)=' + dec(A / 100) + '+' + dec(B / 100) + '-' + dec(U / 100) + '=' + dec(C / 100)) + '.', 'Réunion', { _v: v });
+    if (v === 'incomp') {
+      A = ri(2, 9) * 5; B = ri(2, 9) * 5;
+      return sortieP('Soient ' + m('A') + ' et ' + m('B') + ' deux événements incompatibles tels que ' + vP('P(A)', cent(A)) + ' et ' + vP('P(B)', cent(B)) + '. Calculer ' + m('P(A cup B)') + '.', cent(A + B),
+        'Incompatibles : ' + m('P(A cap B)=0') + ', donc ' + m('P(A cup B)=P(A)+P(B)=' + dec((A + B) / 100)) + '.', 'Événements incompatibles', { _v: v });
+    }
+    if (v === 'contraire-union') return sortieP('Soient ' + m('A') + ' et ' + m('B') + ' deux événements tels que ' + pA + ', ' + pB + ' et ' + vP('P(A cap B)', c) + '. Calculer ' + m('P(bar(A cup B))') + '.', cent(100 - U),
+      m('P(A cup B)=' + dec(A / 100) + '+' + dec(B / 100) + '-' + dec(C / 100) + '=' + dec(U / 100)) + ', puis ' + m('P(bar(A cup B))=1-' + dec(U / 100) + '=' + dec((100 - U) / 100)) + '.', 'Événement contraire', { _v: v });
+    return sortieP('Soient ' + m('A') + ' et ' + m('B') + ' deux événements tels que ' + vP('P(A cap B)', c) + '. Calculer ' + m('P(bar(A cap B))') + '.', cent(100 - C),
+      m('P(bar(A cap B))=1-P(A cap B)=1-' + dec(C / 100) + '=' + dec((100 - C) / 100)) + '.', 'Événement contraire', { _v: v });
+  };
+
+  G['maths-proba-conditionnelle'] = function () {
+    var v = pick(['def', 'def', 'produit', 'sens']), A = ri(4, 18) * 5, B, C;
+    if (v === 'def') {
+      C = ri(1, A / 5 - 1) * 5 || 5;
+      if (C >= A) C = A - 5;
+      var f = fc(C, A);
+      return sortieP('On donne ' + vP('P(A)', cent(A)) + ' et ' + vP('P(A cap B)', cent(C)) + '. Calculer ' + m('P_A(B)') + '.', f,
+        m('P_A(B)=frac(P(A cap B),P(A))=frac(' + dec(C / 100) + ',' + dec(A / 100) + ')=' + (dstr(f) || ftxt(f))) + '.', 'Définition', { _v: v });
+    }
+    if (v === 'produit') {
+      var P1 = ri(2, 18) * 5, f2 = fc(A * P1, 10000);
+      return sortieP('On donne ' + vP('P(A)', cent(A)) + ' et ' + vP('P_A(B)', cent(P1)) + '. Calculer ' + m('P(A cap B)') + '.', f2,
+        m('P(A cap B)=P(A)*P_A(B)=' + dec(A / 100) + '*' + dec(P1 / 100) + '=' + dec(A * P1 / 10000)) + '.', 'Formule du produit', { _v: v });
+    }
+    var mx, Cc, nn = 0;
+    do { B = ri(4, 18) * 5; mx = Math.min(A, B); Cc = ri(1, mx / 5) * 5; nn++; } while (nn < 500 && A + B - Cc > 100);
+    var cond = pick(['A', 'B']), den = cond === 'A' ? A : B, lbl = cond === 'A' ? 'P_A(B)' : 'P_B(A)', f3 = fc(Cc, den);
+    return sortieP('On donne ' + vP('P(A)', cent(A)) + ', ' + vP('P(B)', cent(B)) + ' et ' + vP('P(A cap B)', cent(Cc)) + '. Calculer ' + m(lbl) + '.', f3,
+      'On divise par la probabilité de ce qu\'on sait : ' + m(lbl + '=frac(P(A cap B),P(' + cond + '))=frac(' + dec(Cc / 100) + ',' + dec(den / 100) + ')=' + (dstr(f3) || ftxt(f3))) + '.', 'Définition', { _v: v, niveau: 3 });
+  };
+
+  G['maths-proba-effectifs'] = function () {
+    var N = pick([100, 120, 150, 200, 240, 300]), X, Y, Z, n = 0;
+    do { X = ri(Math.ceil(0.2 * N / 10), Math.floor(0.7 * N / 10)) * 10; Y = ri(Math.ceil(0.2 * N / 10), Math.floor(0.7 * N / 10)) * 10; Z = ri(1, Math.min(X, Y) / 10) * 10; n++; }
+    while (n < 500 && (X + Y - Z > N - 10 || Z < 10 || Z >= Math.min(X, Y)));
+    var cas = pick(['P_S(M)', 'P_M(S)', 'P_{bar(S)}(M)', 'P_{bar(S)}(bar(M))', 'P(bar(S) cap bar(M))', 'P(S cup M)']), f, ex;
+    var hors = N - X - Y + Z;
+    if (cas === 'P_S(M)') { f = fc(Z, X); ex = ['frac(' + Z + ',' + X + ')']; }
+    else if (cas === 'P_M(S)') { f = fc(Z, Y); ex = ['frac(' + Z + ',' + Y + ')']; }
+    else if (cas === 'P_{bar(S)}(M)') { f = fc(Y - Z, N - X); ex = ['frac(' + (Y - Z) + ',' + (N - X) + ')']; }
+    else if (cas === 'P_{bar(S)}(bar(M))') { f = fc(hors, N - X); ex = ['frac(' + hors + ',' + (N - X) + ')']; }
+    else if (cas === 'P(bar(S) cap bar(M))') { f = fc(hors, N); ex = ['frac(' + hors + ',' + N + ')']; }
+    else { f = fc(X + Y - Z, N); ex = ['frac(' + (X + Y - Z) + ',' + N + ')']; }
+    var enonce = 'Un lycée compte ' + N + ' élèves. ' + X + ' font de l\'AS, ' + Y + ' font partie du club de maths et ' + Z + ' font les deux. On choisit un élève au hasard ; ' + m('S') + ' : « l\'élève fait de l\'AS », ' + m('M') + ' : « l\'élève fait partie du club de maths ». Calculer ' + m(cas) + '.';
+    var expl = 'On compte les élèves : ' + hors + ' ne font ni l\'AS ni le club de maths. ' + m(cas + '=' + ex[0] + (dstr(f) ? '=' + dstr(f) : '')) + '.';
+    if (Math.random() < 0.55) {
+      var o = qcmP(enonce, f, [fc(Z, X), fc(Z, Y), fc(Z, N), fc(Y - Z, N - X), fc(hors, N - X), fc(hors, N), fc(X + Y - Z, N), fc(X, N), fc(Y, N), fc(X - Z, N), fc(Y - Z, N)], expl + ' Les autres valeurs divisent par une mauvaise condition ou oublient de conditionner.', 'Tableau à double entrée', { _cas: cas });
+      if (o) return o;
+    }
+    return sortieP(enonce, f, expl, 'Tableau à double entrée', { _cas: cas });
+  };
+
+  G['maths-proba-arbre'] = function () {
+    var pa = ri(2, 8), p1 = ri(1, 9), p2 = ri(1, 9), cas = pick(['P(A cap B)', 'P(bar(A) cap B)', 'P(B)', 'P(B)', 'P(bar(B))', 'P_B(A)', 'P_{bar(B)}(A)']);
+    var PA = fc(pa, 10), PB1 = fc(p1, 10), PB2 = fc(p2, 10), un = fc(1, 1);
+    var pAB = fmul(PA, PB1), pnAB = fmul(fsub(un, PA), PB2), pB = fadd(pAB, pnAB), pAnB = fmul(PA, fsub(un, PB1)), f, ex;
+    if (cas === 'P(A cap B)') { f = pAB; ex = m('P(A cap B)=P(A)*P_A(B)=' + dec(pa / 10) + '*' + dec(p1 / 10) + '=' + dstr(f)); }
+    else if (cas === 'P(bar(A) cap B)') { f = pnAB; ex = m('P(bar(A) cap B)=P(bar(A))*P_{bar(A)}(B)=' + dec(1 - pa / 10) + '*' + dec(p2 / 10) + '=' + dstr(f)); }
+    else if (cas === 'P(B)') { f = pB; ex = 'Les événements ' + m('A') + ' et ' + m('bar(A)') + ' forment une partition : ' + m('P(B)=P(A cap B)+P(bar(A) cap B)=' + dstr(pAB) + '+' + dstr(pnAB) + '=' + dstr(f)); }
+    else if (cas === 'P(bar(B))') { f = fsub(un, pB); ex = m('P(B)=' + dstr(pB)) + ' par les probabilités totales, puis ' + m('P(bar(B))=1-' + dstr(pB) + '=' + dstr(f)); }
+    else if (cas === 'P_B(A)') { f = fdiv(pAB, pB); ex = m('P(B)=' + dstr(pB)) + ' par les probabilités totales, puis ' + m('P_B(A)=frac(P(A cap B),P(B))=frac(' + dstr(pAB) + ',' + dstr(pB) + ')=' + (dstr(f) || ftxt(f))); }
+    else { f = fdiv(pAnB, fsub(un, pB)); ex = m('P(bar(B))=1-' + dstr(pB) + '=' + dstr(fsub(un, pB))) + ' et ' + m('P(A cap bar(B))=P(A)*P_A(bar(B))=' + dec(pa / 10) + '*' + dec(1 - p1 / 10) + '=' + dstr(pAnB)) + ', puis ' + m('P_{bar(B)}(A)=frac(' + dstr(pAnB) + ',' + dstr(fsub(un, pB)) + ')=' + (dstr(f) || ftxt(f))); }
+    var enonce = 'Un arbre pondéré décrit deux événements ' + m('A') + ' et ' + m('B') + ' avec ' + vP('P(A)', PA) + ', ' + vP('P_A(B)', PB1) + ' et ' + vP('P_{bar(A)}(B)', PB2) + '. Calculer ' + m(cas) + '.';
+    if (Math.random() < 0.55) {
+      var somme = fadd(PB1, PB2), pool = [pAB, pnAB, pB, pAnB, fsub(un, pB), PB1, PB2, PA, fdiv(pAB, pB), fdiv(pnAB, pB), fsub(un, PA)];
+      if (fval(somme) <= 1) pool.push(somme);
+      var o = qcmP(enonce, f, pool, ex + '. Les autres valeurs sont des confusions classiques : un seul chemin, une probabilité conditionnelle prise pour une intersection, ou une somme non pondérée.', 'Plusieurs chemins', { _cas: cas });
+      if (o) return o;
+    }
+    return sortieP(enonce, f, ex + '.', 'Plusieurs chemins', { _cas: cas });
+  };
+
+  G['maths-proba-independance'] = function () {
+    var v = pick(['vf', 'vf', 'inter', 'cond', 'contraire']), a, b, A, B;
+    if (v === 'vf') {
+      A = ri(2, 9); B = ri(2, 9);
+      var prod = A * B, vrai = Math.random() < 0.5, C = prod, mx = Math.min(A, B) * 10, mn = Math.max(0, A + B - 10) * 10;
+      if (!vrai) { var cs = [prod - 5, prod + 5, prod + 10, prod - 10, mx].filter(function (x) { return x > mn && x <= mx && x > 0 && x !== prod; }); if (!cs.length) return G['maths-proba-independance'](); C = pick(cs); }
+      else if (prod > mx || prod < mn || prod <= 0) return G['maths-proba-independance']();
+      var f = cent(C), ok = C === prod;
+      return {
+        type: 'vf', q: 'Soient ' + m('A') + ' et ' + m('B') + ' deux événements tels que ' + vP('P(A)', fc(A, 10)) + ', ' + vP('P(B)', fc(B, 10)) + ' et ' + vP('P(A cap B)', f) + '. Les événements ' + m('A') + ' et ' + m('B') + ' sont indépendants.', rep: ok,
+        expl: m('P(A)*P(B)=' + dec(A / 10) + '*' + dec(B / 10) + '=' + dec(prod / 100)) + (ok ? ' : c\'est égal à ' + m('P(A cap B)') + ', donc les événements sont indépendants.' : ', différent de ' + m('P(A cap B)=' + dec(C / 100)) + ' : les événements ne sont pas indépendants.'), source: 'Définition', _v: v
+      };
+    }
+    A = ri(2, 5); B = ri(2, 5);
+    if (v === 'inter') {
+      var cand = [A * B / 100, (A + B) / 10, (A + B) / 10 - A * B / 100, Math.min(A, B) / 10].map(function (x) { return Math.round(x * 10000) / 10000; });
+      if (new Set(cand).size !== 4) return G['maths-proba-independance']();
+      return qcm('Soient ' + m('A') + ' et ' + m('B') + ' deux événements indépendants tels que ' + vP('P(A)', fc(A, 10)) + ' et ' + vP('P(B)', fc(B, 10)) + '. Calculer ' + m('P(A cap B)') + '.', cand.map(function (x) { return m(dec(x)); }), 0,
+        'Indépendants : ' + m('P(A cap B)=P(A)*P(B)=' + dec(A / 10) + '*' + dec(B / 10) + '=' + dec(cand[0])) + '. Les autres valeurs correspondent à une somme, à ' + m('P(A cup B)') + ' ou au minimum : ce sont des confusions classiques.', 'Définition', { _v: v, _all: cand });
+    }
+    if (v === 'cond') return sortieP('Soient ' + m('A') + ' et ' + m('B') + ' deux événements indépendants tels que ' + vP('P(A)', fc(A, 10)) + ' et ' + vP('P(B)', fc(B, 10)) + '. Calculer ' + m('P_A(B)') + '.', fc(B, 10),
+      'Indépendants avec ' + m('P(A)!=0') + ' : ' + m('P_A(B)=P(B)=' + dec(B / 10)) + ' (savoir que ' + m('A') + ' est réalisé ne change rien).', 'Avec le conditionnel', { _v: v });
+    return sortieP('Soient ' + m('A') + ' et ' + m('B') + ' deux événements indépendants tels que ' + vP('P(A)', fc(A, 10)) + ' et ' + vP('P(B)', fc(B, 10)) + '. Calculer ' + m('P(bar(A) cap B)') + '.', fc((10 - A) * B, 100),
+      m('bar(A)') + ' et ' + m('B') + ' sont aussi indépendants : ' + m('P(bar(A) cap B)=P(bar(A))*P(B)=' + dec(1 - A / 10) + '*' + dec(B / 10) + '=' + dec((10 - A) * B / 100)) + '.', 'Avec le contraire', { _v: v });
+  };
+
   /* ---------- niveau de difficulté de chaque générateur (1 rappel, 2 application, 3 type DS) ---------- */
   var NIVEAU = {
     'maths-discriminant': 1, 'maths-nb-solutions': 1, 'maths-resoudre': 2, 'maths-forme-canonique': 2, 'maths-racine-evidente': 1, 'maths-racine-evidente-cubique': 2,
@@ -717,6 +856,7 @@
     'maths-discriminant-parametre': 3, 'maths-parametre-cours': 3, 'maths-expressions-racines': 3, 'maths-inequation-quotient': 3, 'maths-inequation-cubique': 3,
     'maths-irrationnelle': 3, 'maths-polynome-nb-racines': 3, 'maths-multi-discriminant': 2, 'maths-multi-racines': 2,
     'maths-suite-terme': 1, 'maths-suite-point': 1, 'maths-suite-variation': 2, 'maths-suite-rang': 3, 'maths-suite-stationnaire': 2,
+    'maths-proba-reunion': 2, 'maths-proba-conditionnelle': 2, 'maths-proba-effectifs': 3, 'maths-proba-arbre': 3, 'maths-proba-independance': 3,
     'maths-suite-variation-diff': 3, 'maths-suite-recurrence-carre': 3, 'maths-suite-parametre': 3, 'maths-suite-points-multi': 2, 'maths-suite-ordre-termes': 2
   };
   Object.keys(NIVEAU).forEach(function (nom) {
