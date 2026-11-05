@@ -44,3 +44,12 @@
 #quiz math{font-size:1.08em}
 .qz-m{display:inline}
 .qz-m.lg{display:block;max-width:100%;overflow-x:auto;padding:.1rem 0}
+.qz-hint{font-size:.88rem;margin:.1rem 0 .7rem}
+.qz-ch.sel{border-color:var(--k);background:color-mix(in srgb,var(--k) 12%,transparent)}
+.qz-ch.sel .qz-mk{color:var(--k)}
+.qz-ch.miss{border-color:var(--ok);border-style:dashed}
+.qz-ch.miss .qz-mk{color:var(--ok)}
+.qz-err{color:var(--ko);font-size:.9rem;margin:.2rem 0}
+.qz-err[hidden]{display:none}
+.qz-ord{margin:.2rem 0 .4rem;padding-left:1.3rem}
+.qz-ord li{margin:.15rem 0}

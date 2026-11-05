@@ -348,7 +348,8 @@
     if (fval(rn) === fval(rs[0]) || fval(rn) === fval(rs[1])) return G['maths-valeurs-interdites']();
     var bon = [rs[0], rs[1]], vus = {};
     vus[cle(bon)] = 1;
-    var cands = [[rn], [fneg(rs[0]), fneg(rs[1])], [rs[0], rs[1], rn], [rs[0]], [rs[1]], [rn, rs[1]]], ch = [ens2(bon)];
+    var ch = [ens2(bon), ens2([rs[0], rs[1], rn])], cands = [[rn, rs[1]], [fneg(rs[0]), fneg(rs[1])], [rn, rs[0]], [rn]];
+    vus[cle([rs[0], rs[1], rn])] = 1;
     shuffle(cands).forEach(function (l) { if (ch.length < 4 && !vus[cle(l)]) { vus[cle(l)] = 1; ch.push(ens2(l)); } });
     if (ch.length < 4) return G['maths-valeurs-interdites']();
     return qcm('Pour quelles valeurs de ' + m('x') + ' l\'expression ' + m('frac(' + num + ',' + pol(cs) + ')') + ' n\'est-elle pas définie ?', ch.map(m), 0,
@@ -418,7 +419,7 @@
       'Le point a pour coordonnées ' + m('(n;u_n)') + ' : l\'abscisse est le rang ' + m(k) + ', l\'ordonnée est ' + m('u_' + k + '=' + v) + '.', 'Nuage de points', { _p: p, _s: s, _k: k });
   };
 
-  var NOMS_VAR = ['Croissante', 'Décroissante', 'Ni croissante ni décroissante'];
+  var NOMS_VAR = ['Croissante', 'Décroissante', 'Non monotone'];
   G['maths-suite-variation'] = function () {
     var forme = pick(['lineaire', 'quadratique', 'homographique', 'additive', 'multiplicative']), q, bon, ex, chk;
     if (forme === 'lineaire') {
@@ -473,4 +474,253 @@
     return qcm('Laquelle de ces suites est stationnaire ?', t, t.indexOf(bon),
       'Une suite est stationnaire lorsque ' + m('u_{n+1}-u_n=0') + ' pour tout ' + m('n') + ' : ' + bon + ' est la seule dont tous les termes sont égaux.', 'Croissante', { _all: t, _bon: bon, _k: k });
   };
+
+  /* ================= Questions de type DS : plusieurs étapes, pièges du cours ================= */
+  function fadd(x, y) { return fr(x.p * y.q + y.p * x.q, x.q * y.q); }
+  function fsub(x, y) { return fadd(x, fneg(y)); }
+  function fmul(x, y) { return fr(x.p * y.p, x.q * y.q); }
+  function fdiv(x, y) { return fr(x.p * y.q, x.q * y.p); }
+  function trie(pts) { return pts.slice().sort(function (u, v) { return fval(u) - fval(v); }).filter(function (x, i, t) { return i === 0 || fval(x) !== fval(t[i - 1]); }); }
+
+  /* Ensemble des solutions de f(x) > 0, >= 0, < 0 ou <= 0 d'après le signe de f entre ses points critiques.
+     pts : points critiques triés (zéros et valeurs interdites) ; signeEn(x) : signe de f en x non critique ;
+     nulEn(x) : f s'annule en x ; interditEn(x) : f n'est pas définie en x ;
+     ignorerInterdits : variante FAUSSE qui range les valeurs interdites parmi les solutions (crochet fermé sur une valeur interdite). */
+  function solveSigne(pts, signeEn, nulEn, interditEn, positif, strict, ignorerInterdits) {
+    var xs = pts.map(fval), items = [], i, n = xs.length;
+    for (i = 0; i <= n; i++) {
+      var x = i === 0 ? xs[0] - 1 : i === n ? xs[n - 1] + 1 : (xs[i - 1] + xs[i]) / 2;
+      items.push({ iv: true, k: i, inc: (signeEn(x) > 0) === positif });
+      if (i < n) items.push({ iv: false, k: i, inc: !strict && ((nulEn(xs[i]) && !interditEn(xs[i])) || (ignorerInterdits && interditEn(xs[i]))) });
+    }
+    var parts = [], j = 0;
+    if (items.every(function (it) { return it.inc; })) return 'RR';
+    while (j < items.length) {
+      if (!items[j].inc) { j++; continue; }
+      var d = j, e = j;
+      while (e + 1 < items.length && items[e + 1].inc) e++;
+      if (d === e && !items[d].iv) parts.push('set(' + ftxt(pts[items[d].k]) + ')');
+      else {
+        var g = items[d], h = items[e];
+        var gauche = g.iv ? (g.k === 0 ? ']-inf' : ']' + ftxt(pts[g.k - 1])) : '[' + ftxt(pts[g.k]);
+        var droite = h.iv ? (h.k === n ? '+inf[' : ftxt(pts[h.k]) + '[') : ftxt(pts[h.k]) + ']';
+        parts.push(gauche + ';' + droite);
+      }
+      j = e + 1;
+    }
+    return parts.length ? parts.join(' cup ') : 'vide';
+  }
+  function troisAutres(bon, essais) {          /* [bon] + trois ensembles différents de la bonne réponse, ou null */
+    var ch = [bon];
+    shuffle(essais).forEach(function (s) { if (ch.length < 4 && ch.indexOf(s) < 0) ch.push(s); });
+    return ch.length === 4 ? ch : null;
+  }
+
+  /* équation paramétrique x^2 - 2(m+p)x + (q - m) = 0 : Delta = 4(m - r1)(m - r2) */
+  function equationParam() {
+    var r1, r2;
+    do { r1 = ri(-6, 6); r2 = ri(-6, 6); } while ((r1 + r2) % 2 === 0 || r1 === r2);
+    var p = (-(r1 + r2) - 1) / 2, q = p * p - r1 * r2;
+    var lx = p === 0 ? '-2mx' : '-2(m' + (p > 0 ? '+' + p : p) + ')x';
+    var eq = 'x^2' + lx + (q === 0 ? '-m' : (q > 0 ? '+' : '') + q + '-m') + '=0';
+    return { r1: Math.min(r1, r2), r2: Math.max(r1, r2), p: p, q: q, eq: eq };
+  }
+  G['maths-discriminant-parametre'] = function () {
+    var e = equationParam(), p = e.p, q = e.q;
+    var bon = [4, 4 * (2 * p + 1), 4 * (p * p - q)], d1 = [1, 2 * p + 1, p * p - q], d2 = [4, 8 * p - 4, 4 * p * p + 4 * q], d3 = [2, 4 * p + 4, 2 * p * p - 4 * q];
+    var txt = function (t) { return 'Delta=' + pol(t).replace(/x/g, 'm'); };
+    var ch = [txt(bon), txt(d1), txt(d2), txt(d3)];
+    if (!uniques(ch)) return G['maths-discriminant-parametre']();
+    var b2 = p === 0 ? '(2m)' : '(2(m' + (p > 0 ? '+' : '') + p + '))';
+    return qcm('Calculer le discriminant ' + m('Delta') + ' de l\'équation ' + m('(E_m):' + e.eq) + ' d\'inconnue ' + m('x') + '.', ch.map(m), 0,
+      m('Delta=b^2-4ac=' + b2 + '^2-4(' + (q ? q + '-' : '-') + 'm)=' + txt(bon).slice(6)) + '. Le coefficient ' + m('b') + ' est ' + m(p === 0 ? '-2m' : '-2(m' + (p > 0 ? '+' : '') + p + ')') + ' et le terme constant est ' + m('c=' + (q ? q + '-' : '-') + 'm') + '.',
+      'Équation paramétrique', { _eq: e, _all: ch });
+  };
+  G['maths-parametre-cours'] = function () {
+    var e = equationParam(), t = pick(['distinctes', 'double', 'aucune']);
+    var r1 = fr(e.r1, 1), r2 = fr(e.r2, 1);
+    var all = [ens({ t: 'ext', r1: r1, r2: r2, f: false }), ens({ t: 'int', r1: r1, r2: r2, f: false }), ens({ t: 'ext', r1: r1, r2: r2, f: true }), 'set(' + e.r1 + ';' + e.r2 + ')'];
+    var bon = t === 'distinctes' ? all[0] : t === 'aucune' ? all[1] : all[3];
+    var quoi = t === 'distinctes' ? 'deux solutions distinctes' : t === 'aucune' ? 'aucune solution' : 'une solution double';
+    return qcm('Pour quelles valeurs de ' + m('m') + ' l\'équation ' + m('(E_m):' + e.eq) + ' a-t-elle ' + quoi + ' ?', all.map(m), all.indexOf(bon),
+      m('Delta=4(m-' + par(e.r1) + ')(m-' + par(e.r2) + ')') + ' : ' + m('Delta') + ' est positif à l\'extérieur de ses racines ' + m(e.r1) + ' et ' + m(e.r2) + ', négatif entre elles, nul en ces deux valeurs.',
+      'Équation paramétrique', { _eq: e, _t: t, _all: all, _bon: bon });
+  };
+
+  /* expressions symétriques des racines, calculées avec la somme et le produit sans résoudre */
+  G['maths-expressions-racines'] = function () {
+    var a, b, c, n = 0;
+    do { a = pick([1, 2, 3, -1, -2]); b = ri(-7, 7); c = nz(-6, 6); n++; } while (n < 300 && disc(a, b, c) <= 0);
+    var S = fr(-b, a), P = fr(c, a), v = pick(['carres', 'inverses', 'ecart', 'mixte']), rep, ex, e;
+    if (v === 'carres') { rep = fsub(fmul(S, S), fmul(fr(2, 1), P)); e = 'x_1^2+x_2^2'; ex = m('x_1^2+x_2^2=(x_1+x_2)^2-2x_1x_2=S^2-2P=' + ftxt(rep)); }
+    else if (v === 'inverses') { rep = fdiv(S, P); e = 'frac(1,x_1)+frac(1,x_2)'; ex = m('frac(1,x_1)+frac(1,x_2)=frac(x_1+x_2,x_1x_2)=frac(S,P)=' + ftxt(rep)); }
+    else if (v === 'ecart') { rep = fsub(fmul(S, S), fmul(fr(4, 1), P)); e = '(x_1-x_2)^2'; ex = m('(x_1-x_2)^2=(x_1+x_2)^2-4x_1x_2=S^2-4P=' + ftxt(rep)); }
+    else { rep = fmul(S, P); e = 'x_1x_2(x_1+x_2)'; ex = m('x_1x_2(x_1+x_2)=PS=' + ftxt(rep)); }
+    return {
+      type: 'saisie', nombre: true, tol: 1e-9,
+      q: m('x_1') + ' et ' + m('x_2') + ' sont les solutions de ' + m(pol([a, b, c]) + '=0') + '. Sans les calculer, déterminer ' + m(e) + '. (fraction acceptée)',
+      rep: [fval(rep)], aff: fatt(rep), expl: m(dEtapes(a, b, c)) + ' : les racines existent, ' + m('S=' + ftxt(S)) + ' et ' + m('P=' + ftxt(P)) + '. ' + ex + '.',
+      source: 'Somme des racines', _abc: [a, b, c], _v: v, _rep: fval(rep)
+    };
+  };
+
+  /* inéquations avec un quotient, inéquations de degré 3 : tableau de signes */
+  G['maths-inequation-quotient'] = function () {
+    var rs = distinctes(), cs = polyRacines(rs, pick([1, 2, -1])), nb = nz(-6, 6), na = pick([1, 2, -1, -2]), rn = fr(-nb, na);
+    if (fval(rn) === fval(rs[0]) || fval(rn) === fval(rs[1])) return G['maths-inequation-quotient']();
+    var sym = pick(['>', '>=', '<', '<=']), strict = sym === '>' || sym === '<', positif = sym === '>' || sym === '>=';
+    var pts = trie([rn, rs[0], rs[1]]), num = function (x) { return na * x + nb; }, den = function (x) { return evalP(cs, x); };
+    var sg = function (x) { return Math.sign(num(x) * den(x)); }, nul = function (x) { return Math.abs(num(x)) < 1e-9; }, itd = function (x) { return Math.abs(den(x)) < 1e-9; };
+    var S = function (pos, st, ig) { return solveSigne(pts, sg, nul, itd, pos, st, ig); };
+    var ch = troisAutres(S(positif, strict, false), [S(!positif, strict, false), S(positif, !strict, false), S(!positif, !strict, false), S(positif, strict, true), S(positif, !strict, true)]);
+    if (!ch) return G['maths-inequation-quotient']();
+    return qcm('Résoudre dans ' + m('RR') + ' l\'inéquation ' + m('frac(' + pol([na, nb]) + ',' + pol(cs) + ')' + sym + '0') + '.', ch.map(m), 0,
+      'Numérateur : racine ' + m(ftxt(rn)) + '. Dénominateur : ' + m(dEtapes(cs[0], cs[1], cs[2])) + ', racines ' + m(ftxt(rs[0])) + ' et ' + m(ftxt(rs[1])) + ', valeurs interdites (crochets ouverts). On étudie le signe du quotient dans un tableau de signes.',
+      'Avec un quotient', { _num: [na, nb], _den: cs, _sym: sym, _all: ch });
+  };
+  G['maths-inequation-cubique'] = function () {
+    var r = fr(pick([-2, -1, 1, 2]), 1), s = distinctes();
+    if (fval(s[0]) === fval(r) || fval(s[1]) === fval(r)) return G['maths-inequation-cubique']();
+    var cs = polyRacines([r, s[0], s[1]], pick([1, 1, 2, -1])), sym = pick(['>', '>=', '<', '<=']);
+    var strict = sym === '>' || sym === '<', positif = sym === '>' || sym === '>=', pts = trie([r, s[0], s[1]]);
+    var sg = function (x) { return Math.sign(evalP(cs, x)); }, nul = function (x) { return Math.abs(evalP(cs, x)) < 1e-9; }, itd = function () { return false; };
+    var S = function (pos, st) { return solveSigne(pts, sg, nul, itd, pos, st, false); };
+    var ch = troisAutres(S(positif, strict), [S(!positif, strict), S(positif, !strict), S(!positif, !strict)]);
+    if (!ch) return G['maths-inequation-cubique']();
+    return qcm('Résoudre dans ' + m('RR') + ' l\'inéquation ' + m('P(x)' + sym + '0') + ' avec ' + m('P(x)=' + pol(cs)) + '.', ch.map(m), 0,
+      m('P(' + fval(r) + ')=' + evalTxt(cs, fval(r))) + ' : ' + m(fval(r)) + ' est racine évidente. On factorise ' + m('P(x)=' + coef(cs[0]) + '(' + lin(r) + ')(' + lin(s[0]) + ')(' + lin(s[1]) + ')') + ', puis on dresse le tableau de signes.',
+      'Polynôme de degré 3', { _poly: cs, _sym: sym, _all: ch });
+  };
+
+  /* équation irrationnelle sqrt(x+a) = x-b ou b-x : racines parasites créées par le carré */
+  G['maths-irrationnelle'] = function () {
+    var forme = pick(['x-b', 'b-x']), s = pick([1, 3, 3, 5, 7]), T = (s * s - 1) / 4, a = ri(1, 9), b = T - a;
+    var lo = b + (1 - s) / 2, hi = b + (1 + s) / 2, rhs = function (x) { return forme === 'x-b' ? x - b : b - x; };
+    var rhsTxt = forme === 'x-b' ? (b === 0 ? 'x' : b > 0 ? 'x-' + b : 'x+' + (-b)) : (b === 0 ? '-x' : b > 0 ? b + '-x' : '-' + (-b) + '-x');
+    var ok = function (x) { return rhs(x) >= 0; };                       /* x + a = rhs(x)^2 est vrai pour les deux racines */
+    var vals = [lo, hi].filter(ok), set = function (l) { return 'set(' + l.join(';') + ')'; };
+    var ch = troisAutres(set(vals), [set([lo]), set([hi]), set([lo, hi]), 'vide']);
+    if (!ch) return G['maths-irrationnelle']();
+    var det = [lo, hi].map(function (x) { return m('x=' + x) + ' : le second membre vaut ' + m(rhs(x)) + (ok(x) ? ', c\'est une solution' : ', négatif : fausse solution (une racine carrée est positive)'); }).join(' ; ');
+    return qcm('Résoudre dans ' + m('RR') + ' l\'équation ' + m('sqrt(x+' + a + ')=' + rhsTxt) + '.', ch.map(m), 0,
+      'On élève au carré : ' + m('x+' + a + '=(' + rhsTxt + ')^2') + ', soit ' + m(pol([1, -(2 * b + 1), b * b - a]) + '=0') + ' (' + m('Delta=' + s * s) + '), de solutions ' + m(lo) + ' et ' + m(hi) + '. Mais le carré peut créer de fausses solutions : il faut ' + m(rhsTxt + '>=0') + '. ' + det + '.',
+      'Équation irrationnelle', { _a: a, _b: b, _forme: forme, _vals: vals, _all: ch });
+  };
+
+  /* nombre de racines d'un polynôme de degré 3 dont on connaît une racine évidente */
+  function racines2f(a, b, c) { var d = disc(a, b, c); return d < 0 ? [] : d === 0 ? [-b / (2 * a)] : [(-b - Math.sqrt(d)) / (2 * a), (-b + Math.sqrt(d)) / (2 * a)]; }
+  G['maths-polynome-nb-racines'] = function () {
+    var r = pick([-2, -1, 0, 1, 2]), cas = pick(['pos', 'pos', 'zero', 'neg', 'confondue']), a = pick([1, 1, 2, -1]), q;
+    if (cas === 'neg') q = trinome('neg');
+    else if (cas === 'zero') { var x0 = pick([-4, -3, 3, 4, 5]); q = { a: a, b: -2 * a * x0, c: a * x0 * x0 }; }
+    else if (cas === 'confondue') { var s = pick([-5, -4, -3, 3, 4, 5]); q = { a: a, b: -a * (r + s), c: a * r * s }; }
+    else { var s1 = pick([-5, -4, -3, 3, 4, 5]), s2 = pick([-6, 6, 7, -7, 3, 4]); if (s1 === s2) return G['maths-polynome-nb-racines'](); q = { a: a, b: -a * (s1 + s2), c: a * s1 * s2 }; }
+    var cs = mulPoly([1, -r], [q.a, q.b, q.c]);
+    var rac = [r]; racines2f(q.a, q.b, q.c).forEach(function (x) { if (!rac.some(function (y) { return Math.abs(y - x) < 1e-9; })) rac.push(x); });
+    var n = rac.length;
+    return qcm('Combien de racines réelles distinctes a le polynôme ' + m('P(x)=' + pol(cs)) + ', sachant que ' + m(r) + ' est une racine évidente ?', ['1', '2', '3'], n - 1,
+      m('P(' + r + ')=' + evalTxt(cs, r)) + '. On écrit ' + m('P(x)=(' + lin(fr(r, 1)) + ')(' + pol([q.a, q.b, q.c]) + ')') + ' ; le trinôme a ' + m(dEtapes(q.a, q.b, q.c)) +
+      (cas === 'confondue' ? ' et l\'une de ses racines est ' + m(r) + ' : elle se confond avec la racine évidente.' : '.') + ' Au total ' + n + ' racine' + (n > 1 ? 's' : '') + ' distincte' + (n > 1 ? 's' : '') + '.',
+      'Polynôme de degré 3', { ordre: 'fixe', _poly: cs, _n: n });
+  };
+
+  /* questions à plusieurs bonnes réponses */
+  G['maths-multi-discriminant'] = function () {
+    var quoi = pick(['distinctes', 'aucune']), cats = shuffle(['pos', 'pos', 'neg', 'neg', 'zero', pick(['pos', 'neg'])]).slice(0, 5), eqs = [], bonnes = [];
+    cats.forEach(function (c) { var t = trinome(c); eqs.push({ t: [t.a, t.b, t.c], d: disc(t.a, t.b, t.c) }); });
+    eqs.forEach(function (e, i) { if (quoi === 'distinctes' ? e.d > 0 : e.d < 0) bonnes.push(i); });
+    var txt = eqs.map(function (e) { return m(pol(e.t) + '=0'); });
+    if (bonnes.length < 2 || bonnes.length > 3 || !uniques(txt)) return G['maths-multi-discriminant']();
+    return {
+      type: 'multi', q: 'Quelles équations ont ' + (quoi === 'distinctes' ? 'deux solutions réelles distinctes' : 'aucune solution réelle') + ' ? (plusieurs réponses)', choix: txt, rep: bonnes,
+      expl: eqs.map(function (e) { return m(pol(e.t) + ' : Delta=' + e.d); }).join(' ; ') + '. La condition est ' + (quoi === 'distinctes' ? m('Delta>0') : m('Delta<0')) + '.',
+      source: 'Discriminant', _eqs: eqs.map(function (e) { return e.t; }), _quoi: quoi
+    };
+  };
+  G['maths-multi-racines'] = function () {
+    var rs = shuffle([-3, -2, -1, 0, 1, 2, 3]).slice(0, 3), k = pick([1, 1, 2, -1]);
+    var cs = polyRacines(rs.map(function (x) { return fr(x, 1); }), k);
+    var cand = shuffle([-3, -2, -1, 0, 1, 2, 3]).slice(0, 5).sort(function (x, y) { return x - y; }), bonnes = [];
+    cand.forEach(function (x, i) { if (rs.indexOf(x) >= 0) bonnes.push(i); });
+    if (bonnes.length < 2 || bonnes.length > 3) return G['maths-multi-racines']();
+    return {
+      type: 'multi', q: 'Quels nombres sont des racines de ' + m('P(x)=' + pol(cs)) + ' ? (plusieurs réponses)', choix: cand.map(String), rep: bonnes,
+      expl: cand.map(function (x) { return m('P(' + par(x) + ')=' + evalP(cs, x)); }).join(' ; ') + '. Les racines sont les nombres pour lesquels ' + m('P') + ' s\'annule.', source: 'Polynôme de degré 3', _poly: cs, _cand: cand
+    };
+  };
+
+  /* ================= Chapitre 2 (niveau DS) : variation, paramètre, nuage de points ================= */
+  G['maths-suite-variation-diff'] = function () {
+    var a = nz(-5, 6), b = ri(-5, 6), d = pick([1, 1, 2, 3]), N = a * d - b;
+    if (N === 0) return G['maths-suite-variation-diff']();
+    var den = '(n+' + d + ')(n+' + (d + 1) + ')', f = function (x) { return 'frac(' + x + ',' + den + ')'; };
+    var autres = [-N, a - b, a * d + b, b - a].filter(function (x, i, t) { return x !== N && t.indexOf(x) === i; });
+    if (autres.length < 3) return G['maths-suite-variation-diff']();
+    var ch = [f(N)].concat(shuffle(autres).slice(0, 3).map(f)), un = pol([a, b]).replace(/x/g, 'n');
+    return qcm('La suite ' + m('(u_n)') + ' est définie sur ' + m('NN') + ' par ' + m('u_n=frac(' + un + ',n+' + d + ')') + '. Que vaut ' + m('u_{n+1}-u_n') + ' ?', ch.map(m), 0,
+      m('u_{n+1}-u_n=frac((' + a + '(n+1)' + (b >= 0 ? '+' : '') + b + ')(n+' + d + ')-(' + un + ')(n+' + (d + 1) + '),' + den + ')=' + f(N)) + '. Le dénominateur est positif : le signe est celui de ' + m(N) + ', la suite est ' + (N > 0 ? 'croissante.' : 'décroissante.'),
+      'Méthode', { _a: a, _b: b, _d: d, _N: N, _all: ch });
+  };
+  var ETIQ = ['Croissante', 'Décroissante', 'Stationnaire', 'Non monotone'];
+  G['maths-suite-recurrence-carre'] = function () {
+    var u0 = pick([fr(2, 1), fr(3, 1), fr(4, 1), fr(5, 1), fr(9, 1), fr(1, 2), fr(1, 3), fr(1, 4), fr(2, 3), fr(3, 4), fr(3, 2), fr(4, 3), fr(5, 2), fr(5, 4)]), v = fval(u0);
+    var racine = Math.random() < 0.45, haut = v > 1, bon = racine ? (haut ? 1 : 0) : (haut ? 0 : 1);
+    var rec = racine ? 'u_{n+1}=sqrt(u_n)' : 'u_{n+1}=u_n^2', dif = racine ? 'sqrt(u_n)-u_n=sqrt(u_n)(1-sqrt(u_n))' : 'u_n^2-u_n=u_n(u_n-1)';
+    var pourquoi = racine ? (haut ? 'les termes restent supérieurs à ' + m('1') + ', donc ' + m('sqrt(u_n)>1') + ' est faux et ' + m('1-sqrt(u_n)') + ' est négatif : la suite est décroissante.'
+      : 'les termes restent compris entre ' + m('0') + ' et ' + m('1') + ', donc ' + m('1-sqrt(u_n)') + ' est positif : la suite est croissante.')
+      : (haut ? 'les termes restent supérieurs à ' + m('1') + ', donc ' + m('u_n-1') + ' est positif : la suite est croissante.'
+        : 'les termes restent compris entre ' + m('0') + ' et ' + m('1') + ', donc ' + m('u_n-1') + ' est négatif : la suite est décroissante.');
+    return qcm('Quel est le sens de variation de la suite définie par ' + m('u_0=' + ftxt(u0)) + ' et ' + m(rec) + ' ?', ETIQ, bon,
+      m('u_{n+1}-u_n=' + dif) + '. Comme ' + m('u_0=' + ftxt(u0)) + (haut ? ' est supérieur à ' + m('1') : ' est compris entre ' + m('0') + ' et ' + m('1')) + ', ' + pourquoi,
+      'Méthode', { ordre: 'fixe', _u0: v, _racine: racine });
+  };
+  G['maths-suite-parametre'] = function () {
+    var c = pick([1, 2, 3]), t = ri(-2, 2), croiss = Math.random() < 0.55, cc = c === 1 ? '' : String(c);
+    var tt = t === 0 ? 'a' : 'a' + (t > 0 ? '+' + t : t), lin = t === 0 ? '+an' : '+(' + tt + ')n';
+    var f = (croiss ? '' : '-') + cc + 'n^2' + lin, K = croiss ? -t - c : c - t;
+    var cand = croiss ? ['a>' + K, 'a>=' + (-K), 'a>=' + (K + c), 'a>=' + (K - c), 'a>=' + (K + 1)] : ['a<' + K, 'a<=' + (-K), 'a<=' + (K + c), 'a<=' + (K - c), 'a<=' + (K - 1)];
+    var bon = (croiss ? 'a>=' : 'a<=') + K, ch = troisAutres(bon, cand);
+    if (!ch) return G['maths-suite-parametre']();
+    return qcm('Pour quelles valeurs du réel ' + m('a') + ' la suite définie par ' + m('u_n=' + f) + ' est-elle ' + (croiss ? 'croissante' : 'décroissante') + ' ?', ch.map(m), 0,
+      m('u_{n+1}-u_n=' + (croiss ? '' : '-') + cc + '(2n+1)+' + (t === 0 ? 'a' : tt)) + ', ' + (croiss ? 'positif ou nul pour tout ' + m('n>=0') : 'négatif ou nul pour tout ' + m('n>=0')) + ' si et seulement si c\'est vrai pour ' + m('n=0') +
+      ' (le cas le plus défavorable), soit ' + m(bon) + '.', 'Croissante', { _c: c, _t: t, _croiss: croiss, _all: ch });
+  };
+  G['maths-suite-points-multi'] = function () {
+    var forme = pick(['lin', 'quad']), p = nz(-3, 3), s = ri(-4, 4), b = ri(-4, 3), c = ri(-3, 3);
+    var u = forme === 'lin' ? function (n) { return p * n + s; } : function (n) { return n * n + b * n + c; };
+    var f = forme === 'lin' ? lineaire(p, s) : pol([1, b, c]).replace(/x/g, 'n');
+    var ks = shuffle([0, 1, 2, 3, 4, 5]).slice(0, 5).sort(function (x, y) { return x - y; }), pts = [], bonnes = [];
+    ks.forEach(function (k, i) {
+      var ok = Math.random() < 0.5, y = u(k);
+      if (!ok) y = pick([u(k + 1), u(k) + 1, u(k) - 1, u(Math.max(k - 1, 0)) + 2].filter(function (z) { return z !== u(k); }));
+      if (ok) bonnes.push(i);
+      pts.push(m('(' + k + ';' + y + ')'));
+    });
+    if (bonnes.length < 2 || bonnes.length > 3 || !uniques(pts)) return G['maths-suite-points-multi']();
+    return { type: 'multi', q: 'La suite ' + m('(u_n)') + ' est définie par ' + m('u_n=' + f) + '. Quels points appartiennent à son nuage de points ? (plusieurs réponses)', choix: pts, rep: bonnes,
+      expl: 'Le point d\'abscisse ' + m('n') + ' doit avoir pour ordonnée ' + m('u_n') + ' : ' + ks.map(function (k) { return m('u_' + k + '=' + u(k)); }).join(', ') + '.', source: 'Nuage de points', _forme: forme, _p: p, _s: s, _b: b, _c: c, _ks: ks };
+  };
+  G['maths-suite-ordre-termes'] = function () {
+    var b = ri(-7, 1), c = ri(-4, 6), u = function (n) { return n * n + b * n + c; };
+    var ks = shuffle([0, 1, 2, 3, 4, 5]).slice(0, 4), vals = ks.map(u);
+    if (new Set(vals).size !== 4) return G['maths-suite-ordre-termes']();
+    var ordre = ks.slice().sort(function (x, y) { return u(x) - u(y); });
+    return { type: 'ordre', q: 'La suite ' + m('(u_n)') + ' est définie par ' + m('u_n=' + pol([1, b, c]).replace(/x/g, 'n')) + '. Rangez ces termes du plus petit au plus grand.', items: ordre.map(function (k) { return m('u_' + k); }),
+      expl: 'Dans l\'ordre croissant : ' + ordre.map(function (k) { return m('u_' + k + '=' + u(k)); }).join(', ') + '.', source: 'Définie explicitement', _b: b, _c: c, _ordre: ordre };
+  };
+
+  /* ---------- niveau de difficulté de chaque générateur (1 rappel, 2 application, 3 type DS) ---------- */
+  var NIVEAU = {
+    'maths-discriminant': 1, 'maths-nb-solutions': 1, 'maths-resoudre': 2, 'maths-forme-canonique': 2, 'maths-racine-evidente': 1, 'maths-racine-evidente-cubique': 2,
+    'maths-evaluer-polynome': 1, 'maths-identification-cubique': 3, 'maths-factorisation': 2, 'maths-signe-trinome': 3, 'maths-somme-produit': 2, 'maths-somme-produit-equation': 2,
+    'maths-somme-produit-nombres': 3, 'maths-racine-evidente-autre': 3, 'maths-bicarree': 3, 'maths-parametre': 3, 'maths-valeurs-interdites': 2,
+    'maths-discriminant-parametre': 3, 'maths-parametre-cours': 3, 'maths-expressions-racines': 3, 'maths-inequation-quotient': 3, 'maths-inequation-cubique': 3,
+    'maths-irrationnelle': 3, 'maths-polynome-nb-racines': 3, 'maths-multi-discriminant': 2, 'maths-multi-racines': 2,
+    'maths-suite-terme': 1, 'maths-suite-point': 1, 'maths-suite-variation': 2, 'maths-suite-rang': 3, 'maths-suite-stationnaire': 2,
+    'maths-suite-variation-diff': 3, 'maths-suite-recurrence-carre': 3, 'maths-suite-parametre': 3, 'maths-suite-points-multi': 2, 'maths-suite-ordre-termes': 2
+  };
+  Object.keys(NIVEAU).forEach(function (nom) {
+    var f = G[nom];
+    G[nom] = function () { var q = f(); if (!q.niveau) q.niveau = NIVEAU[nom]; return q; };
+  });
 })(typeof window !== 'undefined' ? window : globalThis);
