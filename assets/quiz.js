@@ -1,6 +1,10 @@
-/* Moteur de quiz du site de fiches (aucune dépendance, aucun réseau hors le fichier de questions de la fiche, progression gardée sur l'appareil).
-   Page : <div id="quiz" data-banque="quiz.json" data-gens="nom1,nom2" data-slug="..." data-retour="./"></div> + assets/generateurs.js + assets/quiz.js.
-   Questions : { id?, type:'qcm'|'vf'|'saisie'|'multi'|'ordre', niveau?(1 rappel, 2 application, 3 type DS), q, choix?, rep, items?, nombre?, tol?, ordre?, expl?, source?, hors_cours? } (voir references/quiz.md du skill).
+/* Moteur de quiz du site de fiches (aucune dépendance, aucun réseau hors les fichiers de questions, progression gardée sur l'appareil).
+   Deux sortes de pages :
+   (1) le quiz d'une fiche : <div id="quiz" data-banque="quiz.json" data-gens="nom1,nom2" data-slug="..." data-retour="./" data-cats='[{"id":"definition","nom":"Définitions"}]'></div>
+   (2) la page « Quiz » commune à tous les chapitres : <div id="quiz" data-catalogue="catalogue.json" data-cats='...' data-retour="../" data-retourtxt="Retour à l'accueil"></div>
+       Le catalogue liste les chapitres (matière, titre, banque, générateurs, effectifs par catégorie et niveau) ; l'élève coche ses chapitres, ses catégories, le niveau et le nombre de questions.
+   + assets/generateurs.js + assets/quiz.js.
+   Questions : { id?, type:'qcm'|'vf'|'saisie'|'multi'|'ordre', niveau?(1 rappel, 2 application, 3 type DS), cat?('definition'|'formule'|'calcul'|'exercice'|'methode'|'piege'|'date'|'repere'|'cause'), q, choix?, rep, items?, nombre?, tol?, ordre?, expl?, source?, hors_cours? } (voir references/quiz.md du skill).
    multi : plusieurs bonnes réponses (rep = liste d'indices) ; ordre : remettre dans l'ordre (items = ordre correct).
    Texte mathématique entre $...$ : mini-syntaxe convertie en MathML (x^2, u_n, u_{n+1}, frac(a,b), sqrt(a), set(1;2), bar(A) (barre), cap, cup, Delta, RR, inf, vide ; un décimal s'écrit avec un point, 0.6, et s'affiche 0,6). */
 (function () {
@@ -9,10 +13,16 @@
   if (!root) return;
   var D = root.dataset;
   var GEN = window.QUIZ_GEN || {};
-  var GENS = (D.gens || '').split(',').filter(function (n) { return n && GEN[n]; });
-  var KEY = 'quiz:' + (D.slug || location.pathname);
-  var RETOUR = D.retour || './';
-  var bank = [], prog = { v: 1, b: {} };
+  var GEN_CAT = window.QUIZ_GEN_CAT || {};
+  var CATS = [], CATNOM = {};
+  try { CATS = JSON.parse(D.cats || '[]'); } catch (e) { }
+  CATS.forEach(function (c) { CATNOM[c.id] = c.nom; });
+  var GLOBAL = !!D.catalogue;                 // page commune à plusieurs chapitres
+  var RETOUR = D.retour || './', RETOUR_TXT = D.retourtxt || 'Retour à la fiche';
+  var CHAP = [], NEUTRE = null;               // chapitres proposés : { slug, matiere, kd, kl, titre, chapitre, banque, gens, fiche, n, cats:{cat:[n1,n2,n3]} }
+  var banks = {}, progs = {};                 // questions chargées et progression, par chapitre (slug)
+  var F = { chap: [], sans: [], n: 10, niv: 'tous' };   // filtres choisis : chapitres, catégories écartées, nombre de questions, niveau
+  var MINI = { tous: 1, moyen: 2, ds: 3 };
   var S = null;                     // série en cours
 
   /* ---------- utilitaires ---------- */
@@ -20,9 +30,24 @@
   function ri(n) { return Math.floor(Math.random() * n); }
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = ri(i + 1), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function $(sel, ctx) { return (ctx || root).querySelector(sel); }
-  function load() { try { var r = JSON.parse(localStorage.getItem(KEY)); if (r && r.v === 1 && r.b) prog = r; } catch (e) { } }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (e) { } }
-  function wipe() { prog = { v: 1, b: {} }; try { localStorage.removeItem(KEY); } catch (e) { } }
+  function catNom(id) { return CATNOM[id] || ''; }
+  function pl(n, un, plu) { return n + ' ' + (n > 1 ? plu : un); }
+  /* progression par chapitre : { v:1, b:{ idQuestion: [boîte 1 à 5, date] } }, gardée dans le navigateur (aucun envoi) */
+  function cle(slug) { return 'quiz:' + slug; }
+  function prog(slug) {
+    if (progs[slug]) return progs[slug];
+    var p = { v: 1, b: {} };
+    try { var r = JSON.parse(localStorage.getItem(cle(slug))); if (r && r.v === 1 && r.b) p = r; } catch (e) { }
+    return (progs[slug] = p);
+  }
+  function save(slug) { try { localStorage.setItem(cle(slug), JSON.stringify(progs[slug])); } catch (e) { } }
+  function wipe(slugs) { slugs.forEach(function (s) { progs[s] = { v: 1, b: {} }; try { localStorage.removeItem(cle(s)); } catch (e) { } }); }
+  /* filtres : gardés sur l'appareil pour la page commune seulement (confort, jamais indispensable) */
+  function chargerFiltres() {
+    try { var r = JSON.parse(localStorage.getItem('quiz:filtres')); if (r && typeof r === 'object') return r; } catch (e) { }
+    return {};
+  }
+  function sauverFiltres() { if (GLOBAL) { try { localStorage.setItem('quiz:filtres', JSON.stringify(F)); } catch (e) { } } }
 
   /* ---------- texte mathématique : mini-syntaxe -> MathML ---------- */
   var FONCTIONS = { ln: 1, log: 1, exp: 1, cos: 1, sin: 1, tan: 1, lim: 1, max: 1, min: 1, pgcd: 1, ppcm: 1 };
@@ -116,75 +141,209 @@
   /* ---------- tirage des questions ---------- */
   var POIDS = { 0: 4, 1: 5, 2: 3, 3: 2, 4: 1, 5: 0.5 };       // 0 = jamais vue ; plus la boîte est haute, moins la question revient
   var POIDS_NIVEAU = { 1: 1, 2: 2, 3: 3 };                     // niveau « tous » : les questions de type DS reviennent trois fois plus que les rappels
-  function boite(q) { return q.id && prog.b[q.id] ? prog.b[q.id][0] : 0; }
+  function genCat(nom) { return GEN_CAT[nom] || 'calcul'; }
   function niveauDe(q) { return q.niveau || 2; }
+  function boite(q) { var p = q.id && q._s ? prog(q._s.slug).b[q.id] : null; return p ? p[0] : 0; }
+  function catOk(c) { return !S.cats || S.cats.indexOf(c) >= 0; }     // S.cats vaut null quand toutes les catégories sont retenues
+  function eligibles(c) {
+    return (banks[c.slug] || []).filter(function (x) { return niveauDe(x) >= S.mini && catOk(x.cat || ''); });
+  }
+  function gensDe(c) {
+    return (c.gens || []).filter(function (n) { return GEN[n] && catOk(genCat(n)); });
+  }
   function tirer() {
-    var q, essais = 0, dernier = S.cur ? S.cur.q : '', mini = S.niv === 'ds' ? 3 : S.niv === 'moyen' ? 2 : 1;
-    do {
-      var gen = GENS.length && (!bank.length || Math.random() < 0.4);
-      if (gen) {
-        var nom = GENS[ri(GENS.length)], k = 0;
-        do { q = GEN[nom](); k++; } while (niveauDe(q) < mini && k < 12);
-        q.gen = nom;
+    var q, essais = 0, dernier = S.cur ? S.cur.q : '';
+    var cands = S.chap.filter(function (c) { return eligibles(c).length || gensDe(c).length; });
+    if (!cands.length) return null;
+    do {                                       // on choisit d'abord un chapitre au hasard : chaque chapitre coché passe aussi souvent que les autres
+      var c = cands[ri(cands.length)], base = eligibles(c), gs = gensDe(c);
+      if (gs.length && (!base.length || Math.random() < 0.4)) {
+        var nom = gs[ri(gs.length)], k = 0;
+        do { q = GEN[nom](); k++; } while (niveauDe(q) < S.mini && k < 12);
+        q.gen = nom; q._s = c; if (!q.cat) q.cat = genCat(nom);
       } else {
-        var base = bank.filter(function (b) { return niveauDe(b) >= mini; });
-        if (!base.length) base = bank.slice();
+        var ids = {}; base.forEach(function (b) { ids[b.id] = 1; });
         var pool = base.filter(function (b) { return S.vues.indexOf(b.id) < 0; });
-        if (!pool.length) { S.vues = []; pool = base.slice(); }
+        if (!pool.length) { S.vues = S.vues.filter(function (id) { return !ids[id]; }); pool = base.slice(); }
         var tot = 0, w = pool.map(function (b) { var x = POIDS[boite(b)] * (S.niv === 'tous' ? POIDS_NIVEAU[niveauDe(b)] : 1); tot += x; return x; }), r = Math.random() * tot, j = 0;
         while (j < pool.length - 1 && r >= w[j]) { r -= w[j]; j++; }
         q = pool[j];
         S.vues.push(q.id);
       }
       essais++;
-    } while (q.q === dernier && essais < 8 && (bank.length + GENS.length) > 1);
+    } while (q.q === dernier && essais < 8);
     return q;
+  }
+
+  /* ---------- filtres : effectifs affichés à l'écran de départ ---------- */
+  function selection() { return CHAP.filter(function (c) { return F.chap.indexOf(c.slug) >= 0; }); }
+  function effectifs(sel) {                    // { catégorie: nombre de questions } pour le niveau choisi
+    var mini = MINI[F.niv], o = {};
+    sel.forEach(function (c) {
+      Object.keys(c.cats || {}).forEach(function (k) {
+        var a = c.cats[k];
+        for (var i = mini - 1; i < 3; i++) o[k] = (o[k] || 0) + (a[i] || 0);
+      });
+    });
+    return o;
+  }
+  function calculs(sel) {                      // des générateurs de calcul sont-ils disponibles dans la sélection ?
+    return sel.some(function (c) { return (c.gens || []).some(function (n) { return GEN[n]; }); });
+  }
+  function categoriesRetenues(sel) {           // null = toutes ; sinon la liste des catégories gardées
+    if (!F.sans.length) return null;
+    return CATS.map(function (c) { return c.id; }).filter(function (id) { return F.sans.indexOf(id) < 0; });
   }
 
   /* ---------- écrans ---------- */
   function icone(c) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + (c === 'ok' ? 'M5 13l4 4L19 7' : 'M6 6l12 12M18 6L6 18') + '"/></svg>'; }
+  function teinte(c) {                         // couleur de la matière sur toute la page (page commune)
+    var w = root.parentElement, t = c || NEUTRE;
+    if (GLOBAL && w && t) { w.style.setProperty('--kd', t.kd); w.style.setProperty('--kl', t.kl); }
+  }
+  function seg(id, groupe, label, valeurs, courante) {
+    return '<p class="qz-lab" id="' + id + '">' + label + '</p><div class="qz-seg" role="group" aria-labelledby="' + id + '" data-g="' + groupe + '">' +
+      valeurs.map(function (v) { return '<button type="button" class="btn" data-v="' + v[0] + '" aria-pressed="' + (String(courante) === String(v[0])) + '">' + v[1] + '</button>'; }).join('') + '</div>';
+  }
 
   function accueil() {
-    S = null;
-    var nb = bank.length, vues = 0, maitrisees = 0, ds = bank.some(function (b) { return niveauDe(b) >= 3; });
-    bank.forEach(function (b) { var x = boite(b); if (x > 0) vues++; if (x >= 4) maitrisees++; });
-    var vide = !nb && !GENS.length;
-    root.innerHTML =
-      '<h1>Quiz</h1><p class="m">' + esc(D.titre || '') + '</p>' +
-      (vide ? '<p class="lead">Aucune question n\'est disponible pour l\'instant.</p>' :
-        '<p class="lead">' + (GENS.length ? 'Les questions changent à chaque série.' : 'Les questions sont mélangées à chaque série.') +
-        ' Celles dont la réponse était fausse reviennent plus souvent.</p>' +
-        '<p class="qz-lab" id="qz-lab">Nombre de questions</p>' +
-        '<div class="qz-seg" role="group" aria-labelledby="qz-lab" data-g="n">' +
-        '<button type="button" class="btn" data-v="10" aria-pressed="true">10</button>' +
-        '<button type="button" class="btn" data-v="20" aria-pressed="false">20</button>' +
-        '<button type="button" class="btn" data-v="0" aria-pressed="false">Sans fin</button></div>' +
-        (ds ? '<p class="qz-lab" id="qz-lab2">Niveau</p>' +
-          '<div class="qz-seg" role="group" aria-labelledby="qz-lab2" data-g="niv">' +
-          '<button type="button" class="btn" data-v="tous" aria-pressed="true">Tous niveaux</button>' +
-          '<button type="button" class="btn" data-v="moyen" aria-pressed="false">Moyen et DS</button>' +
-          '<button type="button" class="btn" data-v="ds" aria-pressed="false">DS</button></div>' : '') +
-        '<div class="row2"><button type="button" class="btn qz-pri" id="qz-go">Commencer</button></div>' +
-        (nb ? '<p class="m qz-stat">' + maitrisees + ' question' + (maitrisees > 1 ? 's' : '') + ' maîtrisée' + (maitrisees > 1 ? 's' : '') +
-          ' sur ' + nb + ', ' + vues + ' déjà vue' + (vues > 1 ? 's' : '') + '.</p>' : '')) +
-      '<div class="row2" style="margin-top:1.6rem"><a class="btn" href="' + esc(RETOUR) + '">Retour à la fiche</a>' +
-      (vues ? '<button type="button" class="btn" id="qz-raz">Effacer la progression</button>' : '') + '</div>';
-    var choix = { n: 10, niv: 'tous' };
+    S = null; teinte(null);
+    var vide = !CHAP.length;
+    var groupes = [];                          // chapitres groupés par matière, dans l'ordre du catalogue
+    CHAP.forEach(function (c) {
+      var g = groupes.filter(function (x) { return x.m === c.matiere; })[0];
+      if (!g) groupes.push(g = { m: c.matiere, kd: c.kd, kl: c.kl, l: [] });
+      g.l.push(c);
+    });
+    var ds = CHAP.some(function (c) { return (c.gens || []).length || Object.keys(c.cats || {}).some(function (k) { return c.cats[k][2] > 0; }); });
+    var h = '<h1>Quiz</h1><p class="m">' + esc(D.titre || '') + '</p>';
+    if (vide) h += '<p class="lead">Aucune question n\'est disponible pour l\'instant.</p>';
+    else {
+      h += '<p class="lead">' + (GLOBAL ? 'Choisissez les chapitres et les catégories à réviser.' : 'Choisissez ce que vous voulez réviser.') +
+        ' Les questions sont mélangées à chaque série, et celles dont la réponse était fausse reviennent plus souvent.</p>';
+      if (GLOBAL) {
+        h += '<p class="qz-lab" id="qz-labc">Chapitres</p><div id="qz-chaps">' + groupes.map(function (g, gi) {
+          return '<section class="mat qz-grp" data-gi="' + gi + '" style="--kd:' + esc(g.kd) + ';--kl:' + esc(g.kl) + '" aria-label="' + esc(g.m) + '">' +
+            '<div class="qz-gh"><b class="qz-gt">' + esc(g.m) + '</b><button type="button" class="qz-all" data-gi="' + gi + '"></button></div>' +
+            g.l.map(function (c) {
+              return '<label class="qz-ck"><input type="checkbox" value="' + esc(c.slug) + '"><span class="qz-bx" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>' +
+                '<span class="qz-ct"><b>' + esc(c.chapitre) + '</b><span>' + esc(c.titre) + '</span><small class="qz-cn" data-s="' + esc(c.slug) + '"></small></span></label>';
+            }).join('') + '</section>';
+        }).join('') + '</div>';
+      }
+      h += '<p class="qz-lab" id="qz-labk">Catégories</p><div class="qz-cats" role="group" aria-labelledby="qz-labk">' +
+        CATS.map(function (c) { return '<button type="button" class="btn qz-cat" data-id="' + esc(c.id) + '" aria-pressed="true">' + esc(c.nom) + ' <small></small></button>'; }).join('') + '</div>' +
+        seg('qz-lab1', 'n', 'Nombre de questions', [[10, '10'], [20, '20'], [0, 'Sans fin']], F.n) +
+        (ds ? seg('qz-lab2', 'niv', 'Niveau', [['tous', 'Tous niveaux'], ['moyen', 'Moyen et DS'], ['ds', 'DS']], F.niv) : '') +
+        '<p class="qz-count" id="qz-count" role="status" aria-live="polite"></p>' +
+        '<div class="row2"><button type="button" class="btn qz-pri" id="qz-go">Commencer</button></div><p class="m qz-stat" id="qz-stat"></p>';
+    }
+    h += '<div class="row2" style="margin-top:1.6rem"><a class="btn" href="' + esc(RETOUR) + '">' + esc(RETOUR_TXT) + '</a>' +
+      (!GLOBAL && D.global ? '<a class="btn" href="' + esc(D.global) + '">Quiz de plusieurs chapitres</a>' : '') +
+      '<button type="button" class="btn" id="qz-raz" hidden>Effacer la progression</button></div>';
+    root.innerHTML = h;
+    if (vide) return;
+    // état initial des cases et des puces
+    root.querySelectorAll('.qz-ck input').forEach(function (i) {
+      i.checked = F.chap.indexOf(i.value) >= 0;
+      i.onchange = function () {
+        var p = F.chap.indexOf(i.value);
+        if (i.checked && p < 0) F.chap.push(i.value); else if (!i.checked && p >= 0) F.chap.splice(p, 1);
+        sauverFiltres(); maj();
+      };
+    });
+    root.querySelectorAll('.qz-all').forEach(function (b) {
+      b.onclick = function () {
+        var l = groupes[+b.dataset.gi].l, tous = l.every(function (c) { return F.chap.indexOf(c.slug) >= 0; });
+        l.forEach(function (c) {
+          var p = F.chap.indexOf(c.slug);
+          if (tous && p >= 0) F.chap.splice(p, 1); else if (!tous && p < 0) F.chap.push(c.slug);
+        });
+        root.querySelectorAll('.qz-ck input').forEach(function (i) { i.checked = F.chap.indexOf(i.value) >= 0; });
+        sauverFiltres(); maj();
+      };
+    });
+    root.querySelectorAll('.qz-cat').forEach(function (b) {
+      b.onclick = function () {
+        if (b.getAttribute('aria-disabled') === 'true') return;
+        var p = F.sans.indexOf(b.dataset.id);
+        if (p >= 0) F.sans.splice(p, 1); else F.sans.push(b.dataset.id);
+        sauverFiltres(); maj();
+      };
+    });
     root.querySelectorAll('.qz-seg').forEach(function (g) {
       g.querySelectorAll('.btn').forEach(function (b) {
         b.onclick = function () {
-          choix[g.dataset.g] = g.dataset.g === 'n' ? parseInt(b.dataset.v, 10) : b.dataset.v;
+          F[g.dataset.g] = g.dataset.g === 'n' ? parseInt(b.dataset.v, 10) : b.dataset.v;
           g.querySelectorAll('.btn').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          sauverFiltres(); maj();
         };
       });
     });
-    var go = $('#qz-go'); if (go) go.onclick = function () { demarrer(choix.n, null, choix.niv); };
-    var raz = $('#qz-raz'); if (raz) raz.onclick = function () { if (confirm('Effacer la progression de ce quiz sur cet appareil ?')) { wipe(); accueil(); } };
+    $('#qz-go').onclick = function () { demarrer(null); };
+    $('#qz-raz').onclick = function () {
+      if (confirm('Effacer la progression des chapitres cochés sur cet appareil ?')) { wipe(selection().map(function (c) { return c.slug; })); maj(); }
+    };
+    maj();
   }
 
-  function demarrer(n, rejouer, niv) {
-    S = { n: rejouer ? rejouer.length : n, rejouer: rejouer, niv: niv || 'tous', i: 0, bons: 0, faux: [], vues: [], cur: null, repondu: false };
-    suivante();
+  /* met à jour, sans tout redessiner, les effectifs, les puces et le bouton « Commencer » */
+  function maj() {
+    var sel = selection(), aucune = !sel.length, vue = aucune ? CHAP : sel;          // sans chapitre coché, les puces montrent les effectifs de tout le quiz
+    var eff = effectifs(vue), gen = calculs(vue), total = 0, retenues = 0;
+    root.querySelectorAll('.qz-all').forEach(function (b) {
+      var boxes = b.closest('.qz-grp').querySelectorAll('input'), tous = Array.prototype.every.call(boxes, function (i) { return i.checked; });
+      b.textContent = tous ? 'Tout décocher' : 'Tout cocher';
+    });
+    root.querySelectorAll('.qz-cn').forEach(function (s) {
+      var c = CHAP.filter(function (x) { return x.slug === s.dataset.s; })[0], P = prog(c.slug).b, vues = 0, maitrisees = 0;
+      Object.keys(P).forEach(function (k) { if (P[k][0] > 0) vues++; if (P[k][0] >= 4) maitrisees++; });
+      s.textContent = pl(c.n || 0, 'question', 'questions') + ((c.gens || []).length ? ' et des calculs renouvelés' : '') + (maitrisees ? ', ' + maitrisees + ' maîtrisée' + (maitrisees > 1 ? 's' : '') : '');
+    });
+    root.querySelectorAll('.qz-cat').forEach(function (b) {
+      var id = b.dataset.id, n = eff[id] || 0, avecGen = id === 'calcul' && gen, dispo = n > 0 || avecGen, actif = F.sans.indexOf(id) < 0;
+      b.setAttribute('aria-pressed', dispo && actif ? 'true' : 'false');
+      b.setAttribute('aria-disabled', dispo ? 'false' : 'true');
+      b.classList.toggle('off', !dispo);
+      b.querySelector('small').textContent = dispo ? String(n) + (avecGen ? '+' : '') : '0';
+      if (dispo && actif) { total += n; retenues++; }
+    });
+    var c = $('#qz-count'), go = $('#qz-go');
+    if (c) {
+      var calcOk = gen && F.sans.indexOf('calcul') < 0;          // les générateurs ne servent que si la catégorie « calcul » est retenue
+      if (!F.sans.length) total += eff[''] || 0;                  // questions sans catégorie : seulement quand rien n'est écarté
+      var ok = !aucune && (total > 0 || calcOk);
+      c.textContent = aucune ? 'Cochez au moins un chapitre.' : !ok && !retenues ? 'Choisissez au moins une catégorie.' :
+        !ok ? 'Aucune question avec ces filtres.' : pl(total, 'question', 'questions') + ' dans la sélection' + (calcOk ? ', plus des calculs qui changent à chaque série' : '') + '.';
+      go.disabled = !ok; go.setAttribute('aria-disabled', ok ? 'false' : 'true');
+    }
+    var st = $('#qz-stat'), raz = $('#qz-raz'), v = 0, mm = 0;
+    sel.forEach(function (x) { var P = prog(x.slug).b; Object.keys(P).forEach(function (k) { if (P[k][0] > 0) v++; if (P[k][0] >= 4) mm++; }); });
+    if (st) st.textContent = v ? pl(mm, 'question maîtrisée', 'questions maîtrisées') + ', ' + pl(v, 'déjà vue', 'déjà vues') + ' dans la sélection.' : '';
+    if (raz) raz.hidden = !v;
+  }
+
+  function erreur() { root.innerHTML = '<h1>Quiz</h1><p class="lead">Les questions n\'ont pas pu être chargées. Vérifiez la connexion, puis rechargez la page.</p>'; }
+
+  function charger(sel) {                      // charge (une seule fois) la banque de chaque chapitre coché
+    return Promise.all(sel.map(function (c) {
+      if (banks[c.slug] || !c.banque) { banks[c.slug] = banks[c.slug] || []; return null; }
+      return fetch(c.banque, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function (d) { banks[c.slug] = ((d && d.questions) || []).map(function (q) { q._s = c; return q; }); });
+    }));
+  }
+
+  function demarrer(rejouer) {
+    var sel = rejouer ? CHAP : selection();
+    if (!rejouer && !sel.length) return;
+    root.innerHTML = '<p class="m">Chargement…</p>';
+    (rejouer ? Promise.resolve() : charger(sel)).then(function () {
+      S = { n: rejouer ? rejouer.length : F.n, rejouer: rejouer, niv: F.niv, mini: MINI[F.niv], cats: categoriesRetenues(sel), chap: sel, i: 0, bons: 0, faux: [], vues: [], cur: null, repondu: false, parCat: {} };
+      if (!rejouer && !S.chap.some(function (c) { return eligibles(c).length || gensDe(c).length; })) {
+        S = null; accueil(); var cn = $('#qz-count'); if (cn) cn.textContent = 'Aucune question avec ces filtres.'; return;
+      }
+      suivante();
+    }).catch(erreur);
   }
 
   function suivante() {
@@ -192,6 +351,7 @@
     S.i++;
     S.repondu = false;
     S.cur = S.rejouer ? S.rejouer[S.i - 1] : tirer();
+    if (!S.cur) return fin();
     afficher();
   }
 
@@ -201,10 +361,13 @@
   }
 
   function afficher() {
-    var q = S.cur, pct = S.n ? Math.round((S.i - 1) / S.n * 100) : 0, mode = 'choix';
+    var q = S.cur, pct = S.n ? Math.round((S.i - 1) / S.n * 100) : 0, mode = 'choix', c = q._s || {};
+    teinte(c);
+    var tags = (GLOBAL && c.matiere ? '<span class="qz-tag">' + esc(c.matiere + ', ' + c.chapitre) + '</span>' : '') + (q.cat && catNom(q.cat) ? '<span class="qz-tag qz-tc">' + esc(catNom(q.cat)) + '</span>' : '');
     var corps = '<div class="qz-top"><span class="m" id="qz-pos">' + (S.n ? 'Question ' + S.i + ' sur ' + S.n : 'Question ' + S.i) + '</span>' +
       (S.n ? '' : '<button type="button" class="btn qz-fin" id="qz-stop">Terminer</button>') + '</div>' +
       (S.n ? '<div class="qz-bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' : '<div class="qz-gap"></div>') +
+      (tags ? '<div class="qz-tags">' + tags + '</div>' : '') +
       '<h2 class="qz-text" id="qz-text" tabindex="-1">' + fmt(q.q) + '</h2><div id="qz-ans">';
     S.items = null; S.sel = null; S.seq = null;
     if (q.type === 'saisie') {
@@ -249,21 +412,23 @@
 
   function enregistrer(q, bon) {
     if (bon) S.bons++; else S.faux.push(q);
-    if (q.id) {
-      var b = prog.b[q.id] ? prog.b[q.id][0] : 0;
-      prog.b[q.id] = [bon ? Math.min(5, b + 1) : 1, Date.now()];
-      save();
+    var k = q.cat || '', pc = S.parCat[k] || (S.parCat[k] = [0, 0]);
+    pc[1]++; if (bon) pc[0]++;
+    if (q.id && q._s) {
+      var P = prog(q._s.slug), b = P.b[q.id] ? P.b[q.id][0] : 0;
+      P.b[q.id] = [bon ? Math.min(5, b + 1) : 1, Date.now()];
+      save(q._s.slug);
     }
   }
 
   function retour(q, bon, attendu, libelle, brut) {
     S.repondu = true;
-    var fb = $('#qz-fb');
+    var fb = $('#qz-fb'), fiche = (q._s && q._s.fiche) || RETOUR;
     var html = '<p class="qz-v"><b>' + (bon ? icone('ok') + 'Bonne réponse' : icone('ko') + 'Pas tout à fait') + '</b></p>';
     if (!bon) html += brut ? '<p>' + (libelle || 'Réponse attendue') + ' :</p>' + attendu : '<p>' + (libelle || 'Réponse attendue') + ' : <b>' + attendu + '</b></p>';
     if (q.expl) html += '<p class="qz-ex">' + fmt(q.expl) + '</p>';
-    if (q.source) html += '<p class="m qz-src">' + (q.hors_cours ? 'Information absente du cours (†). ' : 'Dans la fiche : ') + fmt(q.source) +
-      '. <a href="' + esc(RETOUR) + '">Ouvrir la fiche</a></p>';
+    if (q.source) html += '<p class="m qz-src">' + (q.hors_cours ? 'Information absente du cours (†). ' : q.cat === 'exercice' ? 'Exercice du cours : ' : 'Dans la fiche : ') + fmt(q.source) +
+      '. <a href="' + esc(fiche) + '">Ouvrir la fiche</a></p>';
     fb.className = 'qz-fb ' + (bon ? 'ok' : 'ko');
     fb.innerHTML = html; fb.hidden = false;
     ajuster();
@@ -353,7 +518,8 @@
   function fin() {
     var n = S.i - (S.repondu ? 0 : 1);          // questions réellement traitées
     if (n < 0) n = 0;
-    var faux = S.faux, bons = S.bons, niv = S.niv;
+    var faux = S.faux, bons = S.bons, parCat = S.parCat;
+    teinte(null);
     var liste = faux.map(function (q) {
       var att;
       if (q.type === 'saisie') att = fmt(aff(q));
@@ -361,15 +527,21 @@
       else if (q.type === 'multi') att = q.rep.map(function (k) { return fmt(q.choix[k]); }).join(' ; ');
       else if (q.type === 'ordre') att = q.items.map(function (t, k) { return (k + 1) + '. ' + fmt(t); }).join(' ; ');
       else att = fmt(q.choix[q.rep]);
-      return '<li><span class="qz-lq">' + fmt(q.q) + '</span><span class="m">Réponse : ' + att + '</span></li>';
+      var ou = [GLOBAL && q._s && q._s.matiere ? q._s.matiere + ', ' + q._s.chapitre : '', catNom(q.cat)].filter(Boolean).join(' : ');
+      return '<li><span class="qz-lq">' + fmt(q.q) + '</span>' + (ou ? '<span class="m qz-ou">' + esc(ou) + '</span>' : '') + '<span class="m">Réponse : ' + att + '</span></li>';
     }).join('');
-    root.innerHTML = '<h1>Résultat</h1><p class="qz-score"><b>' + bons + '</b> sur ' + n + (n ? ' (' + Math.round(bons / n * 100) + ' %)' : '') + '</p>' +
+    var cats = Object.keys(parCat).filter(function (k) { return k && catNom(k); });
+    var detail = cats.length > 1 ? '<p class="qz-lab">Par catégorie</p><ul class="qz-pc">' + cats.map(function (k) {
+      var p = parCat[k], r = Math.round(p[0] / p[1] * 100);
+      return '<li><span>' + esc(catNom(k)) + '</span><b>' + p[0] + ' sur ' + p[1] + '</b><i class="qz-pb" aria-hidden="true"><i style="width:' + r + '%"></i></i></li>';
+    }).join('') + '</ul>' : '';
+    root.innerHTML = '<h1>Résultat</h1><p class="qz-score"><b>' + bons + '</b> sur ' + n + (n ? ' (' + Math.round(bons / n * 100) + ' %)' : '') + '</p>' + detail +
       (faux.length ? '<p class="qz-lab">À revoir</p><ol class="qz-rev">' + liste + '</ol>' : (n ? '<p class="lead">Aucune erreur sur cette série.</p>' : '')) +
       '<div class="row2">' + (faux.length ? '<button type="button" class="btn qz-pri" id="qz-redo">Refaire les questions ratées</button>' : '') +
       '<button type="button" class="btn' + (faux.length ? '' : ' qz-pri') + '" id="qz-new">Nouvelle série</button>' +
-      '<a class="btn" href="' + esc(RETOUR) + '">Retour à la fiche</a></div>';
+      '<a class="btn" href="' + esc(RETOUR) + '">' + esc(RETOUR_TXT) + '</a></div>';
     ajuster();
-    var redo = $('#qz-redo'); if (redo) redo.onclick = function () { demarrer(0, faux.slice(), niv); };
+    var redo = $('#qz-redo'); if (redo) redo.onclick = function () { demarrer(faux.slice()); };
     $('#qz-new').onclick = accueil;
     var h = root.querySelector('h1'); if (h) { h.tabIndex = -1; h.focus(); }
     S = null;
@@ -390,13 +562,30 @@
   });
 
   /* ---------- démarrage ---------- */
-  load();
-  function pret(data) {
-    bank = (data && data.questions) || [];
-    accueil();
+  function comptes(c, qs) {                     // effectifs par catégorie et par niveau : { cat: [niveau 1, 2, 3] }
+    var o = {};
+    qs.forEach(function (q) { var k = q.cat || '', a = o[k] || (o[k] = [0, 0, 0]); a[niveauDe(q) - 1]++; });
+    c.n = qs.length; c.cats = o;
   }
-  if (D.banque) {
-    fetch(D.banque, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(pret).catch(function () { root.innerHTML = '<h1>Quiz</h1><p class="lead">Les questions n\'ont pas pu être chargées. Vérifiez la connexion, puis rechargez la page.</p>'; });
-  } else pret({ questions: [] });
+  function fetchJson(u) { return fetch(u, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); }); }
+  if (GLOBAL) {
+    fetchJson(D.catalogue).then(function (cat) {
+      CHAP = cat.chapitres || []; NEUTRE = cat.neutre || null;
+      var r = chargerFiltres();
+      F.chap = (r.chap || []).filter(function (s) { return CHAP.some(function (c) { return c.slug === s; }); });
+      F.sans = (r.sans || []).filter(function (id) { return CATNOM[id]; });
+      if (r.n === 0 || r.n === 10 || r.n === 20) F.n = r.n;
+      if (MINI[r.niv]) F.niv = r.niv;
+      accueil();
+    }).catch(erreur);
+  } else {
+    var gens = (D.gens || '').split(',').filter(function (n) { return n && GEN[n]; });
+    var c1 = { slug: D.slug || location.pathname, matiere: '', chapitre: '', titre: D.titre || '', banque: D.banque || '', gens: gens, fiche: RETOUR };
+    CHAP = [c1]; F.chap = [c1.slug];
+    (D.banque ? fetchJson(D.banque).then(function (d) { return (d && d.questions) || []; }) : Promise.resolve([])).then(function (qs) {
+      banks[c1.slug] = qs.map(function (q) { q._s = c1; return q; });
+      comptes(c1, qs);
+      accueil();
+    }).catch(erreur);
+  }
 })();

@@ -859,8 +859,11 @@
     'maths-proba-reunion': 2, 'maths-proba-conditionnelle': 2, 'maths-proba-effectifs': 3, 'maths-proba-arbre': 3, 'maths-proba-independance': 3,
     'maths-suite-variation-diff': 3, 'maths-suite-recurrence-carre': 3, 'maths-suite-parametre': 3, 'maths-suite-points-multi': 2, 'maths-suite-ordre-termes': 2
   };
+  /* catégorie des générateurs (voir quiz/categories.json) : tous des « calculs », sauf exception listée ici (nom : catégorie) */
+  var CAT = root.QUIZ_GEN_CAT = root.QUIZ_GEN_CAT || {};
   Object.keys(NIVEAU).forEach(function (nom) {
     var f = G[nom];
-    G[nom] = function () { var q = f(); if (!q.niveau) q.niveau = NIVEAU[nom]; return q; };
+    CAT[nom] = CAT[nom] || 'calcul';
+    G[nom] = function () { var q = f(); if (!q.niveau) q.niveau = NIVEAU[nom]; if (!q.cat) q.cat = CAT[nom]; return q; };
   });
 })(typeof window !== 'undefined' ? window : globalThis);
