@@ -77,6 +77,7 @@
       if ((x === 'sqrt') && t[i] === '(') { i++; r = seq([')']); i++; return '<msqrt>' + r + '</msqrt>'; }
       if ((x === 'set') && t[i] === '(') { i++; r = seq([')']); i++; return '<mrow><mo>{</mo>' + r + '<mo>}</mo></mrow>'; }
       if (OPS[x]) return '<mo>' + OPS[x] + '</mo>';
+      if (x === 'alpha') return '<mi mathvariant="normal">α</mi>';     // α droit : en italique il ressemble à un « a »
       if (GREC[x]) return '<mi>' + GREC[x] + '</mi>';
       if (/^[A-Za-z]+$/.test(x)) {
         if (x.length === 1) return '<mi>' + x + '</mi>';

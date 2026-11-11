@@ -848,6 +848,63 @@
       m('bar(A)') + ' et ' + m('B') + ' sont aussi indépendants : ' + m('P(bar(A) cap B)=P(bar(A))*P(B)=' + dec(1 - A / 10) + '*' + dec(B / 10) + '=' + dec((10 - A) * B / 100)) + '.', 'Avec le contraire', { _v: v });
   };
 
+
+  /* ================= Annales (composition) : capital avec retrait, seuil Python, minoration, probabilités et suites ================= */
+  function dpt(x) { return (Math.round(x * 100) / 100).toString(); }          /* 1.02 : décimal avec un point (affiché avec une virgule dans une formule) */
+  G['maths-suite-seuil'] = function () {
+    var t = pick([2, 3, 4, 5]), R = pick([50, 100, 150, 200, 250, 300]), a = (100 + t) / 100, L = 100 * R / t;
+    var u0 = Math.ceil(L / 100) * 100 + 100 * ri(1, 8), S = u0 + 100 * ri(4, 40);
+    var u = u0, prev = u0, n = 0, marge = Infinity;
+    while (u <= S && n < 300) { marge = Math.min(marge, Math.abs(u - S)); prev = u; u = a * u - R; n++; }
+    marge = Math.min(marge, Math.abs(u - S));
+    if (n < 3 || n > 80 || marge < 1e-6) return G['maths-suite-seuil']();
+    var arr = function (x) { return (Math.round(x * 100) / 100).toString(); };
+    return {
+      type: 'saisie', nombre: true,
+      q: 'Un capital de ' + u0 + ' € augmente de ' + t + ' % chaque mois, puis on retire ' + R + ' €. Que vaut n à la fin de ce programme ? u=' + u0 + ' ; n=0 ; tant que u<=' + S + ' : u=' + dpt(a) + '*u-' + R + ' puis n=n+1 ; print(n).',
+      rep: [n],
+      expl: 'Chaque mois : ' + m('u_{n+1}=' + dpt(a) + 'u_n-' + R) + '. Comme ' + m('u_0>' + dpt(L)) + ', les termes augmentent. Le premier terme au-dessus de ' + m(S) + ' est ' + m('u_' + n + '=' + arr(u)) + ' (valeur arrondie), le précédent ' + m('u_' + (n - 1) + '=' + arr(prev)) + ' est inférieur ou égal à ' + m(S) + '. Le programme affiche ' + n + '.',
+      source: 'Seuil en Python', _t: t, _R: R, _u0: u0, _S: S, _n: n
+    };
+  };
+
+  var CONCL = ['La suite est croissante', 'La suite est décroissante', 'On ne peut pas conclure', 'La suite est stationnaire'];
+  G['maths-suite-minoration'] = function () {
+    var rr = pick([2, 5, 10, 20, 50]), B = pick([50, 100, 150, 200, 250]), a = (100 + rr) / 100, ell = B * 100 / rr;
+    var min = Math.random() < 0.55, cas = pick(['egal', 'egal', 'bon', 'mauvais']), k = ri(1, 5), L;
+    if (cas === 'egal') L = ell;
+    else if (min) L = cas === 'bon' ? ell + 100 * k : ell - 100 * k;
+    else L = cas === 'bon' ? ell - 100 * k : ell + 100 * k;
+    if (L <= 0 || L % 1 !== 0) return G['maths-suite-minoration']();
+    var K = rr * L / 100 - B, bon = min ? (K >= 0 ? 0 : 2) : (K <= 0 ? 1 : 2);
+    var diff = m(dpt(a - 1) + 'u_n-' + B), borne = m(dpt(a - 1) + '*' + L + '-' + B + '=' + K);
+    var pourquoi = bon === 2 ? ('Avec ' + (min ? m('u_n>=' + L) : m('u_n<=' + L)) + ' on obtient seulement ' + diff + (min ? ' >= ' : ' <= ') + borne + ', qui n\'a pas le bon signe : on ne peut pas conclure.')
+      : ('On a ' + diff + (min ? ' >= ' : ' <= ') + borne + ', donc la différence est ' + (min ? 'positive ou nulle : la suite est croissante.' : 'négative ou nulle : la suite est décroissante.'));
+    return qcm('On sait que ' + m('u_{n+1}=' + dpt(a) + 'u_n-' + B) + ' et que ' + m('u_n' + (min ? '>=' : '<=') + L) + ' pour tout ' + m('n') + '. Que peut-on conclure sur le sens de variation ?',
+      CONCL, bon, 'La différence est ' + m('u_{n+1}-u_n=' + dpt(a - 1) + 'u_n-' + B) + '. ' + pourquoi, 'Méthode', { ordre: 'fixe', _a: a, _B: B, _L: L, _min: min });
+  };
+
+  G['maths-proba-suite'] = function () {
+    var p = ri(2, 9), q = ri(1, 9);
+    if (p <= q) return G['maths-proba-suite']();
+    var c = p - q, dd = function (x) { return (x / 10).toString(); }, forme = function (al, be) { return m(dd(al) + 'u_n+' + dd(be)); };
+    var contexte = 'Chaque année, ' + (p * 10) + ' % des élèves inscrits à un club se réinscrivent et ' + (q * 10) + ' % des non-inscrits s\'y inscrivent. On note ' + m('u_n') + ' la probabilité qu\'un élève soit inscrit l\'année ' + m('n') + '.';
+    if (Math.random() < 0.5) {
+      var cand = [[p, q], [c, p], [q, p], [p, 10 - q]].filter(function (x) { return !(x[0] === c && x[1] === q); });
+      var vus = {}, ch = [];
+      cand.forEach(function (x) { var k = x.join(','); if (!vus[k] && ch.length < 3) { vus[k] = 1; ch.push(x); } });
+      if (ch.length < 3) return G['maths-proba-suite']();
+      return qcm(contexte + ' Que vaut ' + m('u_{n+1}') + ' en fonction de ' + m('u_n') + ' ?', [forme(c, q)].concat(ch.map(function (x) { return forme(x[0], x[1]); })), 0,
+        'Probabilités totales : ' + m('u_{n+1}=' + dd(p) + 'u_n+' + dd(q) + '(1-u_n)=' + dd(c) + 'u_n+' + dd(q)) + '. Oublier le facteur ' + m('1-u_n') + ' donne ' + m(dd(p) + 'u_n+' + dd(q)) + '.',
+        'Probabilités et suites', { ordre: 'fixe', _p: p, _q: q, _v: 'rel' });
+    }
+    var U = pick([2, 4, 5, 6, 8]), r = (p * U + q * (10 - U)) / 100;
+    return {
+      type: 'saisie', nombre: true, q: contexte + ' Calculer ' + m('u_{n+1}') + ' lorsque ' + m('u_n=' + dd(U)) + '.', rep: [Math.round(r * 100) / 100], tol: 1e-9,
+      expl: m('u_{n+1}=' + dd(p) + '*' + dd(U) + '+' + dd(q) + '*' + dd(10 - U) + '=' + dpt(r)) + ' : on additionne les deux chemins qui mènent à « inscrit l\'année suivante ».', source: 'Probabilités et suites', _p: p, _q: q, _U: U, _v: 'calc'
+    };
+  };
+
   /* ---------- niveau de difficulté de chaque générateur (1 rappel, 2 application, 3 type DS) ---------- */
   var NIVEAU = {
     'maths-discriminant': 1, 'maths-nb-solutions': 1, 'maths-resoudre': 2, 'maths-forme-canonique': 2, 'maths-racine-evidente': 1, 'maths-racine-evidente-cubique': 2,
@@ -857,7 +914,8 @@
     'maths-irrationnelle': 3, 'maths-polynome-nb-racines': 3, 'maths-multi-discriminant': 2, 'maths-multi-racines': 2,
     'maths-suite-terme': 1, 'maths-suite-point': 1, 'maths-suite-variation': 2, 'maths-suite-rang': 3, 'maths-suite-stationnaire': 2,
     'maths-proba-reunion': 2, 'maths-proba-conditionnelle': 2, 'maths-proba-effectifs': 3, 'maths-proba-arbre': 3, 'maths-proba-independance': 3,
-    'maths-suite-variation-diff': 3, 'maths-suite-recurrence-carre': 3, 'maths-suite-parametre': 3, 'maths-suite-points-multi': 2, 'maths-suite-ordre-termes': 2
+    'maths-suite-variation-diff': 3, 'maths-suite-recurrence-carre': 3, 'maths-suite-parametre': 3, 'maths-suite-points-multi': 2, 'maths-suite-ordre-termes': 2,
+    'maths-suite-seuil': 3, 'maths-suite-minoration': 3, 'maths-proba-suite': 3
   };
   /* catégorie des générateurs (voir quiz/categories.json) : tous des « calculs », sauf exception listée ici (nom : catégorie) */
   var CAT = root.QUIZ_GEN_CAT = root.QUIZ_GEN_CAT || {};
