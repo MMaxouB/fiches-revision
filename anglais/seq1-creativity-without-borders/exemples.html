@@ -1,0 +1,165 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Exemples · séquence 1</title><style>
+:root{
+  --ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  --bg:#e9edf3; --paper:#ffffff; --ink:#18202f; --muted:#57617a; --line:#d5dbe6; --soft:#f3f5f9; --ok:#e5f4ea; --okl:#1c7a3d;
+  --c1:#2f62c9; --c2:#7240c0; --c3:#0e7c77; --c4:#bf5b08; --c5:#c42f45; --c6:#566176; --c7:#94650f;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532; --ok:#16301f; --okl:#6fd694;
+  --c1:#7fa8ff; --c2:#bf9bff; --c3:#5fd6cf; --c4:#ffb061; --c5:#ff8d9b; --c6:#b3bdd2; --c7:#e5b75f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532; --ok:#16301f; --okl:#6fd694;
+  --c1:#7fa8ff; --c2:#bf9bff; --c3:#5fd6cf; --c4:#ffb061; --c5:#ff8d9b; --c6:#b3bdd2; --c7:#e5b75f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.5;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 3rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.wrap{max-width:62rem;margin:0 auto}
+.top{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-end;justify-content:space-between;margin-bottom:1rem}
+.top h1{font:700 clamp(1.5rem,3.6vw,2.1rem)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.top p{margin:.35rem 0 0;color:var(--muted);max-width:44rem}
+.ctl button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem .95rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1.4rem}
+.chips a{display:inline-block;text-decoration:none;color:var(--ink);border:2px solid var(--c);background:var(--paper);border-radius:999px;padding:.2rem .75rem;font-size:.86rem}
+.chips a small{color:var(--c);font-weight:700;margin-right:.3rem}
+section.s{margin:0 0 2.2rem;scroll-margin-top:1rem}
+section.s>h2{display:flex;flex-wrap:wrap;gap:.2rem .6rem;align-items:baseline;margin:0 0 .3rem;padding:.55rem .9rem;border-radius:10px;background:var(--c);color:#fff;font:700 1.15rem var(--display)}
+section.s>h2 small{font:700 .7rem var(--ui);letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.sn{margin:.3rem 0 .9rem;color:var(--muted)}
+details.ex{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;margin:0 0 .8rem;overflow:hidden}
+details.ex>summary{list-style:none;cursor:pointer;padding:.65rem .9rem;display:flex;flex-direction:column;gap:.25rem}
+details.ex>summary::-webkit-details-marker{display:none}
+details.ex>summary::after{content:"+";position:absolute;right:.9rem;font-weight:700;color:var(--c)}
+details.ex[open]>summary::after{content:"−"}
+details.ex>summary{position:relative;padding-right:2.2rem}
+.tag{align-self:flex-start;font:700 .72rem var(--ui);letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--c);border-radius:999px;padding:.1rem .6rem}
+.q{font-weight:700}
+.body{padding:.2rem .9rem .9rem}
+ol.steps{list-style:none;margin:.2rem 0 0;padding:0;counter-reset:st}
+ol.steps>li{counter-increment:st;position:relative;padding:.35rem 0 .35rem 1.9rem;border-top:1px dashed var(--line)}
+ol.steps>li:first-child{border-top:0}
+ol.steps>li::before{content:counter(st);position:absolute;left:0;top:.5rem;width:1.35rem;height:1.35rem;border-radius:50%;background:var(--soft);border:1.5px solid var(--c);color:var(--c);font:700 .75rem/1.2rem var(--ui);text-align:center}
+.lb{color:var(--muted);font-size:.93rem}
+.fm{overflow-x:auto;overflow-y:hidden;max-width:100%;padding:.15rem 0}
+.fm math{font-size:1.12em;padding:.25em 0}
+math{font-size:1.06em}
+math.big{math-style:normal}
+.concl{margin:.7rem 0 0;padding:.55rem .8rem;border-radius:10px;background:var(--ok);border:1px solid var(--okl)}
+.concl .h{font:700 .72rem var(--ui);letter-spacing:.07em;text-transform:uppercase;color:var(--okl)}
+.concl math{font-size:1.12em}
+.nt{margin:.6rem 0 0;font-size:.9rem;color:var(--muted)}
+.dag{font-weight:700;color:var(--c)}
+.tblw{overflow-x:auto;max-width:100%;margin:.2rem 0}
+table.sg{border-collapse:collapse;font-size:.9rem}
+table.sg th,table.sg td{border:1px solid var(--line);padding:.25rem .5rem;text-align:center;white-space:nowrap}
+table.sg thead th{background:var(--soft)}
+table.sg tbody th{text-align:left;background:var(--soft);font-weight:400}
+svg.fig{width:100%;max-width:340px;height:auto;display:block;margin:.4rem 0;background:var(--paper)}
+svg.fig .gr{stroke:var(--line);stroke-width:1}
+svg.fig .ax{stroke:var(--ink);stroke-width:1.6}
+svg.fig .tx{fill:var(--muted);font:11px var(--ui)}
+svg.fig .pu{fill:var(--c1)} svg.fig .pu2{fill:var(--c1);font-weight:700}
+svg.fig .pv{fill:var(--c3)} svg.fig .pv2{fill:var(--c3);font-weight:700}
+svg.fig .cf{fill:none;stroke:var(--c2);stroke-width:2.2}
+svg.fig .cft{fill:var(--c2);font-weight:700}
+svg.fig .dr{stroke:var(--c5);stroke-width:1.8}
+svg.fig .drt{fill:var(--c5);font-weight:700}
+svg.fig .st{fill:none;stroke:var(--c4);stroke-width:1.6;stroke-dasharray:4 3}
+.foot{margin-top:1.4rem;color:var(--muted);font-size:.88rem}
+pre.code{margin:.3rem 0;padding:.6rem .8rem;border-radius:10px;background:var(--soft);border:1px solid var(--line);font:600 .88rem/1.5 ui-monospace,Consolas,Menlo,monospace;overflow-x:auto;max-width:100%}
+@media (max-width:480px){
+  .body{padding:.2rem .5rem .8rem}
+  details.ex>summary{padding-left:.7rem}
+  ol.steps>li{padding-left:1.6rem}
+  table.sg{font-size:.7rem}
+  table.sg th,table.sg td{padding:.18rem .14rem}
+  table.sg thead th{white-space:normal}
+  .fm math{font-size:1.04em}
+}
+/* mode intégré (Notion) : pas d'en-tête, exemples repliés */
+.emb body{padding:8px}
+.emb .top p,.emb .foot,.emb .sn{display:none}
+.emb .top{margin-bottom:.5rem}
+.emb .top h1{font-size:1.15rem}
+.emb .chips{margin-bottom:.8rem}
+.emb section.s{margin-bottom:1.2rem}
+
+.ot{width:100%;border-collapse:collapse;background:var(--paper)}
+.ot th,.ot td{border:1px solid var(--line);padding:.55rem .65rem;vertical-align:top;text-align:left;line-height:1.45}
+.ot thead th{background:var(--soft);font-weight:700}
+.ot td ul{margin:.2rem 0 0;padding-left:1.1rem}
+.ot td li{margin:.15rem 0}
+.ot td.k{font-weight:700;background:var(--soft)}
+.ot td i{color:var(--muted)}
+.vt{width:100%;border-collapse:collapse;background:var(--paper)}
+.vt th,.vt td{border:1px solid var(--line);padding:.45rem .6rem;vertical-align:top;text-align:left;line-height:1.4}
+.vt thead th{background:var(--soft)}
+.vt td:first-child{font-weight:700;width:38%}
+.tb{margin:0 0 1.6rem}
+.tb h2{margin:0 0 .3rem;padding:.5rem .9rem;border-radius:10px;background:var(--c);color:#fff;font:700 1.05rem var(--display)}
+.tb .sn{margin:.2rem 0 .7rem;color:var(--muted);font-size:.92rem}
+.concl p{margin:.25rem 0 0;font-weight:700}
+@media (max-width:719px){
+  .ot thead{display:none}
+  .ot,.ot tbody,.ot tr,.ot td{display:block;width:100%}
+  .ot tr{border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;margin:0 0 .8rem;background:var(--paper);overflow:hidden}
+  .ot td{border:0;border-top:1px dashed var(--line);padding:.5rem .8rem}
+  .ot td:first-child{border-top:0}
+  .ot td::before{content:attr(data-l);display:block;font:700 .72rem var(--ui);color:var(--muted);margin-bottom:.15rem}
+  .ot td.k::before{content:none}
+}
+@media print{.ot tr{break-inside:avoid}}
+</style>
+<style id="veilleuse">@font-face{font-family:Figtree;src:url(../../assets/figtree-latin.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@media screen{:root{--ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;--display:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+ --bg:#F4F6FB;--paper:#FFFFFF;--ink:#161C2D;--muted:#586380;--line:#D9DFEC;--soft:#EBEFF7;--grid:#E3E8F2;--core1:#17233D;--core2:#2D4A7A;
+ --c1:#2D5FA8;--c2:#5E4BB0;--c3:#1F7A5A;--c4:#B85A14;--c5:#B03A5E;--c6:#4E5A74;--c7:#8A6410;
+ --l1:#2D5FA8;--l2:#5E4BB0;--l3:#1F7A5A;--l4:#B85A14;--l5:#B03A5E;--l6:#4E5A74;--l7:#8A6410;
+ --fr:#2D5FA8;--eu:#5E4BB0;--gr:#1F7A5A;--rev:#B03A5E;--nat:#B85A14;--cul:#8A6410;
+ --r1:#2D5FA8;--r2:#1E4A8C;--r3:#B03A5E;--r4:#6B7A96;--band:rgba(176,58,94,.08);--ok:#E5F4EA;--okl:#1C7A3D}}
+@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#131A2B;--paper:#1B2438;--ink:#ECEFF6;--muted:#9AA6BF;--line:#2A3650;--soft:#222D45;--grid:#232E47;--core1:#1E2A47;--core2:#33466E;
+ --l1:#7FB2F0;--l2:#B8A6F0;--l3:#7FD0A8;--l4:#F2A56B;--l5:#E58FA9;--l6:#A9B4CC;--l7:#E5C06B;
+ --fr:#7FB2F0;--eu:#B8A6F0;--gr:#7FD0A8;--rev:#E58FA9;--nat:#F2A56B;--cul:#E5C06B;
+ --r1:#4A7BE0;--r2:#2F5CBF;--r3:#D4455A;--r4:#6B7A96;--band:rgba(229,143,169,.1);--ok:#16301F;--okl:#6FD694;color-scheme:dark}}
+@media screen{body{margin:0;padding-top:0}
+.hub small,.core small,.dg h3 small,section.s>h2 small,.tag,.concl .h,.box h2,th{text-transform:none;letter-spacing:0}}
+.back{display:block;position:sticky;top:0;z-index:50;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 1rem;padding:.7rem max(16px,env(safe-area-inset-left,0px));background:var(--paper,#1B2438);color:var(--ink,#ECEFF6);border-bottom:1px solid var(--line,#2A3650);font:600 .9rem var(--ui,system-ui),sans-serif;text-decoration:none}
+.back:active{background:var(--soft,#222D45)}
+.back:focus-visible{outline:2px solid var(--ink,#F2C46B);outline-offset:-2px}
+</style>
+<style>@page{size:A4;margin:11mm}@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
+@media print{
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--paper:#fff;--ink:#111;--muted:#444;--line:#bbb;--soft:#f3f3f3;
+  --core1:#1b2a41;--core2:#27486b;--l1:#2f62c9;--l2:#7240c0;--l3:#0e7c77;--l4:#bf5b08;--l5:#c42f45;--l6:#566176;--l7:#94650f;color-scheme:light}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:#fff!important;padding:0!important;font-size:10pt}
+.back,.ctl,svg.lines{display:none!important}
+.top{display:none!important}
+.map{page:land;display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px 11px;max-width:none!important;align-items:start;font-size:9pt;zoom:.88}
+.col{display:contents!important}
+.core{grid-column:1/-1;order:-3;margin:0!important;padding:.45rem 1rem!important}
+.core h2{font-size:1.15rem!important;margin:.1rem 0!important}.core p{display:none!important}
+.br{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;margin:0!important;break-inside:avoid}
+.hub{order:-1;width:auto!important;height:auto!important;border-radius:10px!important;display:block!important;text-align:left!important;padding:.4rem .8rem!important}
+.lv{gap:6px!important}
+.leaf{break-inside:avoid;padding:.3rem .65rem .35rem!important}.leaf b{font-size:.9rem!important}.leaf p{font-size:.78rem!important;margin-top:.1rem!important}
+.rev .leaf p{display:block!important}
+.rev .leaf:not(.open) b::after{content:""!important}
+.detail{page:port;break-before:page;margin:0!important;max-width:none!important}
+.dg,.dg article{break-inside:avoid}
+.dg h3{break-after:avoid}
+.foot{page:port;margin-top:.8rem!important}
+}
+</style>
+<a class="back" href="./">‹ Retour à la fiche, Creativity without borders</a></head><body>
+<div class="wrap"><header class="top"><div><h1>Anglais · exemples résolus</h1><p>Chaque point de grammaire ou de méthode avec ses exemples. Touche un exemple pour le déplier.</p></div><div class="ctl"><button id="tg">Tout ouvrir</button></div></header>
+<nav class="chips" aria-label="Notions"><a href="#projet" style="--c:var(--c1)"><small>Seq 1</small>Exprimer un projet, une intention</a><a href="#futurs" style="--c:var(--c2)"><small>Seq 1</small>Choisir le bon futur</a></nav>
+<main><section class="s" id="projet" style="--c:var(--c1)"><h2><small>Seq 1</small>Exprimer un projet, une intention</h2><p class="sn">Quatre verbes, quatre constructions : intend to et plan to + base verbale, aim to + base verbale ou aim at + V-ing, look forward to + V-ing.</p><details class="ex"><summary><span class="tag">To intend to</span><span class="q">The artist intends ____ (paint) a mural on the border wall.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Intention ferme, plus formelle que « plan to » : to intend to + base verbale.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>to paint</p></div><p class="nt">Exemple du cours : The artist intends to paint a mural on the border wall.</p></div></details><details class="ex"><summary><span class="tag">To plan to, to plan on</span><span class="q">The collective plans ____ (organize) an exhibition. / They are planning on ____ (create) a series of murals.</span></summary><div class="body"><ol class="steps"><li><div class="lb">To plan to + base verbale.</div></li><li><div class="lb">To plan on + V-ing.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>to organize ; creating</p></div><p class="nt">Projet réfléchi, organisé, avec une idée de préparation concrète.</p></div></details><details class="ex"><summary><span class="tag">To aim to, to aim at</span><span class="q">The project aims ____ (raise) awareness. / She aims ____ (transform) public perception of the wall.</span></summary><div class="body"><ol class="steps"><li><div class="lb">To aim to + base verbale.</div></li><li><div class="lb">To aim at + V-ing.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>to raise ; at transforming</p></div><p class="nt">Objectif, but, ambition à atteindre.</p></div></details><details class="ex"><summary><span class="tag">To look forward to</span><span class="q">We are looking forward to ____ (see) the new artwork.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Après « look forward to », « to » est une préposition : jamais de base verbale.</div></li><li><div class="lb">On utilise donc V-ing (ou un nom : I look forward to the exhibition).</div></li></ol><div class="concl"><div class="h">Réponse</div><p>seeing</p></div><p class="nt">Impatience, attente positive vis-à-vis d&#x27;un événement futur.</p></div></details><details class="ex"><summary><span class="tag">Traduire 1 †</span><span class="q">Ce photographe a l&#x27;intention de mettre en lumière la solitude des familles tiraillées entre deux cultures.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Intention : intends to + base verbale.</div></li><li><div class="lb">Mettre en lumière : to shed light on. Tiraillé entre deux cultures : caught between two cultures.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>This photographer intends to shed light on the loneliness of families caught between two cultures.</p></div><p class="nt">Modèle établi d&#x27;après la copie corrigée de l&#x27;évaluation 2 (article « the » devant loneliness et families, « photographer »).</p></div></details><details class="ex"><summary><span class="tag">Traduire 2 †</span><span class="q">Les grands-parents de Sofia prévoient de lui transmettre leurs traditions pour qu&#x27;elle ne se sente jamais étrangère.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Projet : plan to + base verbale. Transmettre des traditions : to pass on traditions.</div></li><li><div class="lb">But : so that she will never feel like an outsider.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>Sofia&#x27;s grandparents plan to pass on their traditions to her so that she will never feel like an outsider.</p></div><p class="nt">Correction du professeur : « so that she will never feel like an outsider ».</p></div></details><details class="ex"><summary><span class="tag">Traduire 3 †</span><span class="q">Ce roman vise à dénoncer les termes péjoratifs utilisés pour désigner les immigrés.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Objectif : aim to + base verbale, avec le « s » de la 3e personne (aims).</div></li><li><div class="lb">Péjoratif : derogatory ; article « the » avant derogatory terms.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>This novel aims to denounce the derogatory terms used to speak about immigrants.</p></div></div></details><details class="ex"><summary><span class="tag">Traduire 4 †</span><span class="q">J&#x27;ai hâte de lire l&#x27;article dans lequel le journaliste rend compte de sa nuit avec la police des frontières.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Impatience : look forward to + V-ing.</div></li><li><div class="lb">« Dans lequel » : in which. Rendre compte de : gives an account of. Police des frontières : border patrol.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>I look forward to reading the article in which the journalist gives an account of her night with the border patrol.</p></div><p class="nt">Correction du professeur : « in which », « an account of », « her » (le journaliste de l&#x27;article est une femme).</p></div></details><details class="ex"><summary><span class="tag">Traduire 5 †</span><span class="q">Lasse d&#x27;être rejetée, Elena a hâte de commencer une nouvelle vie, mais elle a l&#x27;intention de peser le pour et le contre avant de déménager.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Lasse d&#x27;être rejetée : Tired of being cast out (of + V-ing, jamais « to be »).</div></li><li><div class="lb">Hâte : looks forward to starting. Intention : intends to weigh the pros and cons.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>Tired of being cast out, Elena looks forward to starting a new life, but she intends to weigh the pros and cons before moving.</p></div></div></details></section><section class="s" id="futurs" style="--c:var(--c2)"><h2><small>Seq 1</small>Choisir le bon futur</h2><p class="sn">Will : opinion, décision spontanée, promesse. Be going to : déjà décidé ou preuve visible. Présent be + V-ing : arrangement précis. Présent simple : horaire officiel. Les dix phrases viennent de l&#x27;évaluation 2 (corrigée par le professeur) : leurs exemples sont donc des ajouts †.</p><details class="ex"><summary><span class="tag">Will et going to</span><span class="q">Quel futur choisir : « Don&#x27;t worry, I ____ (help) you » et « Look at those clouds, it ____ (rain) » ?</span></summary><div class="body"><ol class="steps"><li><div class="lb">« Don&#x27;t worry, I&#x27;ll help you » : promesse, offre : will + BV.</div></li><li><div class="lb">« Look at those clouds » : preuve visible : be going to + BV.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>I&#x27;ll help you ; it&#x27;s going to rain</p></div><p class="nt">Exemples du cours.</p></div></details><details class="ex"><summary><span class="tag">Horaire officiel †</span><span class="q">My cousin&#x27;s flight from Montreal ____ (land) at 7.40 tomorrow morning, so we need to leave the house early.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Un horaire de vol est fixe et indépendant de la volonté du sujet : présent simple.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>lands</p></div></div></details><details class="ex"><summary><span class="tag">Décision spontanée †</span><span class="q">« The phone&#x27;s ringing! » : « Stay where you are, I ____ (get) it. »</span></summary><div class="body"><ol class="steps"><li><div class="lb">Décision prise au moment où l&#x27;on parle : will + BV.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>will get</p></div><p class="nt">La copie avait « am going to get » : le professeur corrige en « will get ».</p></div></details><details class="ex"><summary><span class="tag">Projet décidé †</span><span class="q">Mia has bought flour, eggs and chocolate: she ____ (bake) a cake for her dad&#x27;s birthday.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Les ingrédients déjà achetés montrent que c&#x27;est décidé : be going to + BV.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>is going to bake</p></div></div></details><details class="ex"><summary><span class="tag">Arrangement précis †</span><span class="q">I can&#x27;t come to the cinema on Friday evening. I ____ (have) dinner with my grandparents; my mum booked the restaurant last week.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Le restaurant est réservé : arrangement précis : présent be + V-ing.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>&#x27;m having</p></div><p class="nt">La copie avait « have » : le professeur corrige en « &#x27;m having ».</p></div></details><details class="ex"><summary><span class="tag">Prédiction sans preuve †</span><span class="q">Experts predict that by 2050 most cars in Europe ____ (run) on electricity.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Prédiction sans preuve concrète, présentée comme une opinion d&#x27;experts : will + BV.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>will run</p></div></div></details><details class="ex"><summary><span class="tag">Calendrier officiel †</span><span class="q">According to the official school calendar, the winter holidays ____ (start) on 20 December.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Un calendrier officiel est un horaire fixe : présent simple.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>start</p></div><p class="nt">La copie avait « starts » (coché par le professeur) ; « the winter holidays » étant pluriel, la forme grammaticalement correcte est « start ».</p></div></details><details class="ex"><summary><span class="tag">Preuve visible †</span><span class="q">Look at the scoreboard! We&#x27;re losing 4-0 with two minutes left. We ____ (lose) this match.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Le tableau d&#x27;affichage est une preuve visible dans le présent : be going to + BV.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>are going to lose</p></div><p class="nt">La copie avait « will lose » : le professeur corrige en « are going to lose ».</p></div></details><details class="ex"><summary><span class="tag">Intention déjà prise †</span><span class="q">« Have you made up your mind? » : « Yes, I ____ (apply) to a university in Scotland. I decided last month. »</span></summary><div class="body"><ol class="steps"><li><div class="lb">La décision a été prise le mois dernier : be going to + BV.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>&#x27;m going to apply</p></div><p class="nt">La copie avait « will apply » : le professeur corrige en « &#x27;m going to apply ».</p></div></details><details class="ex"><summary><span class="tag">Deux arrangements †</span><span class="q">Tom ____ (not / take) the bus tomorrow: his brother ____ (drive) him to school. They arranged it this morning.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Arrangement fait ce matin avec quelqu&#x27;un d&#x27;autre : présent be + V-ing, deux fois.</div></li></ol><div class="concl"><div class="h">Réponse</div><p>isn&#x27;t taking ; is driving</p></div><p class="nt">La copie avait « will not take » et « drives ».</p></div></details><details class="ex"><summary><span class="tag">Promesse †</span><span class="q">Promise me you ____ (text) me as soon as you get home.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Promesse : will + BV. Après « as soon as », le verbe reste au présent simple (get).</div></li></ol><div class="concl"><div class="h">Réponse</div><p>will text</p></div></div></details></section></main>
+<p class="foot">† = ajout absent du cours. Les textes anglais des tableaux sont ceux du cours.</p></div><script>(function(){var ds=document.querySelectorAll('details.ex'),open=true;
+ds.forEach(function(d){d.open=true});var b=document.getElementById('tg');function lab(){b.textContent=open?'Tout fermer':'Tout ouvrir'}
+b.onclick=function(){open=!open;ds.forEach(function(d){d.open=open});lab()};lab()})();</script></body></html>

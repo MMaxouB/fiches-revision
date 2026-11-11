@@ -1,0 +1,244 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Carte mentale · méthodes</title><style>
+/* Carte mentale : un noyau au centre, sept branches colorées de chaque côté ; sur téléphone elle se lit comme un plan en cartes. */
+:root{
+  --ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  --bg:#e9edf3; --paper:#ffffff; --ink:#18202f; --muted:#57617a; --line:#d5dbe6; --soft:#f3f5f9;
+  --core1:#1b2a41; --core2:#27486b;
+  --c1:#2f62c9; --c2:#7240c0; --c3:#0e7c77; --c4:#bf5b08; --c5:#c42f45; --c6:#566176; --c7:#94650f;
+  --l1:#2f62c9; --l2:#7240c0; --l3:#0e7c77; --l4:#bf5b08; --l5:#c42f45; --l6:#566176; --l7:#94650f;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532;
+  --core1:#0b1220; --core2:#1f3a5c;
+  --l1:#7fa8ff; --l2:#bf9bff; --l3:#5fd6cf; --l4:#ffb061; --l5:#ff8d9b; --l6:#b3bdd2; --l7:#e5b75f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532;
+  --core1:#0b1220; --core2:#1f3a5c;
+  --l1:#7fa8ff; --l2:#bf9bff; --l3:#5fd6cf; --l4:#ffb061; --l5:#ff8d9b; --l6:#b3bdd2; --l7:#e5b75f; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 3rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.top{max-width:1500px;margin:0 auto 1.4rem;display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-end;justify-content:space-between}
+.top h1{font:700 clamp(1.5rem,3.6vw,2.1rem)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.top p{margin:.35rem 0 0;color:var(--muted);max-width:44rem}
+.ctl{display:flex;flex-wrap:wrap;gap:.5rem}
+.ctl button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem .95rem}
+.ctl button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:700}
+
+.map{position:relative;max-width:1500px;margin:0 auto}
+.col{display:flex;flex-direction:column;gap:22px}
+.br{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.hub{border-radius:14px;background:var(--c);color:#fff;padding:.7rem 1rem;position:relative;z-index:1}
+.hub small{display:block;font:700 .7rem var(--ui);letter-spacing:.09em;text-transform:uppercase;opacity:.85}
+.hub b{display:block;font:700 1.02rem/1.2 var(--display)}
+.lv{display:flex;flex-direction:column;gap:9px}
+.leaf{--cl:var(--l1);position:relative;z-index:1;border:2px solid var(--cl);border-radius:16px;background:var(--paper);padding:.5rem .85rem .55rem}
+.leaf b{display:block;font-size:.95rem;line-height:1.25}
+.leaf>b math{font-size:1em}
+.leaf p{margin:.2rem 0 0;font-size:.86rem;color:var(--muted)}
+.leaf .dg{color:var(--cl);font-weight:700}
+.rev .leaf{cursor:pointer}
+.rev .leaf p{display:none}
+.rev .leaf.open p{display:block}
+.rev .leaf:not(.open) b::after{content:" +";color:var(--cl);font-weight:700}
+.core{position:relative;z-index:1;background:radial-gradient(circle at 30% 25%,var(--core2),var(--core1));color:#fff;border-radius:18px;padding:1.2rem 1.3rem;margin-bottom:1.6rem;text-align:center}
+.core small{display:block;font:700 .72rem var(--ui);letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.core h2{font:700 1.5rem/1.15 var(--display);margin:.35rem 0 .5rem;text-wrap:balance}
+.core .yr{display:inline-block;border:1.5px solid rgba(255,255,255,.55);border-radius:999px;padding:.1rem .8rem;font-weight:700}
+.core p{margin:.7rem 0 0;font-size:.9rem;opacity:.9}
+svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0}
+.foot{max-width:1500px;margin:1.6rem auto 0;color:var(--muted);font-size:.88rem}
+
+.b1{--c:var(--c1);--cl:var(--l1)}.b2{--c:var(--c2);--cl:var(--l2)}.b3{--c:var(--c3);--cl:var(--l3)}.b4{--c:var(--c4);--cl:var(--l4)}
+.b5{--c:var(--c5);--cl:var(--l5)}.b6{--c:var(--c6);--cl:var(--l6)}.b7{--c:var(--c7);--cl:var(--l7)}
+
+@media (min-width:1100px){
+  .map{display:grid;grid-template-columns:1fr minmax(250px,290px) 1fr;gap:0 clamp(60px,7vw,110px);align-items:center}
+  .core{margin:0;border-radius:50%;aspect-ratio:1;display:flex;flex-direction:column;justify-content:center;padding:1.8rem}
+  .col{gap:30px}
+  .br{flex-direction:row;align-items:center;gap:clamp(40px,4.5vw,70px);margin:0}
+  .col.r .br{flex-direction:row}
+  .hub{flex:none;width:136px;height:136px;border-radius:50%;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:.6rem}
+  .hub b{font-size:.9rem}
+  .lv{flex:1;min-width:0}
+}
+@media (max-width:1099px){svg.lines{display:none}.map{display:flex;flex-direction:column}.core{order:-1;margin-bottom:1.2rem}.hub{order:-1}.br{margin-bottom:12px}}
+
+.detail{max-width:46rem;margin:3rem auto 0}
+.detail h2{font:700 1.5rem var(--display);letter-spacing:-.01em;margin:0 0 .3rem}
+.detail>p{margin:0 0 1.6rem;color:var(--muted)}
+.dg{margin:0 0 1.8rem}
+.dg h3{display:flex;gap:.6rem;align-items:baseline;margin:0 0 .6rem;padding:.55rem .9rem;border-radius:10px;background:var(--c);color:#fff;font:700 1.05rem var(--display)}
+.dg h3 small{font:700 .7rem var(--ui);letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.dg article{border-left:3px solid var(--cl);padding:.1rem 0 .1rem .9rem;margin:0 0 1rem}
+.dg article h4{margin:0 0 .15rem;font-size:1rem}
+.dg article p{margin:.15rem 0 0;line-height:1.6}
+/* mode intégré (Notion) : liste compacte sur deux colonnes, sans le détail (il est dans la page) */
+.emb body{padding:8px}
+.emb .top h1,.emb .top p,.emb #detail,.emb .foot,.emb svg.lines{display:none}
+.emb .top{margin-bottom:.6rem}
+.emb .map{display:grid;grid-template-columns:1fr;gap:12px;align-items:start;max-width:none}
+.emb .col{display:contents}
+.emb .br{flex-direction:column;align-items:stretch;gap:8px;margin:0}
+.emb .hub{order:-1;width:auto;height:auto;border-radius:12px;display:block;text-align:left;padding:.55rem .9rem}
+.emb .core{order:-2;grid-column:1/-1;margin:0;aspect-ratio:auto;border-radius:12px;display:block;padding:.7rem 1rem}
+.emb .core h2{font-size:1.2rem;margin:.2rem 0 .3rem}
+.emb .core p{display:none}
+@media (min-width:620px){.emb .map{grid-template-columns:1fr 1fr}}
+
+math{font-size:1.06em}
+math.big{math-style:normal}
+.leaf p math{color:var(--ink)}
+.leaf p{font-size:.92rem;line-height:1.7}
+.dg article p{line-height:1.8}
+.leaf{overflow-wrap:anywhere}
+</style>
+<style id="veilleuse">@font-face{font-family:Figtree;src:url(../../assets/figtree-latin.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@media screen{:root{--ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;--display:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+ --bg:#F4F6FB;--paper:#FFFFFF;--ink:#161C2D;--muted:#586380;--line:#D9DFEC;--soft:#EBEFF7;--grid:#E3E8F2;--core1:#17233D;--core2:#2D4A7A;
+ --c1:#2D5FA8;--c2:#5E4BB0;--c3:#1F7A5A;--c4:#B85A14;--c5:#B03A5E;--c6:#4E5A74;--c7:#8A6410;
+ --l1:#2D5FA8;--l2:#5E4BB0;--l3:#1F7A5A;--l4:#B85A14;--l5:#B03A5E;--l6:#4E5A74;--l7:#8A6410;
+ --fr:#2D5FA8;--eu:#5E4BB0;--gr:#1F7A5A;--rev:#B03A5E;--nat:#B85A14;--cul:#8A6410;
+ --r1:#2D5FA8;--r2:#1E4A8C;--r3:#B03A5E;--r4:#6B7A96;--band:rgba(176,58,94,.08);--ok:#E5F4EA;--okl:#1C7A3D}}
+@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#131A2B;--paper:#1B2438;--ink:#ECEFF6;--muted:#9AA6BF;--line:#2A3650;--soft:#222D45;--grid:#232E47;--core1:#1E2A47;--core2:#33466E;
+ --l1:#7FB2F0;--l2:#B8A6F0;--l3:#7FD0A8;--l4:#F2A56B;--l5:#E58FA9;--l6:#A9B4CC;--l7:#E5C06B;
+ --fr:#7FB2F0;--eu:#B8A6F0;--gr:#7FD0A8;--rev:#E58FA9;--nat:#F2A56B;--cul:#E5C06B;
+ --r1:#4A7BE0;--r2:#2F5CBF;--r3:#D4455A;--r4:#6B7A96;--band:rgba(229,143,169,.1);--ok:#16301F;--okl:#6FD694;color-scheme:dark}}
+@media screen{body{margin:0;padding-top:0}
+.hub small,.core small,.dg h3 small,section.s>h2 small,.tag,.concl .h,.box h2,th{text-transform:none;letter-spacing:0}}
+.back{display:block;position:sticky;top:0;z-index:50;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 1rem;padding:.7rem max(16px,env(safe-area-inset-left,0px));background:var(--paper,#1B2438);color:var(--ink,#ECEFF6);border-bottom:1px solid var(--line,#2A3650);font:600 .9rem var(--ui,system-ui),sans-serif;text-decoration:none}
+.back:active{background:var(--soft,#222D45)}
+.back:focus-visible{outline:2px solid var(--ink,#F2C46B);outline-offset:-2px}
+</style>
+<style>@page{size:A4;margin:11mm}@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
+@media print{
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--paper:#fff;--ink:#111;--muted:#444;--line:#bbb;--soft:#f3f3f3;
+  --core1:#1b2a41;--core2:#27486b;--l1:#2f62c9;--l2:#7240c0;--l3:#0e7c77;--l4:#bf5b08;--l5:#c42f45;--l6:#566176;--l7:#94650f;color-scheme:light}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:#fff!important;padding:0!important;font-size:10pt}
+.back,.ctl,svg.lines{display:none!important}
+.top{display:none!important}
+.map{page:land;display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px 11px;max-width:none!important;align-items:start;font-size:9pt;zoom:.88}
+.col{display:contents!important}
+.core{grid-column:1/-1;order:-3;margin:0!important;padding:.45rem 1rem!important}
+.core h2{font-size:1.15rem!important;margin:.1rem 0!important}.core p{display:none!important}
+.br{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;margin:0!important;break-inside:avoid}
+.hub{order:-1;width:auto!important;height:auto!important;border-radius:10px!important;display:block!important;text-align:left!important;padding:.4rem .8rem!important}
+.lv{gap:6px!important}
+.leaf{break-inside:avoid;padding:.3rem .65rem .35rem!important}.leaf b{font-size:.9rem!important}.leaf p{font-size:.78rem!important;margin-top:.1rem!important}
+.rev .leaf p{display:block!important}
+.rev .leaf:not(.open) b::after{content:""!important}
+.detail{page:port;break-before:page;margin:0!important;max-width:none!important}
+.dg,.dg article{break-inside:avoid}
+.dg h3{break-after:avoid}
+.foot{page:port;margin-top:.8rem!important}
+}
+</style>
+<a class="back" href="./">‹ Retour à la fiche, Compréhension écrite et orale</a></head><body>
+
+<header class="top">
+  <div>
+    <h1>Anglais · Méthodes : l'essentiel à retenir</h1>
+    <p>Méthodes de compréhension écrite et orale : l'essentiel à retenir, en une carte.</p>
+  </div>
+  <div class="ctl">
+    <button id="rev" aria-pressed="false">Mode révision : cacher les réponses</button>
+    <button id="all">Tout ouvrir</button>
+  </div>
+</header>
+<main class="map" id="map">
+  <svg class="lines" id="lines" aria-hidden="true"></svg>
+  <div class="col l" id="cl"></div>
+  <section class="core" id="core">
+    <small>Anglais · Première</small>
+    <h2>Méthodes de compréhension</h2>
+    <span class="yr">Méthodes</span>
+    <p>Rédiger un compte rendu écrit et organiser un compte rendu de compréhension orale.</p>
+  </section>
+  <div class="col r" id="cr"></div>
+</main>
+<section class="detail" id="detail"><h2>Pour bien comprendre</h2><p>Relis ces détails pour comprendre chaque bulle, puis apprends seulement la carte par cœur.</p></section>
+<p class="foot">† = ajout absent du cours. En mode révision, touche une bulle pour afficher sa réponse et teste-toi à voix haute.</p>
+
+<script>
+(function(){
+"use strict";
+var B=[{"n": 1, "side": "l", "small": "Méthodes · I", "t": "Compte rendu écrit", "leaves": [["Ce n&#x27;est pas un résumé", "montrer qu&#x27;on a compris"], ["Les règles", "sélectionner, reformuler, regrouper"], ["L&#x27;introduction", "deux ou trois phrases"], ["Répondre aux questions", "en anglais, sans copier"]], "det": ["Un compte rendu n&#x27;est pas un simple résumé. Son objectif est de montrer qu&#x27;on a compris le document dans son ensemble : son sujet, l&#x27;organisation des idées, les exemples utilisés, ainsi que le point de vue ou l&#x27;intention de l&#x27;auteur.", "Sélectionner et organiser les informations essentielles (ne pas raconter l&#x27;article paragraphe par paragraphe). Reformuler avec ses propres mots, avec seulement de courtes citations pour justifier une analyse. Regrouper par idées ou par thèmes, pas dans l&#x27;ordre du texte. Faire apparaître les liens entre les idées avec des connecteurs logiques. Ne pas donner son opinion personnelle sauf si la consigne le demande.", "Elle comporte deux ou trois phrases : identifier précisément le document, puis présenter son sujet et son angle principal. Dans cet ordre si possible : nature du document, titre exact, auteur, source, date de publication, contexte utile, thème principal et angle précis.", "On répond aux questions en anglais, sans recopier le texte (c&#x27;est du plagiat). Pour justifier une réponse, on utilise une citation courte et on indique le numéro de ligne."]}, {"n": 2, "side": "r", "small": "Méthodes · II", "t": "Compréhension orale", "leaves": [["Le déroulement", "3 écoutes, document de 1&#x27;30"], ["Partie 1", "nature, source, locuteurs, thème"], ["Partie 2", "tout ce qu&#x27;on a compris"], ["Partie 3", "buts et stratégies de communication"]], "det": ["Trois écoutes, pour un document de 1&#x27;30, avec 1&#x27; de pause entre chaque écoute. Le compte rendu est rédigé en français.", "Première partie : la nature du document, la source, le nombre de locuteurs et leur fonction, le thème.", "Deuxième partie, le développement : tout ce qu&#x27;on a compris du document.", "Troisième partie, la conclusion : les buts du document et les stratégies de communication."]}];
+var cl=document.getElementById('cl'),cr=document.getElementById('cr');
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
+B.forEach(function(b){
+  var br=el('div','br b'+b.n);br.dataset.n=b.n;
+  var hub=el('div','hub');hub.appendChild(el('small','',b.small));hub.appendChild(el('b','',b.t));
+  var lv=el('div','lv');
+  b.leaves.forEach(function(l){
+    var f=el('div','leaf');f.tabIndex=0;f.setAttribute('role','button');
+    f.appendChild(el('b','',l[0]));f.appendChild(el('p','',l[1]));
+    lv.appendChild(f);
+  });
+  if(b.side==='l'){br.appendChild(lv);br.appendChild(hub)}else{br.appendChild(hub);br.appendChild(lv)}
+  (b.side==='l'?cl:cr).appendChild(br);
+});
+var dsec=document.getElementById('detail');
+B.forEach(function(b){
+  var g=el('div','dg b'+b.n),h=el('h3','',b.t);h.insertBefore(el('small','',b.small),h.firstChild);g.appendChild(h);
+  b.leaves.forEach(function(l,i){
+    var a=el('article');a.appendChild(el('h4','',l[0]));
+    a.appendChild(el('p','',b.det[i]));
+    g.appendChild(a);
+  });
+  dsec.appendChild(g);
+});
+var EMB=false;
+if(EMB)document.documentElement.classList.add('emb');
+var map=document.getElementById('map'),svg=document.getElementById('lines'),core=document.getElementById('core');
+function box(e){var r=e.getBoundingClientRect(),m=map.getBoundingClientRect();return{l:r.left-m.left,t:r.top-m.top,w:r.width,h:r.height}}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function draw(){
+  svg.innerHTML='';
+  if(EMB)return;
+  if(!window.matchMedia('(min-width:1100px)').matches)return;
+  var m=map.getBoundingClientRect();svg.setAttribute('viewBox','0 0 '+m.width+' '+m.height);
+  var c=box(core),cx=c.l+c.w/2,cy=c.t+c.h/2,cr_=c.w/2;
+  document.querySelectorAll('.br').forEach(function(br){
+    var n=br.dataset.n,col=css('--l'+n),h=box(br.querySelector('.hub')),hx=h.l+h.w/2,hy=h.t+h.h/2,hr=h.w/2;
+    var left=hx<cx,ax=left?hx+hr:hx-hr;
+    var ang=Math.atan2(hy-cy,hx-cx),bx=cx+Math.cos(ang)*cr_,by=cy+Math.sin(ang)*cr_;
+    var dx=bx-ax;
+    path('M'+ax+' '+hy+' C'+(ax+dx*.5)+' '+hy+' '+(bx-dx*.5)+' '+by+' '+bx+' '+by,col,4);
+    br.querySelectorAll('.leaf').forEach(function(lf){
+      var q=box(lf),ly=q.t+q.h/2,lx=left?q.l+q.w:q.l,hxe=left?hx-hr:hx+hr;
+      var d=hxe-lx;
+      path('M'+hxe+' '+hy+' C'+(hxe-d*.5)+' '+hy+' '+(lx+d*.5)+' '+ly+' '+lx+' '+ly,col,2);
+    });
+  });
+}
+function path(d,col,w){
+  var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',col);p.setAttribute('stroke-width',w);p.setAttribute('stroke-linecap','round');
+  svg.appendChild(p);
+}
+function redraw(){requestAnimationFrame(draw)}
+var rev=document.getElementById('rev'),all=document.getElementById('all');
+rev.onclick=function(){var on=rev.getAttribute('aria-pressed')!=='true';rev.setAttribute('aria-pressed',on);map.classList.toggle('rev',on);
+  if(!on)document.querySelectorAll('.leaf.open').forEach(function(l){l.classList.remove('open')});redraw()};
+all.onclick=function(){var open=all.dataset.o!=='1';all.dataset.o=open?'1':'';all.textContent=open?'Tout refermer':'Tout ouvrir';
+  if(open){map.classList.add('rev');rev.setAttribute('aria-pressed','true')}
+  document.querySelectorAll('.leaf').forEach(function(l){l.classList.toggle('open',open)});redraw()};
+function tog(e){var l=e.target.closest('.leaf');if(l&&map.classList.contains('rev')){l.classList.toggle('open');redraw()}}
+map.addEventListener('click',tog);
+map.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e)}});
+window.addEventListener('resize',redraw);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(redraw);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redraw);
+redraw();
+})();
+</script>
+</body></html>
