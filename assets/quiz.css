@@ -8,6 +8,8 @@
 .qz-stat{font-size:.9rem;margin-top:1rem}
 .qz-top{display:flex;align-items:center;justify-content:space-between;gap:.5rem;min-height:44px;font-size:.9rem}
 .qz-fin{min-height:36px;font-size:.85rem}
+.qz-act{display:flex;gap:.5rem}
+.qz-fin[hidden]{display:none}
 .qz-bar{height:4px;background:var(--line);border-radius:2px;margin:.3rem 0 1.4rem}
 .qz-bar i{display:block;height:100%;background:var(--k);border-radius:2px}
 .qz-gap{height:.8rem}

@@ -356,6 +356,14 @@
     afficher();
   }
 
+  /* « Passer » : la question n'est ni juste ni fausse, elle ne compte pas. Dans une série tirée au hasard on en tire une autre à la place ;
+     dans « Refaire les questions ratées » (liste fixe) on passe simplement à la suivante. */
+  function passer() {
+    if (!S || S.repondu) return;
+    if (S.rejouer) { S.passees = (S.passees || 0) + 1; S.repondu = true; } else S.i--;
+    suivante();
+  }
+
   function bouton(it, k, lettre) {
     return '<button type="button" class="qz-ch" data-k="' + k + '"><span class="qz-lt" aria-hidden="true">' + lettre + '</span>' +
       '<span class="qz-tx">' + fmt(it.t) + '</span><span class="qz-mk" aria-hidden="true"></span></button>';
@@ -366,7 +374,8 @@
     teinte(c);
     var tags = (GLOBAL && c.matiere ? '<span class="qz-tag">' + esc(c.matiere + ', ' + c.chapitre) + '</span>' : '') + (q.cat && catNom(q.cat) ? '<span class="qz-tag qz-tc">' + esc(catNom(q.cat)) + '</span>' : '');
     var corps = '<div class="qz-top"><span class="m" id="qz-pos">' + (S.n ? 'Question ' + S.i + ' sur ' + S.n : 'Question ' + S.i) + '</span>' +
-      (S.n ? '' : '<button type="button" class="btn qz-fin" id="qz-stop">Terminer</button>') + '</div>' +
+      '<span class="qz-act"><button type="button" class="btn qz-fin" id="qz-skip">Passer</button>' +
+      (S.n ? '' : '<button type="button" class="btn qz-fin" id="qz-stop">Terminer</button>') + '</span></div>' +
       (S.n ? '<div class="qz-bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' : '<div class="qz-gap"></div>') +
       (tags ? '<div class="qz-tags">' + tags + '</div>' : '') +
       '<h2 class="qz-text" id="qz-text" tabindex="-1">' + fmt(q.q) + '</h2><div id="qz-ans">';
@@ -408,6 +417,7 @@
     var f = $('#qz-form'); if (f) f.onsubmit = function (e) { e.preventDefault(); repondreSaisie($('#qz-in').value); };
     var vb = $('#qz-val'); if (vb) vb.onclick = function () { if (mode === 'multi') validerMulti(); else validerOrdre(); };
     var st = $('#qz-stop'); if (st) st.onclick = fin;
+    $('#qz-skip').onclick = passer;
     $('#qz-next').onclick = suivante;
   }
 
@@ -433,6 +443,7 @@
     fb.className = 'qz-fb ' + (bon ? 'ok' : 'ko');
     fb.innerHTML = html; fb.hidden = false;
     ajuster();
+    var sk = $('#qz-skip'); if (sk) sk.hidden = true;
     var nx = $('#qz-next');
     nx.hidden = false;
     nx.textContent = (S.n && S.i >= S.n) ? 'Voir le résultat' : 'Question suivante';
@@ -518,6 +529,7 @@
 
   function fin() {
     var n = S.i - (S.repondu ? 0 : 1);          // questions réellement traitées
+    if (S.rejouer) n -= S.passees || 0;
     if (n < 0) n = 0;
     var faux = S.faux, bons = S.bons, parCat = S.parCat;
     teinte(null);
