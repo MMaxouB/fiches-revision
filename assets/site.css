@@ -47,7 +47,7 @@ a{color:inherit}
 .nl a:focus-visible,.brand:focus-visible{outline:2px solid var(--lampe);outline-offset:2px}
 .nl .hm{display:none}
 @media (min-width:560px){.nl .hm{display:inline-flex}}
-@media (max-width:359px){.brand span{display:none}}
+@media (max-width:429px){.brand span{display:none}}
 .btn.pri{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
 /* ---------- accueil ---------- */
