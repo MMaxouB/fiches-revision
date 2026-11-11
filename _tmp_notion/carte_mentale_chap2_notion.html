@@ -1,0 +1,200 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Carte mentale · formules du chapitre 2</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@500;700&display=swap">
+<style>
+/* Carte mentale : un noyau au centre, sept branches colorées de chaque côté ; sur téléphone elle se lit comme un plan en cartes. */
+:root{
+  --ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  --bg:#e9edf3; --paper:#ffffff; --ink:#18202f; --muted:#57617a; --line:#d5dbe6; --soft:#f3f5f9;
+  --core1:#1b2a41; --core2:#27486b;
+  --c1:#2f62c9; --c2:#7240c0; --c3:#0e7c77; --c4:#bf5b08; --c5:#c42f45; --c6:#566176; --c7:#94650f;
+  --l1:#2f62c9; --l2:#7240c0; --l3:#0e7c77; --l4:#bf5b08; --l5:#c42f45; --l6:#566176; --l7:#94650f;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532;
+  --core1:#0b1220; --core2:#1f3a5c;
+  --l1:#7fa8ff; --l2:#bf9bff; --l3:#5fd6cf; --l4:#ffb061; --l5:#ff8d9b; --l6:#b3bdd2; --l7:#e5b75f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532;
+  --core1:#0b1220; --core2:#1f3a5c;
+  --l1:#7fa8ff; --l2:#bf9bff; --l3:#5fd6cf; --l4:#ffb061; --l5:#ff8d9b; --l6:#b3bdd2; --l7:#e5b75f; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 3rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.top{max-width:1500px;margin:0 auto 1.4rem;display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-end;justify-content:space-between}
+.top h1{font:700 clamp(1.5rem,3.6vw,2.1rem)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.top p{margin:.35rem 0 0;color:var(--muted);max-width:44rem}
+.ctl{display:flex;flex-wrap:wrap;gap:.5rem}
+.ctl button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem .95rem}
+.ctl button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:700}
+
+.map{position:relative;max-width:1500px;margin:0 auto}
+.col{display:flex;flex-direction:column;gap:22px}
+.br{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.hub{border-radius:14px;background:var(--c);color:#fff;padding:.7rem 1rem;position:relative;z-index:1}
+.hub small{display:block;font:700 .7rem var(--ui);letter-spacing:.09em;text-transform:uppercase;opacity:.85}
+.hub b{display:block;font:700 1.02rem/1.2 var(--display)}
+.lv{display:flex;flex-direction:column;gap:9px}
+.leaf{--cl:var(--l1);position:relative;z-index:1;border:2px solid var(--cl);border-radius:16px;background:var(--paper);padding:.5rem .85rem .55rem}
+.leaf b{display:block;font-size:.95rem;line-height:1.25}
+.leaf>b math{font-size:1em}
+.leaf p{margin:.2rem 0 0;font-size:.86rem;color:var(--muted)}
+.leaf .dg{color:var(--cl);font-weight:700}
+.rev .leaf{cursor:pointer}
+.rev .leaf p{display:none}
+.rev .leaf.open p{display:block}
+.rev .leaf:not(.open) b::after{content:" +";color:var(--cl);font-weight:700}
+.core{position:relative;z-index:1;background:radial-gradient(circle at 30% 25%,var(--core2),var(--core1));color:#fff;border-radius:18px;padding:1.2rem 1.3rem;margin-bottom:1.6rem;text-align:center}
+.core small{display:block;font:700 .72rem var(--ui);letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.core h2{font:700 1.5rem/1.15 var(--display);margin:.35rem 0 .5rem;text-wrap:balance}
+.core .yr{display:inline-block;border:1.5px solid rgba(255,255,255,.55);border-radius:999px;padding:.1rem .8rem;font-weight:700}
+.core p{margin:.7rem 0 0;font-size:.9rem;opacity:.9}
+svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0}
+.foot{max-width:1500px;margin:1.6rem auto 0;color:var(--muted);font-size:.88rem}
+
+.b1{--c:var(--c1);--cl:var(--l1)}.b2{--c:var(--c2);--cl:var(--l2)}.b3{--c:var(--c3);--cl:var(--l3)}.b4{--c:var(--c4);--cl:var(--l4)}
+.b5{--c:var(--c5);--cl:var(--l5)}.b6{--c:var(--c6);--cl:var(--l6)}.b7{--c:var(--c7);--cl:var(--l7)}
+
+@media (min-width:1100px){
+  .map{display:grid;grid-template-columns:1fr minmax(250px,290px) 1fr;gap:0 clamp(60px,7vw,110px);align-items:center}
+  .core{margin:0;border-radius:50%;aspect-ratio:1;display:flex;flex-direction:column;justify-content:center;padding:1.8rem}
+  .col{gap:30px}
+  .br{flex-direction:row;align-items:center;gap:clamp(40px,4.5vw,70px);margin:0}
+  .col.r .br{flex-direction:row}
+  .hub{flex:none;width:136px;height:136px;border-radius:50%;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:.6rem}
+  .hub b{font-size:.9rem}
+  .lv{flex:1;min-width:0}
+}
+@media (max-width:1099px){svg.lines{display:none}.map{display:flex;flex-direction:column}.core{order:-1;margin-bottom:1.2rem}.hub{order:-1}.br{margin-bottom:12px}}
+
+.detail{max-width:46rem;margin:3rem auto 0}
+.detail h2{font:700 1.5rem var(--display);letter-spacing:-.01em;margin:0 0 .3rem}
+.detail>p{margin:0 0 1.6rem;color:var(--muted)}
+.dg{margin:0 0 1.8rem}
+.dg h3{display:flex;gap:.6rem;align-items:baseline;margin:0 0 .6rem;padding:.55rem .9rem;border-radius:10px;background:var(--c);color:#fff;font:700 1.05rem var(--display)}
+.dg h3 small{font:700 .7rem var(--ui);letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.dg article{border-left:3px solid var(--cl);padding:.1rem 0 .1rem .9rem;margin:0 0 1rem}
+.dg article h4{margin:0 0 .15rem;font-size:1rem}
+.dg article p{margin:.15rem 0 0;line-height:1.6}
+/* mode intégré (Notion) : liste compacte sur deux colonnes, sans le détail (il est dans la page) */
+.emb body{padding:8px}
+.emb .top h1,.emb .top p,.emb #detail,.emb .foot,.emb svg.lines{display:none}
+.emb .top{margin-bottom:.6rem}
+.emb .map{display:grid;grid-template-columns:1fr;gap:12px;align-items:start;max-width:none}
+.emb .col{display:contents}
+.emb .br{flex-direction:column;align-items:stretch;gap:8px;margin:0}
+.emb .hub{order:-1;width:auto;height:auto;border-radius:12px;display:block;text-align:left;padding:.55rem .9rem}
+.emb .core{order:-2;grid-column:1/-1;margin:0;aspect-ratio:auto;border-radius:12px;display:block;padding:.7rem 1rem}
+.emb .core h2{font-size:1.2rem;margin:.2rem 0 .3rem}
+.emb .core p{display:none}
+@media (min-width:620px){.emb .map{grid-template-columns:1fr 1fr}}
+
+math{font-size:1.06em}
+math.big{math-style:normal}
+.leaf p math{color:var(--ink)}
+.leaf p{font-size:.92rem;line-height:1.7}
+.dg article p{line-height:1.8}
+.leaf{overflow-wrap:anywhere}
+</style></head><body>
+
+<header class="top">
+  <div>
+    <h1>Maths · Chapitre 2 : toutes les formules</h1>
+    <p>Généralités sur les suites numériques : l'essentiel à retenir, en une carte.</p>
+  </div>
+  <div class="ctl">
+    <button id="rev" aria-pressed="false">Mode révision : cacher les formules</button>
+    <button id="all">Tout ouvrir</button>
+  </div>
+</header>
+<main class="map" id="map">
+  <svg class="lines" id="lines" aria-hidden="true"></svg>
+  <div class="col l" id="cl"></div>
+  <section class="core" id="core">
+    <small>Maths · Première</small>
+    <h2>Généralités sur les suites</h2>
+    <span class="yr">Chapitre 2</span>
+    <p>Définir une suite, la représenter et savoir si elle monte ou descend.</p>
+  </section>
+  <div class="col r" id="cr"></div>
+</main>
+<section class="detail" id="detail"><h2>Pour bien comprendre</h2><p>Relis ces détails pour comprendre chaque bulle, puis apprends seulement la carte par cœur.</p></section>
+<p class="foot">† = ajout absent du cours. En mode révision, touche une bulle pour afficher sa formule et teste-toi à voix haute.</p>
+
+<script>
+(function(){
+"use strict";
+var B=[{"n": 1, "side": "r", "small": "Ch2 · I", "t": "Définir une suite", "leaves": [["Suite numérique", "<math><mi>u<\/mi><mi>:<\/mi><mi>n<\/mi><mo>↦<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><\/math> pour <math><mi>n<\/mi><mo>≥<\/mo><msub><mi>n<\/mi><mn>0<\/mn><\/msub><\/math>"], ["Définie explicitement", "<math><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>=<\/mo><mi>f<\/mi><mo stretchy=\"false\">(<\/mo><mi>n<\/mi><mo stretchy=\"false\">)<\/mo><\/math>"], ["Définie par récurrence", "<math><msub><mi>u<\/mi><mn>0<\/mn><\/msub><\/math> donné, <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>=<\/mo><mi>f<\/mi><mo stretchy=\"false\">(<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo stretchy=\"false\">)<\/mo><\/math>"]], "det": ["Une suite est une fonction définie pour tous les entiers <math><mi>n<\/mi><mo>≥<\/mo><msub><mi>n<\/mi><mn>0<\/mn><\/msub><\/math> et à valeurs réelles. On la note <math><mo stretchy=\"false\">(<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo stretchy=\"false\">)<\/mo><\/math> ; <math><mi>n<\/mi><\/math> est le rang, <math><msub><mi>u<\/mi><mi>n<\/mi><\/msub><\/math> le terme général. En langage naturel, c&#x27;est une liste infinie de nombres réels dont chacun porte son numéro (son rang) ; chaque nombre est un « terme ».", "On calcule directement n&#x27;importe quel terme en remplaçant <math><mi>n<\/mi><\/math>. Exemple : <math><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>=<\/mo><mn>2<\/mn><mi>n<\/mi><mo>−<\/mo><mn>3<\/mn><\/math> donne <math><msub><mi>u<\/mi><mn>0<\/mn><\/msub><mo>=<\/mo><mo>−<\/mo><mn>3<\/mn><\/math>.", "On donne le premier terme et une relation qui permet de calculer le suivant à partir du précédent. Exemple : <math><msub><mi>u<\/mi><mn>0<\/mn><\/msub><mo>=<\/mo><mo>−<\/mo><mn>3<\/mn><\/math> et <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>=<\/mo><mn>2<\/mn><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>+<\/mo><mn>1<\/mn><\/math> donnent <math><msub><mi>u<\/mi><mn>1<\/mn><\/msub><mo>=<\/mo><mo>−<\/mo><mn>5<\/mn><\/math>, <math><msub><mi>u<\/mi><mn>2<\/mn><\/msub><mo>=<\/mo><mo>−<\/mo><mn>9<\/mn><\/math>."]}, {"n": 2, "side": "r", "small": "Ch2 · II et III", "t": "Représenter et variation", "leaves": [["Nuage de points", "points <math><mo stretchy=\"false\">(<\/mo><mi>n<\/mi><mspace width=\"0.167em\" /><mi>;<\/mi><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo stretchy=\"false\">)<\/mo><\/math> dans un repère"], ["Construction en escalier", "courbe de <math><mi>f<\/mi><\/math> et droite <math><mi>y<\/mi><mo>=<\/mo><mi>x<\/mi><\/math>"], ["Croissante", "<math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>−<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>≥<\/mo><mn>0<\/mn><\/math>"], ["Méthode", "étudier le signe de <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>−<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><\/math>"]], "det": ["Chaque terme devient un point : abscisse = le rang <math><mi>n<\/mi><\/math>, ordonnée = la valeur <math><msub><mi>u<\/mi><mi>n<\/mi><\/msub><\/math>. Le cours donne deux façons de représenter une suite : placer les termes <math><msub><mi>u<\/mi><mn>0<\/mn><\/msub><\/math>, <math><msub><mi>u<\/mi><mn>1<\/mn><\/msub><\/math>, <math><msub><mi>u<\/mi><mn>2<\/mn><\/msub><\/math>… sur la droite numérique, ou placer les points <math><mo stretchy=\"false\">(<\/mo><mi>n<\/mi><mspace width=\"0.167em\" /><mi>;<\/mi><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo stretchy=\"false\">)<\/mo><\/math> dans un repère, ce qui donne un nuage de points.", "Pour <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>=<\/mo><mi>f<\/mi><mo stretchy=\"false\">(<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo stretchy=\"false\">)<\/mo><\/math> : on part de <math><msub><mi>u<\/mi><mn>0<\/mn><\/msub><\/math> sur l&#x27;axe des abscisses, on monte jusqu&#x27;à la courbe, on va horizontalement jusqu&#x27;à <math><mi>y<\/mi><mo>=<\/mo><mi>x<\/mi><\/math>, puis on redescend sur l&#x27;axe pour lire <math><msub><mi>u<\/mi><mn>1<\/mn><\/msub><\/math>. On recommence.", "Vrai pour tout <math><mi>n<\/mi><mo>≥<\/mo><msub><mi>n<\/mi><mn>0<\/mn><\/msub><\/math>. Décroissante : <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>−<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>≤<\/mo><mn>0<\/mn><\/math>. Stationnaire : <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>−<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>=<\/mo><mn>0<\/mn><\/math>. Monotone : l&#x27;un des trois.", "On écrit <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><\/math> en remplaçant <math><mi>n<\/mi><\/math> par <math><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/math>, on fait la différence, on met au même dénominateur et on étudie le signe du résultat."]}, {"n": 3, "side": "l", "small": "Ch2 · Composition", "t": "Suites en composition", "leaves": [["Vrai ou faux", "vrai : calculer <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>−<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><\/math> ; faux : un contre-exemple"], ["Mettre en équation †", "<math><mo>+<\/mo><mn>2<\/mn><mspace width=\"0.167em\" /><mi>%<\/mi><\/math> puis <math><mo>−<\/mo><mn>100<\/mn><\/math> : <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>=<\/mo><mn>1<\/mn><mrow><mo>,<\/mo><\/mrow><mn>02<\/mn><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>−<\/mo><mn>100<\/mn><\/math>"], ["Variation avec une minoration †", "<math><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>≥<\/mo><mn>5000<\/mn><\/math> donne <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>−<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>≥<\/mo><mn>0<\/mn><\/math>"], ["Forme explicite <math><mi>A<\/mi><mo>×<\/mo><msup><mi>q<\/mi><mi>n<\/mi><\/msup><mo>+<\/mo><mi>B<\/mi><\/math> †", "<math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>−<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>=<\/mo><mi>A<\/mi><mspace width=\"0.167em\" /><msup><mi>q<\/mi><mi>n<\/mi><\/msup><mo stretchy=\"false\">(<\/mo><mi>q<\/mi><mo>−<\/mo><mn>1<\/mn><mo stretchy=\"false\">)<\/mo><\/math>"], ["Seuil en Python †", "tant que <math><mi>u<\/mi><mo>≤<\/mo><mn>7000<\/mn><\/math> : <math><mi>u<\/mi><mo>=<\/mo><mn>1<\/mn><mrow><mo>,<\/mo><\/mrow><mn>02<\/mn><mi>u<\/mi><mo>−<\/mo><mn>100<\/mn><\/math>, <math><mi>n<\/mi><mo>=<\/mo><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/math>"]], "det": ["Pour prouver qu&#x27;une affirmation sur une suite est vraie, on calcule <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>−<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><\/math> pour tout <math><mi>n<\/mi><\/math> et on étudie son signe. Pour la prouver fausse, un seul contre-exemple suffit (par exemple <math><mo>−<\/mo><mfrac><mn>1<\/mn><mi>n<\/mi><\/mfrac><\/math> : termes négatifs mais suite croissante). Piège du rang : avec <math><msub><mi>w<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>=<\/mo><mo stretchy=\"false\">(<\/mo><mo>−<\/mo><mn>3<\/mn><msup><mo stretchy=\"false\">)<\/mo><mi>n<\/mi><\/msup><mo>+<\/mo><msub><mi>w<\/mi><mi>n<\/mi><\/msub><\/math> et <math><msub><mi>w<\/mi><mn>0<\/mn><\/msub><mo>=<\/mo><mn>2<\/mn><\/math>, le troisième terme est <math><msub><mi>w<\/mi><mn>2<\/mn><\/msub><\/math>.", "Augmenter de <math><mn>2<\/mn><mspace width=\"0.167em\" /><mi>%<\/mi><\/math> revient à multiplier par <math><mn>1<\/mn><mo>+<\/mo><mfrac><mrow><mn>2<\/mn><\/mrow><mrow><mn>100<\/mn><\/mrow><\/mfrac><mo>=<\/mo><mn>1<\/mn><mrow><mo>,<\/mo><\/mrow><mn>02<\/mn><\/math> ; le retrait de <math><mn>100<\/mn><\/math> s&#x27;écrit <math><mo>−<\/mo><mn>100<\/mn><\/math>. D&#x27;où <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>=<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>+<\/mo><mn>0<\/mn><mrow><mo>,<\/mo><\/mrow><mn>02<\/mn><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>−<\/mo><mn>100<\/mn><\/math> <math><mo>=<\/mo><mn>1<\/mn><mrow><mo>,<\/mo><\/mrow><mn>02<\/mn><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>−<\/mo><mn>100<\/mn><\/math>.", "Ici <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>−<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>=<\/mo><mn>0<\/mn><mrow><mo>,<\/mo><\/mrow><mn>02<\/mn><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>−<\/mo><mn>100<\/mn><\/math>. Comme <math><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>≥<\/mo><mn>5000<\/mn><\/math>, on a <math><mn>0<\/mn><mrow><mo>,<\/mo><\/mrow><mn>02<\/mn><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>−<\/mo><mn>100<\/mn><\/math> <math><mo>≥<\/mo><mn>0<\/mn><mrow><mo>,<\/mo><\/mrow><mn>02<\/mn><mo>×<\/mo><mn>5000<\/mn><mo>−<\/mo><mn>100<\/mn><\/math> <math><mo>=<\/mo><mn>0<\/mn><\/math> : la différence est positive ou nulle, la suite est croissante.", "Avec <math><msub><mi>u<\/mi><mi>n<\/mi><\/msub><mo>=<\/mo><mn>1000<\/mn><mo>×<\/mo><mn>1<\/mn><mrow><mo>,<\/mo><\/mrow><msup><mn>02<\/mn><mi>n<\/mi><\/msup><mo>+<\/mo><mn>5000<\/mn><\/math>, on factorise la différence par <math><mn>1000<\/mn><mo>×<\/mo><mn>1<\/mn><mrow><mo>,<\/mo><\/mrow><msup><mn>02<\/mn><mi>n<\/mi><\/msup><\/math> : <math><msub><mi>u<\/mi><mrow><mi>n<\/mi><mo>+<\/mo><mn>1<\/mn><\/mrow><\/msub><mo>−<\/mo><msub><mi>u<\/mi><mi>n<\/mi><\/msub><\/math> <math><mo>=<\/mo><mn>1000<\/mn><mo>×<\/mo><mn>1<\/mn><mrow><mo>,<\/mo><\/mrow><msup><mn>02<\/mn><mi>n<\/mi><\/msup><mo>×<\/mo><mn>0<\/mn><mrow><mo>,<\/mo><\/mrow><mn>02<\/mn><\/math> <math><mo>=<\/mo><mn>20<\/mn><mo>×<\/mo><mn>1<\/mn><mrow><mo>,<\/mo><\/mrow><msup><mn>02<\/mn><mi>n<\/mi><\/msup><mo>&gt;<\/mo><mn>0<\/mn><\/math>. Le signe vient de <math><mi>A<\/mi><\/math> et de <math><mi>q<\/mi><mo>−<\/mo><mn>1<\/mn><\/math> ; une puissance de <math><mi>q<\/mi><mo>&gt;<\/mo><mn>0<\/mn><\/math> est toujours positive.", "On part de <math><mi>u<\/mi><mo>=<\/mo><mn>6000<\/mn><\/math> et <math><mi>n<\/mi><mo>=<\/mo><mn>0<\/mn><\/math>. La boucle « while u&lt;=7000 » calcule le terme suivant et ajoute <math><mn>1<\/mn><\/math> à <math><mi>n<\/mi><\/math> tant que le seuil n&#x27;est pas dépassé ; « print(n) » affiche le rang cherché. Le programme affiche <math><mn>36<\/mn><\/math>."]}];
+var cl=document.getElementById('cl'),cr=document.getElementById('cr');
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
+B.forEach(function(b){
+  var br=el('div','br b'+b.n);br.dataset.n=b.n;
+  var hub=el('div','hub');hub.appendChild(el('small','',b.small));hub.appendChild(el('b','',b.t));
+  var lv=el('div','lv');
+  b.leaves.forEach(function(l){
+    var f=el('div','leaf');f.tabIndex=0;f.setAttribute('role','button');
+    f.appendChild(el('b','',l[0]));f.appendChild(el('p','',l[1]));
+    lv.appendChild(f);
+  });
+  if(b.side==='l'){br.appendChild(lv);br.appendChild(hub)}else{br.appendChild(hub);br.appendChild(lv)}
+  (b.side==='l'?cl:cr).appendChild(br);
+});
+var dsec=document.getElementById('detail');
+B.forEach(function(b){
+  var g=el('div','dg b'+b.n),h=el('h3','',b.t);h.insertBefore(el('small','',b.small),h.firstChild);g.appendChild(h);
+  b.leaves.forEach(function(l,i){
+    var a=el('article');a.appendChild(el('h4','',l[0]));
+    a.appendChild(el('p','',b.det[i]));
+    g.appendChild(a);
+  });
+  dsec.appendChild(g);
+});
+var EMB=true;
+if(EMB)document.documentElement.classList.add('emb');
+var map=document.getElementById('map'),svg=document.getElementById('lines'),core=document.getElementById('core');
+function box(e){var r=e.getBoundingClientRect(),m=map.getBoundingClientRect();return{l:r.left-m.left,t:r.top-m.top,w:r.width,h:r.height}}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function draw(){
+  svg.innerHTML='';
+  if(EMB)return;
+  if(!window.matchMedia('(min-width:1100px)').matches)return;
+  var m=map.getBoundingClientRect();svg.setAttribute('viewBox','0 0 '+m.width+' '+m.height);
+  var c=box(core),cx=c.l+c.w/2,cy=c.t+c.h/2,cr_=c.w/2;
+  document.querySelectorAll('.br').forEach(function(br){
+    var n=br.dataset.n,col=css('--l'+n),h=box(br.querySelector('.hub')),hx=h.l+h.w/2,hy=h.t+h.h/2,hr=h.w/2;
+    var left=hx<cx,ax=left?hx+hr:hx-hr;
+    var ang=Math.atan2(hy-cy,hx-cx),bx=cx+Math.cos(ang)*cr_,by=cy+Math.sin(ang)*cr_;
+    var dx=bx-ax;
+    path('M'+ax+' '+hy+' C'+(ax+dx*.5)+' '+hy+' '+(bx-dx*.5)+' '+by+' '+bx+' '+by,col,4);
+    br.querySelectorAll('.leaf').forEach(function(lf){
+      var q=box(lf),ly=q.t+q.h/2,lx=left?q.l+q.w:q.l,hxe=left?hx-hr:hx+hr;
+      var d=hxe-lx;
+      path('M'+hxe+' '+hy+' C'+(hxe-d*.5)+' '+hy+' '+(lx+d*.5)+' '+ly+' '+lx+' '+ly,col,2);
+    });
+  });
+}
+function path(d,col,w){
+  var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',col);p.setAttribute('stroke-width',w);p.setAttribute('stroke-linecap','round');
+  svg.appendChild(p);
+}
+function redraw(){requestAnimationFrame(draw)}
+var rev=document.getElementById('rev'),all=document.getElementById('all');
+rev.onclick=function(){var on=rev.getAttribute('aria-pressed')!=='true';rev.setAttribute('aria-pressed',on);map.classList.toggle('rev',on);
+  if(!on)document.querySelectorAll('.leaf.open').forEach(function(l){l.classList.remove('open')});redraw()};
+all.onclick=function(){var open=all.dataset.o!=='1';all.dataset.o=open?'1':'';all.textContent=open?'Tout refermer':'Tout ouvrir';
+  if(open){map.classList.add('rev');rev.setAttribute('aria-pressed','true')}
+  document.querySelectorAll('.leaf').forEach(function(l){l.classList.toggle('open',open)});redraw()};
+function tog(e){var l=e.target.closest('.leaf');if(l&&map.classList.contains('rev')){l.classList.toggle('open');redraw()}}
+map.addEventListener('click',tog);
+map.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e)}});
+window.addEventListener('resize',redraw);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(redraw);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redraw);
+redraw();
+})();
+</script>
+</body></html>
