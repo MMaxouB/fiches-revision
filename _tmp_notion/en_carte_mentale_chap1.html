@@ -1,0 +1,200 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Carte mentale · séquence 1</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@500;700&display=swap">
+<style>
+/* Carte mentale : un noyau au centre, sept branches colorées de chaque côté ; sur téléphone elle se lit comme un plan en cartes. */
+:root{
+  --ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  --bg:#e9edf3; --paper:#ffffff; --ink:#18202f; --muted:#57617a; --line:#d5dbe6; --soft:#f3f5f9;
+  --core1:#1b2a41; --core2:#27486b;
+  --c1:#2f62c9; --c2:#7240c0; --c3:#0e7c77; --c4:#bf5b08; --c5:#c42f45; --c6:#566176; --c7:#94650f;
+  --l1:#2f62c9; --l2:#7240c0; --l3:#0e7c77; --l4:#bf5b08; --l5:#c42f45; --l6:#566176; --l7:#94650f;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532;
+  --core1:#0b1220; --core2:#1f3a5c;
+  --l1:#7fa8ff; --l2:#bf9bff; --l3:#5fd6cf; --l4:#ffb061; --l5:#ff8d9b; --l6:#b3bdd2; --l7:#e5b75f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532;
+  --core1:#0b1220; --core2:#1f3a5c;
+  --l1:#7fa8ff; --l2:#bf9bff; --l3:#5fd6cf; --l4:#ffb061; --l5:#ff8d9b; --l6:#b3bdd2; --l7:#e5b75f; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 3rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.top{max-width:1500px;margin:0 auto 1.4rem;display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-end;justify-content:space-between}
+.top h1{font:700 clamp(1.5rem,3.6vw,2.1rem)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.top p{margin:.35rem 0 0;color:var(--muted);max-width:44rem}
+.ctl{display:flex;flex-wrap:wrap;gap:.5rem}
+.ctl button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem .95rem}
+.ctl button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:700}
+
+.map{position:relative;max-width:1500px;margin:0 auto}
+.col{display:flex;flex-direction:column;gap:22px}
+.br{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.hub{border-radius:14px;background:var(--c);color:#fff;padding:.7rem 1rem;position:relative;z-index:1}
+.hub small{display:block;font:700 .7rem var(--ui);letter-spacing:.09em;text-transform:uppercase;opacity:.85}
+.hub b{display:block;font:700 1.02rem/1.2 var(--display)}
+.lv{display:flex;flex-direction:column;gap:9px}
+.leaf{--cl:var(--l1);position:relative;z-index:1;border:2px solid var(--cl);border-radius:16px;background:var(--paper);padding:.5rem .85rem .55rem}
+.leaf b{display:block;font-size:.95rem;line-height:1.25}
+.leaf>b math{font-size:1em}
+.leaf p{margin:.2rem 0 0;font-size:.86rem;color:var(--muted)}
+.leaf .dg{color:var(--cl);font-weight:700}
+.rev .leaf{cursor:pointer}
+.rev .leaf p{display:none}
+.rev .leaf.open p{display:block}
+.rev .leaf:not(.open) b::after{content:" +";color:var(--cl);font-weight:700}
+.core{position:relative;z-index:1;background:radial-gradient(circle at 30% 25%,var(--core2),var(--core1));color:#fff;border-radius:18px;padding:1.2rem 1.3rem;margin-bottom:1.6rem;text-align:center}
+.core small{display:block;font:700 .72rem var(--ui);letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.core h2{font:700 1.5rem/1.15 var(--display);margin:.35rem 0 .5rem;text-wrap:balance}
+.core .yr{display:inline-block;border:1.5px solid rgba(255,255,255,.55);border-radius:999px;padding:.1rem .8rem;font-weight:700}
+.core p{margin:.7rem 0 0;font-size:.9rem;opacity:.9}
+svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0}
+.foot{max-width:1500px;margin:1.6rem auto 0;color:var(--muted);font-size:.88rem}
+
+.b1{--c:var(--c1);--cl:var(--l1)}.b2{--c:var(--c2);--cl:var(--l2)}.b3{--c:var(--c3);--cl:var(--l3)}.b4{--c:var(--c4);--cl:var(--l4)}
+.b5{--c:var(--c5);--cl:var(--l5)}.b6{--c:var(--c6);--cl:var(--l6)}.b7{--c:var(--c7);--cl:var(--l7)}
+
+@media (min-width:1100px){
+  .map{display:grid;grid-template-columns:1fr minmax(250px,290px) 1fr;gap:0 clamp(60px,7vw,110px);align-items:center}
+  .core{margin:0;border-radius:50%;aspect-ratio:1;display:flex;flex-direction:column;justify-content:center;padding:1.8rem}
+  .col{gap:30px}
+  .br{flex-direction:row;align-items:center;gap:clamp(40px,4.5vw,70px);margin:0}
+  .col.r .br{flex-direction:row}
+  .hub{flex:none;width:136px;height:136px;border-radius:50%;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:.6rem}
+  .hub b{font-size:.9rem}
+  .lv{flex:1;min-width:0}
+}
+@media (max-width:1099px){svg.lines{display:none}.map{display:flex;flex-direction:column}.core{order:-1;margin-bottom:1.2rem}.hub{order:-1}.br{margin-bottom:12px}}
+
+.detail{max-width:46rem;margin:3rem auto 0}
+.detail h2{font:700 1.5rem var(--display);letter-spacing:-.01em;margin:0 0 .3rem}
+.detail>p{margin:0 0 1.6rem;color:var(--muted)}
+.dg{margin:0 0 1.8rem}
+.dg h3{display:flex;gap:.6rem;align-items:baseline;margin:0 0 .6rem;padding:.55rem .9rem;border-radius:10px;background:var(--c);color:#fff;font:700 1.05rem var(--display)}
+.dg h3 small{font:700 .7rem var(--ui);letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.dg article{border-left:3px solid var(--cl);padding:.1rem 0 .1rem .9rem;margin:0 0 1rem}
+.dg article h4{margin:0 0 .15rem;font-size:1rem}
+.dg article p{margin:.15rem 0 0;line-height:1.6}
+/* mode intégré (Notion) : liste compacte sur deux colonnes, sans le détail (il est dans la page) */
+.emb body{padding:8px}
+.emb .top h1,.emb .top p,.emb #detail,.emb .foot,.emb svg.lines{display:none}
+.emb .top{margin-bottom:.6rem}
+.emb .map{display:grid;grid-template-columns:1fr;gap:12px;align-items:start;max-width:none}
+.emb .col{display:contents}
+.emb .br{flex-direction:column;align-items:stretch;gap:8px;margin:0}
+.emb .hub{order:-1;width:auto;height:auto;border-radius:12px;display:block;text-align:left;padding:.55rem .9rem}
+.emb .core{order:-2;grid-column:1/-1;margin:0;aspect-ratio:auto;border-radius:12px;display:block;padding:.7rem 1rem}
+.emb .core h2{font-size:1.2rem;margin:.2rem 0 .3rem}
+.emb .core p{display:none}
+@media (min-width:620px){.emb .map{grid-template-columns:1fr 1fr}}
+
+math{font-size:1.06em}
+math.big{math-style:normal}
+.leaf p math{color:var(--ink)}
+.leaf p{font-size:.92rem;line-height:1.7}
+.dg article p{line-height:1.8}
+.leaf{overflow-wrap:anywhere}
+</style></head><body>
+
+<header class="top">
+  <div>
+    <h1>Anglais · Séquence 1 : l'essentiel à retenir</h1>
+    <p>Séquence 1, Creativity without borders : l'essentiel à retenir, en une carte.</p>
+  </div>
+  <div class="ctl">
+    <button id="rev" aria-pressed="false">Mode révision : cacher les réponses</button>
+    <button id="all">Tout ouvrir</button>
+  </div>
+</header>
+<main class="map" id="map">
+  <svg class="lines" id="lines" aria-hidden="true"></svg>
+  <div class="col l" id="cl"></div>
+  <section class="core" id="core">
+    <small>Anglais · Première</small>
+    <h2>Creativity without borders</h2>
+    <span class="yr">Séquence 1</span>
+    <p>Analyser des œuvres du Border Art et un poème sur l'identité, et savoir exprimer le futur.</p>
+  </section>
+  <div class="col r" id="cr"></div>
+</main>
+<section class="detail" id="detail"><h2>Pour bien comprendre</h2><p>Relis ces détails pour comprendre chaque bulle, puis apprends seulement la carte par cœur.</p></section>
+<p class="foot">† = ajout absent du cours. En mode révision, touche une bulle pour afficher sa réponse et teste-toi à voix haute.</p>
+
+<script>
+(function(){
+"use strict";
+var B=[{"n": 1, "side": "l", "small": "Seq 1 · I", "t": "Border Art", "leaves": [["Un mouvement", "né au milieu des années 1980"], ["Art as a gateway", "le mouvement chicano"], ["Analyser un document", "four questions"], ["Identities and exchanges", "pays, cultures et vies différents"]], "det": ["Le Border Art est un mouvement qui a commencé au milieu des années 1980 (mid-1980s). Des artistes font des installations sur et autour de la frontière. Pour eux, la frontière n&#x27;est pas seulement une clôture physique (a physical fence) : c&#x27;est aussi un lieu d&#x27;expression et d&#x27;émotions (a place for expressions and emotions).", "« When art is a gateway » : le mouvement chicano (Chicano movement) attire l&#x27;attention sur l&#x27;identité et les problèmes des Mexicains-Américains (Mexican-American identity and issues).", "Face à une œuvre, quatre questions : What can you see ? What does it suggest ? What is the message ? Compare these two paintings. On décrit d&#x27;abord ce qu&#x27;on voit, puis ce que cela suggère, puis le message, puis on compare.", "Thème de la séquence : des pays et des cultures différents (Different countries and culture), des vies différentes (pauvre ou riche, adultes ou enfants, émotions…). Exemple étudié : Frida Kahlo, Along the Border Line Between Mexico and the United States, 1932."]}, {"n": 2, "side": "l", "small": "Seq 1 · I", "t": "American Gothic", "leaves": [["Le document", "Grant Wood, 1930"], ["La scène", "maison gothique, fourche"], ["L&#x27;impression", "sévères, tristes"], ["Le message", "« this is America »"]], "det": ["Peinture de 1930, réalisée par Grant Wood. Elle représente un couple, ou un père et sa fille (a couple or a father and daughter). La scène se passe dans l&#x27;Amérique rurale, plus précisément dans le Midwest (Mid West).", "Une énorme maison ou ferme blanche, de style gothique (built in a gothic style). Ils portent des vêtements sombres : manteau noir, chemise blanche, salopette (overall), tablier (apron). L&#x27;homme tient une fourche (a pitchfork), comme s&#x27;il tenait une arme (as if he were holding a weapon).", "Ils ne paraissent pas heureux : tristes, blasés (sad, blasé), sévères, misérables (stern, miserable), effrayants, ennuyés, contrariés (frightening, bored, upset). Ils sont habillés en noir (wearing black).", "Grant Wood montre une famille américaine qui représente les traditions et l&#x27;industrie rurale (traditions and rural industry). Elle est emblématique de la « Middle America » et de l&#x27;Amérique des petites villes (small town America). Message de Grant Wood : this is America."]}, {"n": 3, "side": "l", "small": "Seq 1 · I", "t": "Chicano Gothic", "leaves": [["Le document", "Roberto Rios, 1971"], ["La scène", "pauvreté, cabane en bois"], ["La transmission", "la pelle de l&#x27;enfant"], ["Message et frontière", "Mexicans are America too"]], "det": ["Peinture de 1971, réalisée par Roberto Rios. Elle met en scène une famille chicano : les parents et cinq enfants (a Chicano family, parents + five children).", "Le père tient une bouteille de bière et une pelle (a bottle of beer and a shovel). La mère est enceinte (pregnant), entourée de ses enfants. Ils ont l&#x27;air pauvres (poor = destitute) : un enfant est peut-être nu, les autres portent des vêtements sales ou usés (dirty or worn-out). Il y a des déchets au sol (trash), une poubelle renversée (overturned bin) et un pneu (a discharged tyre) en bas à gauche. Ils se tiennent devant une maison en bois qui ressemble à une cabane (a shack).", "L&#x27;enfant qui tient la pelle montre que les traditions se transmettent d&#x27;une génération à la suivante (traditions are being passed on from one generation to the next).", "Message de Roberto Rios : Mexicans are America too. On attendrait que le Border Art représente la frontière, et pourtant Chicano Gothic ne montre ni clôture ni mur. La frontière n&#x27;est pas seulement la ligne physique entre deux pays : c&#x27;est aussi la ligne invisible d&#x27;exclusion (the invisible line of exclusion) qui prive les Mexicains-Américains d&#x27;une pleine égalité."]}, {"n": 4, "side": "r", "small": "Seq 1 · I", "t": "Legal Alien", "leaves": [["Le titre", "un étranger en règle"], ["Un oxymore", "Mexican ⊖ American"], ["La narratrice", "entre deux cultures"], ["Le regard des Américains", "perhaps exotic, definitely different"]], "det": ["A legal alien est quelqu&#x27;un qui vit dans un pays dont il n&#x27;est pas originaire (someone who lives in a country they do not come from) : un étranger (foreigner). Le mot est lié à la loi (connected to the law).", "Les deux mots placés côte à côte créent un oxymore (an oxymoron). Le trait d&#x27;union (hyphen) de Mexican-American relie et oppose à la fois deux identités.", "Elle est mexicaine-américaine : elle parle espagnol et anglais et passe d&#x27;une culture à l&#x27;autre. Elle travaille dans une entreprise américaine ; elle a peut-être une carte verte (green card) et c&#x27;est peut-être une intellectuelle. Elle embrasse les deux cultures : elle est ouverte d&#x27;esprit (open-minded) et a une identité complexe. On attendrait qu&#x27;elle soit pleinement intégrée : elle ne l&#x27;est pas.", "Les Américains la voient « perhaps exotic », « perhaps inferior », « definitely different » : « An American to Mexicans » ≠ « A Mexican to Americans ». Ce sont des mots péjoratifs (derogatory words). Même quand elle prend du recul (« perhaps »), cela fait mal à la fin (« definitely ») : quoi qu&#x27;elle fasse, on la voit comme une étrangère dans son propre pays."]}, {"n": 5, "side": "r", "small": "Seq 1 · I", "t": "Hyphenated American", "leaves": [["Le trait d&#x27;union", "lien ou séparation"], ["Un poème en vers libres", "elle veut être comprise"], ["Les sentiments", "solitude, amertume, lassitude"], ["La rivalité", "une frontière culturelle"]], "det": ["« Hyphenated American » : que peut représenter le trait d&#x27;union dans Mexican-American ? D&#x27;un côté un lien, une union (link) entre sa culture mexicaine et sa culture américaine. De l&#x27;autre une séparation (separation) : le fossé entre les deux cultures (the gap between both cultures).", "C&#x27;est un poème en vers libres (a free verse poem). Elle cherche à être comprise (she aimed to be understood). On a l&#x27;impression qu&#x27;elle parle à quelqu&#x27;un (we are under the impression she is talking to somebody).", "Elle se sent incomprise par les deux communautés (misunderstood by both communities) : sentiment de solitude, d&#x27;impuissance, de résignation, d&#x27;amertume, de lassitude (loneliness, powerlessness, resignation, bitterness, weariness). Elle est fatiguée d&#x27;être jugée (tired of being judged).", "Il y a une rivalité entre les deux communautés (a rivalry between the two communities). Elle vit un fossé culturel (a cultural divide) qu&#x27;on peut comparer à la frontière vue dans les différentes œuvres d&#x27;art."]}, {"n": 6, "side": "r", "small": "Seq 1 · II", "t": "Projet et intention", "leaves": [["To intend to", "intention ferme, + base verbale"], ["To plan to / on", "projet réfléchi, organisé"], ["To aim to / at", "objectif, ambition"], ["To look forward to", "toujours + V-ing"]], "det": ["Exprime une intention, une décision prise dans l&#x27;esprit, souvent assez ferme et plus formelle que « plan to ». Construction : to intend to + BV. Exemple : The artist intends to paint a mural on the border wall.", "Exprime un projet réfléchi, organisé, avec une idée de préparation concrète. Constructions : to plan to + BV, ou to plan on + V-ing. Exemples : The collective plans to organize an exhibition. / They are planning on creating a series of murals.", "Exprime un objectif, un but, une ambition à atteindre. Constructions : to aim to + BV, ou to aim at + V-ing. Exemples : The project aims to raise awareness. / She aims at transforming public perception of the wall.", "Exprime l&#x27;impatience, une attente positive vis-à-vis d&#x27;un événement futur. Attention : « to » est ici une préposition, jamais suivie de la base verbale. Construction : to look forward to + V-ing (ou un nom). Exemples : We are looking forward to seeing the new artwork. / I look forward to the exhibition."]}, {"n": 7, "side": "r", "small": "Seq 1 · II", "t": "Les futurs", "leaves": [["Will + BV", "prédiction, décision spontanée, promesse"], ["Be going to + BV", "déjà décidé ou preuve visible"], ["Présent be + V-ing", "arrangement précis"], ["Présent simple", "horaire fixe, officiel"]], "det": ["Prédiction sans preuve concrète, décision spontanée (prise au moment où l&#x27;on parle), promesse, offre. Exemples : I&#x27;m sure this project will change the way people see the border. / Don&#x27;t worry, I&#x27;ll help you.", "Intention ou projet déjà décidé avant le moment où l&#x27;on parle ; prédiction fondée sur une preuve ou un indice visible dans le présent. Exemples : The city is going to turn the old checkpoint into a museum (plan déjà annoncé). / Look at those clouds, it&#x27;s going to rain.", "Futur proche, programmé, arrangé à l&#x27;avance avec quelqu&#x27;un d&#x27;autre ou dans un emploi du temps personnel, souvent avec une date ou une heure précise. Exemple : We are visiting the border art exhibition on Saturday morning : it&#x27;s already planned.", "Futur d&#x27;un horaire fixe, officiel, indépendant de la volonté du sujet (transports, programmes, horaires d&#x27;ouverture). Exemples : The exhibition opens at 10 a.m. next Friday. / The train leaves at 9:15."]}];
+var cl=document.getElementById('cl'),cr=document.getElementById('cr');
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
+B.forEach(function(b){
+  var br=el('div','br b'+b.n);br.dataset.n=b.n;
+  var hub=el('div','hub');hub.appendChild(el('small','',b.small));hub.appendChild(el('b','',b.t));
+  var lv=el('div','lv');
+  b.leaves.forEach(function(l){
+    var f=el('div','leaf');f.tabIndex=0;f.setAttribute('role','button');
+    f.appendChild(el('b','',l[0]));f.appendChild(el('p','',l[1]));
+    lv.appendChild(f);
+  });
+  if(b.side==='l'){br.appendChild(lv);br.appendChild(hub)}else{br.appendChild(hub);br.appendChild(lv)}
+  (b.side==='l'?cl:cr).appendChild(br);
+});
+var dsec=document.getElementById('detail');
+B.forEach(function(b){
+  var g=el('div','dg b'+b.n),h=el('h3','',b.t);h.insertBefore(el('small','',b.small),h.firstChild);g.appendChild(h);
+  b.leaves.forEach(function(l,i){
+    var a=el('article');a.appendChild(el('h4','',l[0]));
+    a.appendChild(el('p','',b.det[i]));
+    g.appendChild(a);
+  });
+  dsec.appendChild(g);
+});
+var EMB=true;
+if(EMB)document.documentElement.classList.add('emb');
+var map=document.getElementById('map'),svg=document.getElementById('lines'),core=document.getElementById('core');
+function box(e){var r=e.getBoundingClientRect(),m=map.getBoundingClientRect();return{l:r.left-m.left,t:r.top-m.top,w:r.width,h:r.height}}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function draw(){
+  svg.innerHTML='';
+  if(EMB)return;
+  if(!window.matchMedia('(min-width:1100px)').matches)return;
+  var m=map.getBoundingClientRect();svg.setAttribute('viewBox','0 0 '+m.width+' '+m.height);
+  var c=box(core),cx=c.l+c.w/2,cy=c.t+c.h/2,cr_=c.w/2;
+  document.querySelectorAll('.br').forEach(function(br){
+    var n=br.dataset.n,col=css('--l'+n),h=box(br.querySelector('.hub')),hx=h.l+h.w/2,hy=h.t+h.h/2,hr=h.w/2;
+    var left=hx<cx,ax=left?hx+hr:hx-hr;
+    var ang=Math.atan2(hy-cy,hx-cx),bx=cx+Math.cos(ang)*cr_,by=cy+Math.sin(ang)*cr_;
+    var dx=bx-ax;
+    path('M'+ax+' '+hy+' C'+(ax+dx*.5)+' '+hy+' '+(bx-dx*.5)+' '+by+' '+bx+' '+by,col,4);
+    br.querySelectorAll('.leaf').forEach(function(lf){
+      var q=box(lf),ly=q.t+q.h/2,lx=left?q.l+q.w:q.l,hxe=left?hx-hr:hx+hr;
+      var d=hxe-lx;
+      path('M'+hxe+' '+hy+' C'+(hxe-d*.5)+' '+hy+' '+(lx+d*.5)+' '+ly+' '+lx+' '+ly,col,2);
+    });
+  });
+}
+function path(d,col,w){
+  var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',col);p.setAttribute('stroke-width',w);p.setAttribute('stroke-linecap','round');
+  svg.appendChild(p);
+}
+function redraw(){requestAnimationFrame(draw)}
+var rev=document.getElementById('rev'),all=document.getElementById('all');
+rev.onclick=function(){var on=rev.getAttribute('aria-pressed')!=='true';rev.setAttribute('aria-pressed',on);map.classList.toggle('rev',on);
+  if(!on)document.querySelectorAll('.leaf.open').forEach(function(l){l.classList.remove('open')});redraw()};
+all.onclick=function(){var open=all.dataset.o!=='1';all.dataset.o=open?'1':'';all.textContent=open?'Tout refermer':'Tout ouvrir';
+  if(open){map.classList.add('rev');rev.setAttribute('aria-pressed','true')}
+  document.querySelectorAll('.leaf').forEach(function(l){l.classList.toggle('open',open)});redraw()};
+function tog(e){var l=e.target.closest('.leaf');if(l&&map.classList.contains('rev')){l.classList.toggle('open');redraw()}}
+map.addEventListener('click',tog);
+map.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e)}});
+window.addEventListener('resize',redraw);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(redraw);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redraw);
+redraw();
+})();
+</script>
+</body></html>
