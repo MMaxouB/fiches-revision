@@ -202,6 +202,9 @@
     var w = root.parentElement, t = c || NEUTRE;
     if (GLOBAL && w && t) { w.style.setProperty('--kd', t.kd); w.style.setProperty('--kl', t.kl); }
   }
+  function colonne(etroite) {                  // question, résultat et quiz d'une seule fiche : colonne de lecture centrée (lien « Fiche » compris) ; écran de départ de la page commune : pleine largeur
+    var w = root.parentElement; if (w) w.classList.toggle('qzp', !!etroite);
+  }
   function seg(id, groupe, label, valeurs, courante) {
     return '<p class="qz-lab" id="' + id + '">' + label + '</p><div class="qz-seg" role="group" aria-labelledby="' + id + '" data-g="' + groupe + '">' +
       valeurs.map(function (v) { return '<button type="button" class="btn" data-v="' + v[0] + '" aria-pressed="' + (String(courante) === String(v[0])) + '">' + v[1] + '</button>'; }).join('') + '</div>';
@@ -222,26 +225,28 @@
     else {
       h += '<p class="lead">' + (GLOBAL ? 'Choisissez les chapitres et les catégories à réviser.' : 'Choisissez ce que vous voulez réviser.') +
         ' Les questions sont mélangées à chaque série, et celles dont la réponse était fausse reviennent plus souvent.</p>';
+      h += '<div class="qz-setup' + (GLOBAL ? ' two' : '') + '">';           // ordinateur : chapitres à gauche, réglages et « Commencer » à droite
       if (GLOBAL) {
-        h += '<p class="qz-lab" id="qz-labc">Chapitres</p><div id="qz-chaps">' + groupes.map(function (g, gi) {
+        h += '<div class="qz-cola"><p class="qz-lab" id="qz-labc">Chapitres</p><div id="qz-chaps">' + groupes.map(function (g, gi) {
           return '<section class="mat qz-grp" data-gi="' + gi + '" style="--kd:' + esc(g.kd) + ';--kl:' + esc(g.kl) + '" aria-label="' + esc(g.m) + '">' +
             '<div class="qz-gh"><b class="qz-gt">' + esc(g.m) + '</b><button type="button" class="qz-all" data-gi="' + gi + '"></button></div>' +
             g.l.map(function (c) {
               return '<label class="qz-ck"><input type="checkbox" value="' + esc(c.slug) + '"><span class="qz-bx" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>' +
                 '<span class="qz-ct"><b>' + esc(c.chapitre) + '</b><span>' + esc(c.titre) + '</span><small class="qz-cn" data-s="' + esc(c.slug) + '"></small></span></label>';
             }).join('') + '</section>';
-        }).join('') + '</div>';
+        }).join('') + '</div></div>';
       }
-      h += '<p class="qz-lab" id="qz-labk">Catégories</p><div class="qz-cats" role="group" aria-labelledby="qz-labk">' +
+      h += '<div class="qz-colb"><p class="qz-lab" id="qz-labk">Catégories</p><div class="qz-cats" role="group" aria-labelledby="qz-labk">' +
         CATS.map(function (c) { return '<button type="button" class="btn qz-cat" data-id="' + esc(c.id) + '" aria-pressed="true">' + esc(c.nom) + ' <small></small></button>'; }).join('') + '</div>' +
         seg('qz-lab1', 'n', 'Nombre de questions', [[10, '10'], [20, '20'], [0, 'Sans fin']], F.n) +
         (ds ? seg('qz-lab2', 'niv', 'Niveau', [['tous', 'Tous niveaux'], ['moyen', 'Moyen et DS'], ['ds', 'DS']], F.niv) : '') +
         '<p class="qz-count" id="qz-count" role="status" aria-live="polite"></p>' +
-        '<div class="row2"><button type="button" class="btn qz-pri" id="qz-go">Commencer</button></div><p class="m qz-stat" id="qz-stat"></p>';
+        '<div class="row2"><button type="button" class="btn qz-pri" id="qz-go">Commencer</button></div><p class="m qz-stat" id="qz-stat"></p></div></div>';
     }
     h += '<div class="row2" style="margin-top:1.6rem"><a class="btn" href="' + esc(RETOUR) + '">' + esc(RETOUR_TXT) + '</a>' +
       (!GLOBAL && D.global ? '<a class="btn" href="' + esc(D.global) + '">Quiz de plusieurs chapitres</a>' : '') +
       '<button type="button" class="btn" id="qz-raz" hidden>Effacer la progression</button></div>';
+    colonne(!GLOBAL);
     root.innerHTML = h;
     if (vide) return;
     // état initial des cases et des puces
@@ -389,14 +394,14 @@
       mode = 'multi';
       var im = shuffle(q.choix.map(function (c, k) { return { t: c, bon: q.rep.indexOf(k) >= 0 }; }));
       S.items = im; S.sel = im.map(function () { return false; });
-      corps += '<p class="m qz-hint">Plusieurs réponses sont possibles : touchez toutes les bonnes.</p><div role="group" aria-labelledby="qz-text">' +
+      corps += '<p class="m qz-hint">Plusieurs réponses sont possibles : touchez toutes les bonnes.</p><div class="qz-ans-g" role="group" aria-labelledby="qz-text">' +
         im.map(function (it, k) { return bouton(it, k, String.fromCharCode(65 + k)); }).join('') + '</div>' +
         '<div class="row2"><button type="button" class="btn qz-pri" id="qz-val">Valider</button></div><p class="qz-err" id="qz-err" role="alert" hidden></p>';
     } else if (q.type === 'ordre') {
       mode = 'ordre';
       var io = shuffle(q.items.map(function (t, k) { return { t: t, rang: k }; }));
       S.items = io; S.seq = [];
-      corps += '<p class="m qz-hint">Touchez les éléments dans l\'ordre, du premier au dernier. Touchez-en une deuxième fois pour le retirer.</p><div role="group" aria-labelledby="qz-text">' +
+      corps += '<p class="m qz-hint">Touchez les éléments dans l\'ordre, du premier au dernier. Touchez-en une deuxième fois pour le retirer.</p><div class="qz-ans-g" role="group" aria-labelledby="qz-text">' +
         io.map(function (it, k) { return bouton(it, k, ''); }).join('') + '</div>' +
         '<div class="row2"><button type="button" class="btn qz-pri" id="qz-val">Valider</button></div><p class="qz-err" id="qz-err" role="alert" hidden></p>';
     } else {
@@ -404,10 +409,11 @@
         : q.choix.map(function (c, k) { return { t: c, bon: k === q.rep }; });
       if (q.type !== 'vf' && q.ordre !== 'fixe') items = shuffle(items);
       S.items = items;
-      corps += '<div role="group" aria-labelledby="qz-text">' + items.map(function (it, k) { return bouton(it, k, String.fromCharCode(65 + k)); }).join('') + '</div>';
+      corps += '<div class="qz-ans-g" role="group" aria-labelledby="qz-text">' + items.map(function (it, k) { return bouton(it, k, String.fromCharCode(65 + k)); }).join('') + '</div>';
     }
     corps += '</div><div class="qz-fb" id="qz-fb" role="status" aria-live="polite" hidden></div>' +
       '<div class="row2"><button type="button" class="btn qz-pri" id="qz-next" hidden>Question suivante</button></div>';
+    colonne(true);
     root.innerHTML = corps;
     ajuster();
     var h = $('#qz-text'); if (h) h.focus({ preventScroll: false });
@@ -548,6 +554,7 @@
       var p = parCat[k], r = Math.round(p[0] / p[1] * 100);
       return '<li><span>' + esc(catNom(k)) + '</span><b>' + p[0] + ' sur ' + p[1] + '</b><i class="qz-pb" aria-hidden="true"><i style="width:' + r + '%"></i></i></li>';
     }).join('') + '</ul>' : '';
+    colonne(true);
     root.innerHTML = '<h1>Résultat</h1><p class="qz-score"><b>' + bons + '</b> sur ' + n + (n ? ' (' + Math.round(bons / n * 100) + ' %)' : '') + '</p>' + detail +
       (faux.length ? '<p class="qz-lab">À revoir</p><ol class="qz-rev">' + liste + '</ol>' : (n ? '<p class="lead">Aucune erreur sur cette série.</p>' : '')) +
       '<div class="row2">' + (faux.length ? '<button type="button" class="btn qz-pri" id="qz-redo">Refaire les questions ratées</button>' : '') +

@@ -26,7 +26,8 @@
     b.addEventListener('click', function () {
       if (ch) arret();
       ch = { min: +b.getAttribute('data-min'), nom: b.getAttribute('data-nom'), ecoule: 0, dernier: Date.now(), run: true };
-      b.classList.add('on'); tick = setInterval(function () { compte(); affiche(); }, 500); affiche();
+      Array.prototype.forEach.call(root.querySelectorAll('.chr[data-ex="' + b.getAttribute('data-ex') + '"]'), function (x) { x.classList.add('on'); });
+      tick = setInterval(function () { compte(); affiche(); }, 500); affiche();
     });
   });
   bp.addEventListener('click', function () { if (!ch) return; compte(); ch.run = !ch.run; ch.dernier = Date.now(); affiche(); });

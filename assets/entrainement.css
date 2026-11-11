@@ -12,8 +12,8 @@
 .chr.on{border-color:var(--lampe);color:var(--lampe)}
 .part h3{font-size:1.02rem;font-weight:600;margin:1.6rem 0 .1rem;color:var(--ink)}
 .exi p{margin:.6rem 0;line-height:1.65}
-.qpre{margin-top:.4rem}
-.q{border-top:1px solid var(--line);padding:.95rem 0;display:grid;grid-template-columns:minmax(0,1fr);gap:.7rem;margin-top:.5rem}
+.qpre{margin:.2rem 0 .7rem;padding-bottom:.6rem;border-bottom:1px dashed var(--line)}
+.q{border-top:1px solid var(--line);padding:.8rem 0 .6rem;margin-top:.4rem}
 .qh{margin:0 0 .3rem;display:flex;gap:.6rem;align-items:baseline}
 .qn{color:var(--k);font-size:1.02rem}
 .qp{color:var(--mute);font-size:.8rem;border:1px solid var(--line);border-radius:999px;padding:0 .55rem}
@@ -31,4 +31,23 @@
 .sj-bar[hidden]{display:none}
 .sj-tm{font-weight:600;font-variant-numeric:tabular-nums;margin-right:auto;color:var(--ink2)}
 .sj-tm.fin{color:var(--lampe)}
-@media (min-width:900px){.exh h2{font-size:1.4rem}.qx{font-size:1.04rem}}
+/* ordinateur : énoncé à gauche, sommaire et chrono des exercices à droite (collant) ; la barre de chrono court sur toute la largeur */
+.sj-side{display:none}
+@media (min-width:900px){
+  #sj{display:grid;grid-template-columns:minmax(0,1fr) 19rem;column-gap:4rem;align-items:start}
+  .sj-main{grid-column:1;grid-row:1;min-width:0}
+  .sj-side{display:block;grid-column:2;grid-row:1;position:sticky;top:76px;padding-top:.6rem}
+  .sj-bar{grid-column:1/-1}
+  .chr-m{display:none}
+  .exh{grid-template-columns:minmax(0,1fr)}
+  .exh h2{font-size:1.4rem}.qx{font-size:1.04rem}
+  .sj-sh{margin:0 0 .4rem;font-weight:600;color:var(--k)}
+  .sj-side ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+  .sj-side li{display:flex;align-items:center;gap:.6rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
+  .sj-side a{flex:1;min-width:0;text-decoration:none}
+  .sj-side a b{display:block;font-weight:600}
+  .sj-side a span{display:block;color:var(--mute);font-size:.85rem}
+  .sj-side a:hover b{color:var(--k)}
+  .sj-side .btn{min-height:40px;font-size:.88rem}
+}
+

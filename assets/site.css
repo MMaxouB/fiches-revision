@@ -6,8 +6,14 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.5 Figtree,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   padding:0 0 3rem}
-.w{max-width:42rem;margin:0 auto;padding:.4rem max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
-.w.lg{max-width:68rem}
+/* Mise en page responsive globale (téléphone ET ordinateur) : une seule colonne large de 72 rem, centrée ; chaque page range son contenu en colonnes dès 900 px.
+   Points de rupture : 560 (barre, grilles à 2), 760 (héros), 900 (disposition ordinateur), 1280 et 1700 (le texte grandit un peu). */
+html{font-size:100%}
+@media (min-width:1280px){html{font-size:106.25%}}
+@media (min-width:1700px){html{font-size:112.5%}}
+.w,.w.lg{max-width:72rem;margin:0 auto;padding:.4rem max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+@media (min-width:900px){.w,.w.lg{padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(32px,env(safe-area-inset-right,0px))}}
+.nr{max-width:42rem}
 h1{font-size:clamp(1.6rem,6.5vw,2.2rem);line-height:1.12;font-weight:600;letter-spacing:-.01em;margin:.3rem 0 .4rem;text-wrap:balance}
 h2{font-size:.95rem;font-weight:600;color:var(--k);margin:1.9rem 0 .1rem}
 p{margin:.3rem 0}.m{color:var(--mute)}
@@ -15,7 +21,7 @@ a{color:inherit}
 .back{display:inline-flex;align-items:center;min-height:44px;color:var(--mute);text-decoration:none;font-size:.9rem}
 .back svg{width:18px;height:18px;margin-left:-6px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .k{color:var(--k);font-weight:600;font-size:.92rem;margin:.5rem 0 0}
-.lead{color:var(--ink2);margin:.9rem 0 1.3rem}
+.lead{color:var(--ink2);margin:.9rem 0 1.3rem;max-width:46rem}
 .rows{list-style:none;margin:0;padding:0}
 .row{display:flex;gap:12px;align-items:center;min-height:58px;padding:10px 0;border-top:1px solid var(--line);text-decoration:none}
 .rows li:last-child .row{border-bottom:1px solid var(--line)}
@@ -30,13 +36,24 @@ a{color:inherit}
 .img{display:block;margin:.5rem 0 0;background:var(--s1);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .img img{display:block;width:100%;height:auto}
 .row2{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0}
+/* liste en lignes sur plusieurs colonnes (ordinateur) : filet haut sur la liste, filet bas sur chaque ligne */
+.rows.cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,26rem),1fr));column-gap:3rem;border-top:1px solid var(--line)}
+.rows.cols .row{border-top:0;border-bottom:1px solid var(--line)}
+/* page de fiche : titre et résumé à gauche, supports à droite */
+.fp-f{margin-top:1.4rem}
+@media (min-width:900px){
+  .fp{display:grid;grid-template-columns:minmax(0,25rem) minmax(0,1fr);column-gap:4rem;align-items:start}
+  .fp-a{position:sticky;top:76px}
+  .fp-b{padding-top:3.7rem}
+  .fp-f{grid-column:1/-1;margin-top:2.4rem}
+}
 .btn{font:inherit;font-weight:600;font-size:.95rem;border:1px solid var(--line);background:var(--s1);color:var(--ink);border-radius:999px;padding:0 1.05rem;min-height:44px;display:inline-flex;align-items:center;text-decoration:none;cursor:pointer}
 .foot{margin-top:2.2rem;color:var(--mute);font-size:.85rem}
 
 /* ---------- barre de navigation (toutes les pages du site, sauf les pages sources de fiche) ---------- */
 .nav{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 90%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
-.navin{max-width:42rem;margin:0 auto;display:flex;align-items:center;gap:.25rem;min-height:56px;padding:0 max(12px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
-.navin.lg{max-width:68rem}
+.navin,.navin.lg{max-width:72rem;margin:0 auto;display:flex;align-items:center;gap:.25rem;min-height:56px;padding:0 max(12px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+@media (min-width:900px){.navin,.navin.lg{padding-left:max(32px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}}
 .brand{display:inline-flex;align-items:center;gap:9px;margin-right:auto;min-height:44px;font-weight:600;text-decoration:none;white-space:nowrap}
 .brand svg{flex:none;width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .brand svg .pt{fill:currentColor;stroke:none}
@@ -101,5 +118,4 @@ a{color:inherit}
 .chip:hover{border-color:var(--k)}
 .chip:focus-visible{outline:2px solid var(--lampe);outline-offset:2px}
 .cours h2{scroll-margin-top:72px;font-size:1.05rem}
-.cours .rows{display:block}
-@media (min-width:900px){.cours .rows{column-count:1}}
+

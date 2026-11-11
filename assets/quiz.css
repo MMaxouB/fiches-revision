@@ -2,6 +2,16 @@
 :root{--ok:#6FD694;--ko:#FF9AA8}
 @media (prefers-color-scheme:light){:root{--ok:#1C7A3D;--ko:#B3261E}}
 #quiz h1{margin-top:.6rem}
+/* disposition : téléphone d'abord ; dès 900 px l'écran de départ passe sur deux colonnes et la question reste dans une colonne de lecture centrée */
+.qzp{max-width:52rem;margin-left:auto;margin-right:auto}
+.qz-colb>.qz-lab:first-child,.qz-cola>.qz-lab:first-child{margin-top:1.4rem}
+@media (min-width:900px){
+  .qz-setup.two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);column-gap:4rem;align-items:start}
+  .qz-setup.two .qz-colb{position:sticky;top:76px}
+  #quiz h2.qz-text{font-size:1.45rem}
+  .qz-ans-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(21rem,1fr));gap:.6rem}
+  .qz-ans-g .qz-ch{margin:0}
+}
 #quiz .qz-lab{font-size:.9rem;font-weight:600;color:var(--ink2);margin:1.4rem 0 .4rem;display:block}
 .qz-seg{display:flex;flex-wrap:wrap;gap:.5rem;margin:.2rem 0 1rem}
 .qz-seg .btn[aria-pressed=true],.qz-pri{border-color:var(--k);background:color-mix(in srgb,var(--k) 18%,transparent)}
