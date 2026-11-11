@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="fr">
+<title>Frise chronologique 1788-1815</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Frise : axe proportionnel de 1788 à 1815, événements en ronds numérotés au-dessus de l'axe, régimes et rois dessous, liste numérotée en légende. */
+:root{
+  --ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  --bg:#e9edf3; --paper:#ffffff; --ink:#18202f; --muted:#57617a; --line:#d5dbe6; --soft:#f3f5f9; --grid:#e3e8f0;
+  --fr:#2f62c9; --eu:#7240c0; --gr:#0e7c77; --rev:#c42f45; --nat:#bf5b08; --cul:#94650f;
+  --r1:#3d6fd6; --r2:#1d4aa6; --r3:#c42f45; --r4:#7a8aa6;
+  --band:rgba(196,47,69,.08);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532; --grid:#232b3a;
+  --fr:#7fa8ff; --eu:#bf9bff; --gr:#5fd6cf; --rev:#ff8d9b; --nat:#ffb061; --cul:#e5b75f;
+  --r1:#4a7be0; --r2:#2f5cbf; --r3:#d4455a; --r4:#6b7a96;
+  --band:rgba(255,141,155,.1); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532; --grid:#232b3a;
+  --fr:#7fa8ff; --eu:#bf9bff; --gr:#5fd6cf; --rev:#ff8d9b; --nat:#ffb061; --cul:#e5b75f;
+  --r1:#4a7be0; --r2:#2f5cbf; --r3:#d4455a; --r4:#6b7a96;
+  --band:rgba(255,141,155,.1); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 3rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto}
+.top{margin-bottom:1rem}
+.top h1{font:700 clamp(1.5rem,3.6vw,2.1rem)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.top p{margin:.35rem 0 0;color:var(--muted);max-width:46rem}
+.ctl{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.ctl button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem .95rem}
+.leg{display:flex;flex-wrap:wrap;gap:.35rem 1.1rem;margin:.2rem 0 1rem;font-size:.88rem;color:var(--muted)}
+.leg i{display:inline-block;width:.75rem;height:.75rem;border-radius:50%;margin-right:.35rem;vertical-align:-.05rem;background:var(--c)}
+.gr{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.5rem .3rem .3rem;overflow:hidden}
+.gr svg{display:block;font-family:var(--ui)}
+.lg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 1.8rem;margin-top:1.4rem}
+.lg h3{font:700 1rem var(--display);color:var(--muted);margin:0 0 .7rem;padding-bottom:.35rem;border-bottom:1px solid var(--line)}
+.li{display:flex;gap:.65rem;margin:0 0 .75rem;font-size:.95rem;line-height:1.4}
+.nn{flex:none;width:1.55rem;height:1.55rem;border-radius:50%;background:var(--c);color:var(--paper);font:700 .8rem/1.55rem var(--ui);text-align:center;margin-top:.05rem}
+.li b{font-variant-numeric:tabular-nums}
+@media (max-width:720px){.lg{grid-template-columns:1fr}}
+.hint{margin:.6rem 0 0;font-size:.85rem;color:var(--muted)}
+.dates{margin-top:2rem}
+.dates h2{font:700 1.4rem var(--display);margin:0 0 .3rem}
+.dates ul{list-style:none;margin:1rem 0 0;padding:0;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+.dates li{padding:.6rem 1rem;display:grid;grid-template-columns:11.5rem 1fr;gap:.2rem 1rem;border-top:1px solid var(--line);position:relative;padding-left:1.6rem}
+.dates li:first-child{border-top:0}
+.dates li::before{content:"";position:absolute;left:.6rem;top:1.05rem;width:.55rem;height:.55rem;border-radius:50%;background:var(--ic)}
+.dates li b{font-variant-numeric:tabular-nums}
+.dates .note{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;margin-top:1rem;font-size:.9rem;color:var(--muted)}
+.dates .note b{color:var(--ink)}
+@media (max-width:620px){.dates li{grid-template-columns:1fr}}
+/* mode intégré (Notion) : pas d'en-tête ni de liste des dates */
+.emb body{padding:6px 8px}
+.emb .top,.emb .hint,.emb .dates{display:none}
+.emb .leg{margin:0 0 6px;font-size:.78rem;gap:.2rem .9rem}
+</style>
+<style id="veilleuse">@font-face{font-family:Figtree;src:url(../../assets/figtree-latin.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@media screen{:root{--ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;--display:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+ --bg:#F4F6FB;--paper:#FFFFFF;--ink:#161C2D;--muted:#586380;--line:#D9DFEC;--soft:#EBEFF7;--grid:#E3E8F2;--core1:#17233D;--core2:#2D4A7A;
+ --c1:#2D5FA8;--c2:#5E4BB0;--c3:#1F7A5A;--c4:#B85A14;--c5:#B03A5E;--c6:#4E5A74;--c7:#8A6410;
+ --l1:#2D5FA8;--l2:#5E4BB0;--l3:#1F7A5A;--l4:#B85A14;--l5:#B03A5E;--l6:#4E5A74;--l7:#8A6410;
+ --fr:#2D5FA8;--eu:#5E4BB0;--gr:#1F7A5A;--rev:#B03A5E;--nat:#B85A14;--cul:#8A6410;
+ --r1:#2D5FA8;--r2:#1E4A8C;--r3:#B03A5E;--r4:#6B7A96;--band:rgba(176,58,94,.08);--ok:#E5F4EA;--okl:#1C7A3D}}
+@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#131A2B;--paper:#1B2438;--ink:#ECEFF6;--muted:#9AA6BF;--line:#2A3650;--soft:#222D45;--grid:#232E47;--core1:#1E2A47;--core2:#33466E;
+ --l1:#7FB2F0;--l2:#B8A6F0;--l3:#7FD0A8;--l4:#F2A56B;--l5:#E58FA9;--l6:#A9B4CC;--l7:#E5C06B;
+ --fr:#7FB2F0;--eu:#B8A6F0;--gr:#7FD0A8;--rev:#E58FA9;--nat:#F2A56B;--cul:#E5C06B;
+ --r1:#4A7BE0;--r2:#2F5CBF;--r3:#D4455A;--r4:#6B7A96;--band:rgba(229,143,169,.1);--ok:#16301F;--okl:#6FD694;color-scheme:dark}}
+/* carte mentale : la disposition en bulles (noyau au centre, traits) a besoin de ~1650 px pour les branches à formules larges (arbre pondéré de Ch3). De 1100 à 1699 px (portables), deux colonnes de branches empilées sous le noyau : rien n'est tronqué ; dès 1700 px, bulles et traits, sur une carte plus large */
+@media screen and (min-width:1100px) and (max-width:1699px){
+svg.lines{display:none}
+.map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 2.6rem;align-items:start}
+.core{grid-column:1/-1;order:-1;display:block;aspect-ratio:auto;border-radius:18px;padding:1.2rem 1.3rem;margin:0 0 1.8rem}
+.col{gap:1.8rem}
+.br,.col.r .br{flex-direction:column;align-items:stretch;gap:10px;margin:0}
+.hub{order:-1;width:auto;height:auto;border-radius:14px;display:block;text-align:left;padding:.7rem 1rem}
+.hub b{font-size:1.02rem}
+}
+@media screen and (min-width:1700px){.map{max-width:1640px}}
+/* « Pour bien comprendre » (sous la carte) : sur ordinateur, les groupes s'étalent sur la largeur, les explications en 2 ou 3 colonnes de cartes ; téléphone : une colonne */
+@media screen and (min-width:900px){
+.detail{max-width:84rem}
+.detail>p{max-width:46rem;font-size:1.05rem}
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(22rem,1fr));gap:1rem 2.4rem;margin:0 0 2.4rem}
+.dg h3{grid-column:1/-1;margin:0}
+.dg article{margin:0}
+.dg article h4{font-size:1.08rem}
+.dg article p{font-size:1.02rem}
+}
+@media screen{body{margin:0;padding-top:0}
+.hub small,.core small,.dg h3 small,section.s>h2 small,.tag,.concl .h,.box h2,th{text-transform:none;letter-spacing:0}}
+.back{display:block;position:sticky;top:0;z-index:50;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 1rem;padding:.7rem max(16px,env(safe-area-inset-left,0px));background:var(--paper,#1B2438);color:var(--ink,#ECEFF6);border-bottom:1px solid var(--line,#2A3650);font:600 .9rem var(--ui,system-ui),sans-serif;text-decoration:none}
+/* formule plus large que l'écran (320 px) : elle défile dans sa case au lieu d'élargir la page */
+@media screen{.fm,.leaf p,.dg p,.lv p{max-width:100%;overflow-x:auto;overflow-y:hidden}.leaf p math,.dg p math{padding:.2em 0}}
+.back:active{background:var(--soft,#222D45)}
+.back:focus-visible{outline:2px solid var(--ink,#F2C46B);outline-offset:-2px}
+</style>
+<style>@page{size:A4;margin:11mm}@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
+@media print{
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--paper:#fff;--ink:#111;--muted:#444;--line:#bbb;--soft:#f3f3f3;
+  --core1:#1b2a41;--core2:#27486b;--l1:#2f62c9;--l2:#7240c0;--l3:#0e7c77;--l4:#bf5b08;--l5:#c42f45;--l6:#566176;--l7:#94650f;color-scheme:light}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:#fff!important;padding:0!important;font-size:10pt}
+.back,.ctl,svg.lines{display:none!important}
+.top{display:none!important}
+.map{page:land;display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px 11px;max-width:none!important;align-items:start;font-size:9pt;zoom:.88}
+.col{display:contents!important}
+.core{grid-column:1/-1;order:-3;margin:0!important;padding:.45rem 1rem!important}
+.core h2{font-size:1.15rem!important;margin:.1rem 0!important}.core p{display:none!important}
+.br{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;margin:0!important;break-inside:avoid}
+.hub{order:-1;width:auto!important;height:auto!important;border-radius:10px!important;display:block!important;text-align:left!important;padding:.4rem .8rem!important}
+.lv{gap:6px!important}
+.leaf{break-inside:avoid;padding:.3rem .65rem .35rem!important}.leaf b{font-size:.9rem!important}.leaf p{font-size:.78rem!important;margin-top:.1rem!important}
+.rev .leaf p{display:block!important}
+.rev .leaf:not(.open) b::after{content:""!important}
+.detail{page:port;break-before:page;margin:0!important;max-width:none!important}
+.dg,.dg article{break-inside:avoid}
+.dg h3{break-after:avoid}
+.foot{page:port;margin-top:.8rem!important}
+}
+</style>
+<a class="back" href="./">‹ Retour à la fiche, La Révolution française et l’Empire</a>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Frise chronologique, de 1788 à 1815</h1>
+    <p>Chapitre 1 : La Révolution française et l’Empire. Les numéros des ronds renvoient à la liste sous la frise, puis viennent toutes les dates.</p>
+  </header>
+  <div class="leg" id="leg"></div>
+  <div class="gr" id="gr"></div>
+  <div class="lg" id="lg"></div>
+  <p class="hint">† = absent du cours.</p>
+
+  <section class="dates" id="dates">
+    <h2>Les dates à retenir</h2>
+    <div class="ctl" style="margin-top:.5rem"><button id="cp">Copier la liste</button><span id="cpm" style="color:var(--muted);font-size:.88rem"></span></div>
+    <ul id="dl"></ul>
+    <div class="note"><b>À vérifier :</b> le cours date l’abolition de l’esclavage du 17 février 1794 (le décret est du 4 février †), la prise du pouvoir de Napoléon du 9 octobre 1799 (le coup d’État du 18 brumaire date du 9 novembre †) et la Légion d’honneur de 1804 (créée en 1802 †, première remise en 1804). Il place l’arrestation de Madame Roland en juin 1792 (c’est 1793 †, après l’exclusion des Girondins) et écrit que le roi est guillotiné « avec sa famille » : seul Louis XVI l’est, le 21 janvier 1793 †. Le cours écrit aussi que Louis XV prend le pouvoir en 1774 : c’est l’arrivée de Louis XVI †. Enfin, la Constitution de l’an III date d’août 1795 † et le Directoire s’installe début novembre 1795 † ; le 26 octobre est la fin de la Convention †.</div>
+  </section>
+</div>
+
+<script id="ev" type="application/json">{
+ "meta": {
+  "titre": "Frise chronologique",
+  "debut": 1788,
+  "fin": 1815,
+  "chap": "Ch. 1",
+  "sujet": "La Révolution française et l’Empire"
+ },
+ "cats": {
+  "rev": [
+   "Journées révolutionnaires",
+   "--rev"
+  ],
+  "fr": [
+   "Pouvoirs et institutions",
+   "--fr"
+  ],
+  "soc": [
+   "Droits et société",
+   "--gr"
+  ],
+  "gue": [
+   "Guerres",
+   "--eu"
+  ],
+  "emp": [
+   "Napoléon",
+   "--nat"
+  ]
+ },
+ "clusters": [
+  {
+   "x": 1789.55,
+   "h": "1789",
+   "s": "u",
+   "items": [
+    {
+     "d": "5 mai 1789",
+     "t": "Louis XVI convoque les États généraux : cahiers de doléances de toute la France.",
+     "c": "fr",
+     "k": 1789.344
+    },
+    {
+     "d": "17 juin 1789",
+     "t": "Les députés créent l’Assemblée nationale sans l’accord du roi, qui fait fermer la salle.",
+     "c": "rev",
+     "k": 1789.461
+    },
+    {
+     "d": "20 juin 1789",
+     "t": "Serment du Jeu de paume : ne pas se séparer avant d’avoir écrit la Constitution.",
+     "c": "rev",
+     "k": 1789.469
+    },
+    {
+     "d": "14 juil. 1789",
+     "t": "Prise de la Bastille, symbole de l’arbitraire royal ; La Fayette à la tête de la Garde nationale.",
+     "c": "rev",
+     "k": 1789.536
+    },
+    {
+     "d": "4 août 1789",
+     "t": "Abolition des privilèges.",
+     "c": "soc",
+     "k": 1789.592
+    },
+    {
+     "d": "26 août 1789",
+     "t": "Déclaration des droits de l’homme et du citoyen (DDHC).",
+     "c": "soc",
+     "k": 1789.652
+    },
+    {
+     "d": "5 oct. 1789",
+     "t": "Marche des femmes vers Versailles : la famille royale est ramenée à Paris.",
+     "c": "rev",
+     "k": 1789.761
+    }
+   ]
+  },
+  {
+   "x": 1791.0,
+   "h": "1790 – 1791",
+   "s": "u",
+   "items": [
+    {
+     "d": "14 juil. 1790",
+     "t": "Fête de la Fédération : le roi jure fidélité à la loi, « Roi des Français ».",
+     "c": "fr",
+     "k": 1790.536
+    },
+    {
+     "d": "21-22 juin 1791",
+     "t": "Fuite du roi, arrêté à Varennes.",
+     "c": "rev",
+     "k": 1791.471
+    },
+    {
+     "d": "Sept. 1791",
+     "t": "Constitution de 1791 : monarchie constitutionnelle.",
+     "c": "fr",
+     "k": 1791.705
+    }
+   ]
+  },
+  {
+   "x": 1792.6,
+   "h": "1792",
+   "s": "d",
+   "items": [
+    {
+     "d": "Avril 1792",
+     "t": "Les Girondins déclarent la guerre à l’Autriche.",
+     "c": "gue",
+     "k": 1792.302
+    },
+    {
+     "d": "10 août 1792",
+     "t": "Prise du palais des Tuileries : le roi est emprisonné.",
+     "c": "rev",
+     "k": 1792.608
+    },
+    {
+     "d": "20 sept. 1792",
+     "t": "Victoire de Valmy.",
+     "c": "gue",
+     "k": 1792.719
+    },
+    {
+     "d": "22 sept. 1792",
+     "t": "Début du calendrier républicain ; la Convention proclame la République.",
+     "c": "fr",
+     "k": 1792.724
+    }
+   ]
+  },
+  {
+   "x": 1793.9,
+   "h": "1793 – 1794",
+   "s": "u",
+   "items": [
+    {
+     "d": "21 janv. 1793",
+     "t": "Louis XVI est guillotiné : procès et mort du roi.",
+     "c": "rev",
+     "k": 1793.055
+    },
+    {
+     "d": "31 mai 1793",
+     "t": "Les Girondins sont exclus de la Convention.",
+     "c": "rev",
+     "k": 1793.416
+    },
+    {
+     "d": "1793 – 1794",
+     "t": "La Terreur : Tribunal révolutionnaire, comités, loi des suspects.",
+     "c": "rev",
+     "k": 1793.667
+    },
+    {
+     "d": "Nov. 1793",
+     "t": "Madame Roland est exécutée.",
+     "c": "soc",
+     "k": 1793.853
+    },
+    {
+     "d": "17 févr. 1794",
+     "t": "Abolition de l’esclavage (date du cours).",
+     "c": "soc",
+     "k": 1794.127
+    },
+    {
+     "d": "27 juil. 1794",
+     "t": "Robespierre est arrêté ; il est guillotiné le lendemain.",
+     "c": "rev",
+     "k": 1794.571
+    }
+   ]
+  },
+  {
+   "x": 1795.6,
+   "h": "1795",
+   "s": "d",
+   "items": [
+    {
+     "d": "1795",
+     "t": "Fin des guerres de Vendée (200 000 morts).",
+     "c": "gue",
+     "k": 1795.417
+    },
+    {
+     "d": "26 oct. 1795",
+     "t": "Nouvelle Constitution : le Directoire (1795-1799).",
+     "c": "fr",
+     "k": 1795.818
+    }
+   ]
+  },
+  {
+   "x": 1799.8,
+   "h": "1799",
+   "s": "u",
+   "items": [
+    {
+     "d": "9 oct. 1799",
+     "t": "Le général Napoléon prend le pouvoir par la force (date du cours).",
+     "c": "emp",
+     "k": 1799.772
+    },
+    {
+     "d": "An VIII (1799)",
+     "t": "Constitution adoptée par plébiscite : le Consulat, 3 consuls.",
+     "c": "emp",
+     "k": 1799.955
+    }
+   ]
+  },
+  {
+   "x": 1802.5,
+   "h": "1800 – 1804",
+   "s": "d",
+   "items": [
+    {
+     "d": "1800",
+     "t": "Banque de France.",
+     "c": "emp",
+     "k": 1800.417
+    },
+    {
+     "d": "1802",
+     "t": "Paix avec l’Angleterre ; l’esclavage est rétabli dans les colonies.",
+     "c": "emp",
+     "k": 1802.232
+    },
+    {
+     "d": "1803",
+     "t": "Reprise de la guerre contre l’Angleterre.",
+     "c": "gue",
+     "k": 1803.38
+    },
+    {
+     "d": "21 mars 1804",
+     "t": "Le Code civil entre en vigueur.",
+     "c": "emp",
+     "k": 1804.221
+    },
+    {
+     "d": "1804",
+     "t": "La Légion d’honneur (date du cours).",
+     "c": "emp",
+     "k": 1804.417
+    },
+    {
+     "d": "1804 †",
+     "t": "Napoléon est sacré empereur : début de l’Empire (1804-1815).",
+     "c": "emp",
+     "k": 1804.919
+    }
+   ]
+  },
+  {
+   "x": 1806.5,
+   "h": "1805 – 1808",
+   "s": "u",
+   "items": [
+    {
+     "d": "21 oct. 1805",
+     "t": "Défaite de la flotte française à Trafalgar.",
+     "c": "gue",
+     "k": 1805.805
+    },
+    {
+     "d": "2 déc. 1805",
+     "t": "Victoire de Napoléon à Austerlitz.",
+     "c": "gue",
+     "k": 1805.919
+    },
+    {
+     "d": "1806 †",
+     "t": "Confédération du Rhin : 16 princes obéissent à Napoléon.",
+     "c": "emp",
+     "k": 1806.53
+    },
+    {
+     "d": "1806",
+     "t": "Victoire d’Iéna.",
+     "c": "gue",
+     "k": 1806.786
+    },
+    {
+     "d": "1807",
+     "t": "Victoire d’Eylau.",
+     "c": "gue",
+     "k": 1807.103
+    },
+    {
+     "d": "1808",
+     "t": "Victoire de Tudela.",
+     "c": "gue",
+     "k": 1808.894
+    },
+    {
+     "d": "1808",
+     "t": "Les Espagnols se révoltent ; Joseph, frère de Napoléon, affronte les insurgés.",
+     "c": "gue",
+     "k": 1808.336
+    }
+   ]
+  },
+  {
+   "x": 1813.5,
+   "h": "1812 – 1815",
+   "s": "d",
+   "items": [
+    {
+     "d": "1812",
+     "t": "Campagne de Russie : Moscou, près de 60 000 soldats tués par le froid.",
+     "c": "gue",
+     "k": 1812.702
+    },
+    {
+     "d": "1814 †",
+     "t": "Première abdication de Napoléon ; retour de Louis XVIII ; exil à l’île d’Elbe.",
+     "c": "emp",
+     "k": 1814.264
+    },
+    {
+     "d": "1815",
+     "t": "Les Cent-Jours : Napoléon revient en France.",
+     "c": "emp",
+     "k": 1815.219
+    },
+    {
+     "d": "1815",
+     "t": "Défaite de Waterloo.",
+     "c": "gue",
+     "k": 1815.463
+    },
+    {
+     "d": "1815 †",
+     "t": "Seconde abdication de Napoléon.",
+     "c": "emp",
+     "k": 1815.474
+    }
+   ]
+  }
+ ],
+ "lanes": [
+  {
+   "n": "Régime",
+   "bars": [
+    {
+     "a": 1788.0,
+     "b": 1789.6,
+     "t": "Ancien Régime",
+     "c": "--r4"
+    },
+    {
+     "a": 1789.6,
+     "b": 1792.6,
+     "t": "Monarchie",
+     "c": "--r1"
+    },
+    {
+     "a": 1792.7,
+     "b": 1799.85,
+     "t": "République",
+     "c": "--r3"
+    },
+    {
+     "a": 1799.85,
+     "b": 1804.9,
+     "t": "Consulat",
+     "c": "--r2"
+    },
+    {
+     "a": 1804.9,
+     "b": 1814.3,
+     "t": "Empire",
+     "c": "--nat"
+    }
+   ]
+  },
+  {
+   "n": "Pouvoir",
+   "bars": [
+    {
+     "a": 1788.0,
+     "b": 1792.6,
+     "t": "Louis XVI",
+     "c": "--r4"
+    },
+    {
+     "a": 1792.7,
+     "b": 1795.8,
+     "t": "Convention",
+     "c": "--r3"
+    },
+    {
+     "a": 1795.8,
+     "b": 1799.85,
+     "t": "Directoire",
+     "c": "--fr"
+    },
+    {
+     "a": 1799.85,
+     "b": 1814.3,
+     "t": "Napoléon Bonaparte",
+     "c": "--nat"
+    }
+   ]
+  },
+  {
+   "n": "Durées",
+   "bars": [
+    {
+     "a": 1793.0,
+     "b": 1794.6,
+     "t": "Terreur",
+     "c": "--rev"
+    },
+    {
+     "a": 1793.2,
+     "b": 1795.5,
+     "t": "Vendée",
+     "c": "--eu"
+    }
+   ]
+  }
+ ],
+ "bands": [],
+ "hors_frise": [
+  {
+   "d": "1715",
+   "t": "Mort de Louis XIV ; Louis XV a 5 ans et un régent gouverne.",
+   "c": "fr",
+   "k": 1715.0
+  },
+  {
+   "d": "1774",
+   "t": "Louis XVI arrive au pouvoir.",
+   "c": "fr",
+   "k": 1774.0
+  },
+  {
+   "d": "1784",
+   "t": "Une pièce de Beaumarchais dénonce les injustices sociales et critique les trois ordres.",
+   "c": "soc",
+   "k": 1784.0
+  },
+  {
+   "d": "21 juil. 1788",
+   "t": "Château de Vizille (Isère) : réunion pré-révolutionnaire à la recherche de solutions.",
+   "c": "rev",
+   "k": 1788.555
+  },
+  {
+   "d": "11 juil. 1789",
+   "t": "Le roi regroupe des soldats à Paris pour calmer les émeutes.",
+   "c": "rev",
+   "k": 1789.527
+  },
+  {
+   "d": "1790 †",
+   "t": "Constitution civile du clergé : prêtres fonctionnaires qui prêtent serment.",
+   "c": "soc",
+   "k": 1790.53
+  },
+  {
+   "d": "1791",
+   "t": "Olympe de Gouges écrit la Déclaration des droits de la femme et de la citoyenne.",
+   "c": "soc",
+   "k": 1791.678
+  },
+  {
+   "d": "1792 – 1799",
+   "t": "La France en République (Convention puis Directoire).",
+   "c": "fr",
+   "k": 1792.727
+  },
+  {
+   "d": "1793 †",
+   "t": "Levée de masse de 300 000 hommes ; début des guerres de Vendée.",
+   "c": "gue",
+   "k": 1793.167
+  },
+  {
+   "d": "1793",
+   "t": "La loi des suspects est votée par la Convention.",
+   "c": "rev",
+   "k": 1793.711
+  },
+  {
+   "d": "1795 – 1799",
+   "t": "Le Directoire : 5 directeurs, suffrage censitaire masculin.",
+   "c": "fr",
+   "k": 1795.836
+  },
+  {
+   "d": "1799 – 1804",
+   "t": "Le Consulat.",
+   "c": "emp",
+   "k": 1799.958
+  },
+  {
+   "d": "1801 †",
+   "t": "Concordat avec le pape.",
+   "c": "emp",
+   "k": 1801.538
+  },
+  {
+   "d": "1802",
+   "t": "Création des lycées.",
+   "c": "emp",
+   "k": 1802.333
+  },
+  {
+   "d": "1803",
+   "t": "Franc germinal ; livret ouvrier.",
+   "c": "emp",
+   "k": 1803.266
+  },
+  {
+   "d": "1804",
+   "t": "Remise en place de la surveillance.",
+   "c": "emp",
+   "k": 1804.083
+  },
+  {
+   "d": "1806",
+   "t": "Université impériale.",
+   "c": "emp",
+   "k": 1806.211
+  },
+  {
+   "d": "1807",
+   "t": "Le Code civil prend le nom de Code Napoléon.",
+   "c": "emp",
+   "k": 1807.672
+  },
+  {
+   "d": "1821 †",
+   "t": "Mort de Napoléon à 51 ans sur l’île de Sainte-Hélène.",
+   "c": "emp",
+   "k": 1821.344
+  }
+ ]
+}</script>
+<script>
+(function(){
+"use strict";
+var D=JSON.parse(document.getElementById('ev').textContent),MT=D.meta||{debut:1788,fin:1815},Y0=MT.debut,Y1=MT.fin+1;
+var EMB=false;
+if(EMB)document.documentElement.classList.add('emb');
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+var V=function(k){return 'var('+D.cats[k][1]+')'};
+var leg=document.getElementById('leg');
+Object.keys(D.cats).forEach(function(k){var s=el('span');var i=el('i');i.style.setProperty('--c',V(k));s.appendChild(i);s.appendChild(document.createTextNode(D.cats[k][0]));leg.appendChild(s)});
+
+/* numérotation : tous les événements de la frise, dans l'ordre */
+var items=[],stacks=[];
+D.clusters.forEach(function(c){var s={x:c.x,list:[]};c.items.forEach(function(it){items.push(it);it.n=items.length;s.list.push(it)});stacks.push(s)});
+
+/* légende : trois colonnes de périodes consécutives, de hauteur équilibrée */
+var cb=[0];stacks.forEach(function(s){cb.push(cb[cb.length-1]+s.list.length)});
+function cost(a,b){var t=0;for(var i=a;i<b;i++)t+=1+Math.floor((items[i].d.length+items[i].t.length)/34);return t}
+var bi=1,bj=2,bc=1e9;
+for(var i=1;i<cb.length-1;i++)for(var j=i+1;j<cb.length-1;j++){var m=Math.max(cost(0,cb[i]),cost(cb[i],cb[j]),cost(cb[j],items.length));if(m<bc){bc=m;bi=i;bj=j}}
+var groups=[[0,cb[bi]],[cb[bi],cb[bj]],[cb[bj],items.length]];
+var lg=document.getElementById('lg');
+groups.forEach(function(g){
+  var a=items[g[0]].d.match(/\d{4}/g),b=items[g[1]-1].d.match(/\d{4}/g),y1=a[0],y2=b[b.length-1];
+  var col=el('div');col.appendChild(el('h3','',y1===y2?y1:y1+' – '+y2));
+  for(var k=g[0];k<g[1];k++){var it=items[k],r=el('div','li'),n=el('span','nn',String(it.n));n.style.setProperty('--c',V(it.c));r.appendChild(n);
+    var tx=el('span');tx.appendChild(el('b','',it.d));tx.appendChild(document.createTextNode(' · '+it.t));r.appendChild(tx);col.appendChild(r)}
+  lg.appendChild(col);
+});
+
+/* graphique : s'adapte à la largeur disponible */
+var gr=document.getElementById('gr');
+function draw(){
+  var w=Math.max(300,gr.clientWidth-10),nar=w<720,r=nar?11:15,fs=nar?11:13,sp=2*r+5,M=nar?10:20,bh=nar?20:24;
+  var L0=M+r+2,L1=w-M-r-2,px=function(y){return L0+(y-Y0)*(L1-L0)/(Y1-Y0)},n=stacks.length,mn=2*r+7;
+  var cx=stacks.map(function(s){return px(s.x)}),i;
+  if(cx[0]<M+r)cx[0]=M+r;
+  for(i=1;i<n;i++)cx[i]=Math.max(cx[i],cx[i-1]+mn);
+  if(cx[n-1]>w-M-r){cx[n-1]=w-M-r;for(i=n-2;i>=0;i--)cx[i]=Math.min(cx[i],cx[i+1]-mn)}
+  var maxN=Math.max.apply(null,stacks.map(function(s){return s.list.length}));
+  var top=6,AY=top+r+(maxN-1)*sp+r+14,by=AY+30,H=by+2*bh+10,s='',yl='';
+  s+='<line x1="'+(L0-12)+'" y1="'+AY+'" x2="'+(L1+12)+'" y2="'+AY+'" style="stroke:var(--ink)" stroke-width="2"/>';
+  for(var y=Y0+1;y<=Y1-1;y++){var big=y%5===0;
+    s+='<line x1="'+px(y)+'" y1="'+(AY-(big?5:3))+'" x2="'+px(y)+'" y2="'+(AY+(big?5:3))+'" style="stroke:var(--ink)" stroke-width="'+(big?1.5:1)+'"/>';
+    if(big)yl+='<rect x="'+(px(y)-fs*1.35)+'" y="'+(AY+7)+'" width="'+(fs*2.7)+'" height="'+(fs+5)+'" style="fill:var(--paper)"/><text x="'+px(y)+'" y="'+(AY+19)+'" text-anchor="middle" font-size="'+fs+'" style="fill:var(--muted)">'+y+'</text>'}
+  stacks.forEach(function(st,k){
+    s+='<path d="M'+cx[k]+' '+(top+r+(maxN-1)*sp+r+2)+' L'+px(st.x)+' '+AY+'" style="stroke:var(--muted)" stroke-width="1" fill="none"/><circle cx="'+px(st.x)+'" cy="'+AY+'" r="2.6" style="fill:var(--ink)"/>';
+    st.list.forEach(function(it,j){var cy=top+r+(maxN-1)*sp-j*sp;
+      s+='<circle cx="'+cx[k]+'" cy="'+cy+'" r="'+r+'" style="fill:'+V(it.c)+'"><title>'+esc(it.d+' : '+it.t)+'</title></circle><text x="'+cx[k]+'" y="'+(cy+fs*.36)+'" text-anchor="middle" font-size="'+fs+'" font-weight="700" style="fill:var(--paper)">'+it.n+'</text>'});
+  });
+  s+=yl;
+  D.lanes.slice(0,2).forEach(function(l,li){l.bars.forEach(function(b){
+    var x=px(b.a)-r*.6,wd=Math.max(6,px(b.b)-px(b.a)-2),y=by+li*(bh+4),t=b.t;
+    if(t.length*fs*.52>wd-8)t=t.replace('Charles X','Ch. X');
+    if(t.length*fs*.52>wd-8)t='';
+    s+='<rect x="'+x+'" y="'+y+'" width="'+wd+'" height="'+bh+'" rx="4" style="fill:var('+b.c+')"/>'+(t?'<text x="'+(x+wd/2)+'" y="'+(y+bh/2+fs*.36)+'" text-anchor="middle" font-size="'+fs+'" font-weight="700" fill="#fff">'+t+'</text>':'')})});
+  gr.innerHTML='<svg width="'+w+'" height="'+H+'" viewBox="0 0 '+w+' '+H+'" role="img" aria-label="Frise chronologique de 1788 à 1815 : événements numérotés, régimes et pouvoirs"><title>Frise chronologique 1788-1815</title>'+s+'</svg>';
+}
+draw();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(draw);
+window.addEventListener('resize',draw);
+
+/* liste des dates */
+var dl=document.getElementById('dl'),plain=[],all=[];
+D.clusters.forEach(function(c){c.items.forEach(function(it,i){all.push({k:it.k!==undefined?it.k:c.x+i*.001,it:it})})});
+(D.hors_frise||[]).forEach(function(it){all.push({k:it.k,it:it})});
+all.sort(function(a,b){return a.k-b.k});
+all.forEach(function(o){var it=o.it;
+  var li=el('li');li.style.setProperty('--ic',V(it.c));
+  li.appendChild(el('b','',it.d));li.appendChild(el('span','',it.t));dl.appendChild(li);
+  plain.push('**'+it.d+'** : '+it.t);
+});
+document.getElementById('cp').onclick=function(){
+  var txt=plain.join('\n'),m=document.getElementById('cpm');
+  function ok(){m.textContent='Liste copiée.'}
+  function fb(){var r=document.createRange();r.selectNodeContents(dl);var s=getSelection();s.removeAllRanges();s.addRange(r);m.textContent='Liste sélectionnée : copie-la avec Ctrl+C.'}
+  try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(e){fb()}
+};
+})();
+</script>
