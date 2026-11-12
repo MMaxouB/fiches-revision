@@ -443,7 +443,7 @@
     var fb = $('#qz-fb'), fiche = (q._s && q._s.fiche) || RETOUR;
     var html = '<p class="qz-v"><b>' + (bon ? icone('ok') + 'Bonne réponse' : icone('ko') + 'Pas tout à fait') + '</b></p>';
     if (!bon) html += brut ? '<p>' + (libelle || 'Réponse attendue') + ' :</p>' + attendu : '<p>' + (libelle || 'Réponse attendue') + ' : <b>' + attendu + '</b></p>';
-    if (q.expl) html += '<p class="qz-ex">' + fmt(q.expl) + '</p>';
+    if (q.expl) String(q.expl).split('\n').forEach(function (par) { if (par.trim()) html += '<p class="qz-ex">' + fmt(par) + '</p>'; });   /* une explication peut avoir plusieurs paragraphes (séparés par \n) */
     if (q.source) html += '<p class="m qz-src">' + (q.hors_cours ? 'Information absente du cours (†). ' : q.cat === 'exercice' ? 'Exercice du cours : ' : 'Dans la fiche : ') + fmt(q.source) +
       '. <a href="' + esc(fiche) + '">Ouvrir la fiche</a></p>';
     fb.className = 'qz-fb ' + (bon ? 'ok' : 'ko');

@@ -735,8 +735,13 @@
     });
     if (ch.length < 4) return null;
     var tous = ch.every(function (g) { return dstr(g); });
-    return qcm(q, ch.map(function (g) { return m(tous ? dstr(g) : ftxt(g)); }), 0, expl, source, extra);
+    var aff = function (g) { return m(tous ? dstr(g) : ftxt(g)); };
+    /* chaque mauvaise réponse proposée est expliquée : à quelle autre probabilité ou à quelle erreur elle correspond (champ why des éléments de la réserve) */
+    var autres = ch.slice(1).filter(function (g) { return g.why; }).map(function (g) { return aff(g) + ' : c\'est ' + g.why; });
+    if (autres.length) expl += '\nLes autres réponses correspondent à d\'autres calculs. ' + autres.join(' ; ') + '.';
+    return qcm(q, ch.map(aff), 0, expl, source, extra);
   }
+  function W(f, why) { return { p: f.p, q: f.q, why: why }; }                /* fraction accompagnée de l'explication de l'erreur qu'elle représente */
   function vP(label, f) { return m(label + '=' + dstr(f)); }                 /* « P(A)=0.6 » prêt à insérer (f doit être un décimal fini) */
   function cent(x) { return fc(x, 100); }                                    /* x centièmes -> fraction */
 
@@ -767,18 +772,21 @@
       if (C >= A) C = A - 5;
       var f = fc(C, A);
       return sortieP('On donne ' + vP('P(A)', cent(A)) + ' et ' + vP('P(A cap B)', cent(C)) + '. Calculer ' + m('P_A(B)') + '.', f,
+        'On cherche la probabilité de ' + m('B') + ' sachant ' + m('A') + ' : on divise la probabilité d\'avoir les deux événements par celle de la condition ' + m('A') + ' (ce qu\'on sait déjà).\n' +
         m('P_A(B)=frac(P(A cap B),P(A))=frac(' + dec(C / 100) + ',' + dec(A / 100) + ')=' + (dstr(f) || ftxt(f))) + '.', 'Définition', { _v: v });
     }
     if (v === 'produit') {
       var P1 = ri(2, 18) * 5, f2 = fc(A * P1, 10000);
       return sortieP('On donne ' + vP('P(A)', cent(A)) + ' et ' + vP('P_A(B)', cent(P1)) + '. Calculer ' + m('P(A cap B)') + '.', f2,
+        'Pour avoir ' + m('A') + ' ET ' + m('B') + ', il faut d\'abord ' + m('A') + ', puis ' + m('B') + ' sachant ' + m('A') + ' : on multiplie la probabilité de la condition par la probabilité conditionnelle.\n' +
         m('P(A cap B)=P(A)*P_A(B)=' + dec(A / 100) + '*' + dec(P1 / 100) + '=' + dec(A * P1 / 10000)) + '.', 'Formule du produit', { _v: v });
     }
     var mx, Cc, nn = 0;
     do { B = ri(4, 18) * 5; mx = Math.min(A, B); Cc = ri(1, mx / 5) * 5; nn++; } while (nn < 500 && A + B - Cc > 100);
     var cond = pick(['A', 'B']), den = cond === 'A' ? A : B, lbl = cond === 'A' ? 'P_A(B)' : 'P_B(A)', f3 = fc(Cc, den);
     return sortieP('On donne ' + vP('P(A)', cent(A)) + ', ' + vP('P(B)', cent(B)) + ' et ' + vP('P(A cap B)', cent(Cc)) + '. Calculer ' + m(lbl) + '.', f3,
-      'On divise par la probabilité de ce qu\'on sait : ' + m(lbl + '=frac(P(A cap B),P(' + cond + '))=frac(' + dec(Cc / 100) + ',' + dec(den / 100) + ')=' + (dstr(f3) || ftxt(f3))) + '.', 'Définition', { _v: v, niveau: 3 });
+      'On cherche ' + m(lbl) + ' : l\'événement placé en indice, ' + m(cond) + ', est la condition (ce qu\'on sait déjà). On divise donc par ' + m('P(' + cond + ')') + '.\n' +
+      m(lbl + '=frac(P(A cap B),P(' + cond + '))=frac(' + dec(Cc / 100) + ',' + dec(den / 100) + ')=' + (dstr(f3) || ftxt(f3))) + '.\nPiège : diviser par ' + m('P(' + (cond === 'A' ? 'B' : 'A') + ')') + ' donnerait ' + m(cond === 'A' ? 'P_B(A)' : 'P_A(B)') + ', la probabilité dans l\'autre sens.', 'Définition', { _v: v, niveau: 3 });
   };
 
   G['maths-proba-effectifs'] = function () {
@@ -794,9 +802,31 @@
     else if (cas === 'P(bar(S) cap bar(M))') { f = fc(hors, N); ex = ['frac(' + hors + ',' + N + ')']; }
     else { f = fc(X + Y - Z, N); ex = ['frac(' + (X + Y - Z) + ',' + N + ')']; }
     var enonce = 'Un lycée compte ' + N + ' élèves. ' + X + ' font de l\'AS, ' + Y + ' font partie du club de maths et ' + Z + ' font les deux. On choisit un élève au hasard ; ' + m('S') + ' : « l\'élève fait de l\'AS », ' + m('M') + ' : « l\'élève fait partie du club de maths ». Calculer ' + m(cas) + '.';
-    var expl = 'On compte les élèves : ' + hors + ' ne font ni l\'AS ni le club de maths. ' + m(cas + '=' + ex[0] + (dstr(f) ? '=' + dstr(f) : '')) + '.';
+    /* explication adaptée à la question : de quel groupe on part, ce qu'on y compte, et par quoi on divise */
+    var intro;
+    if (cas === 'P_S(M)') intro = 'L\'indice est la condition : on ne regarde que les ' + X + ' élèves de l\'AS (les ' + N + ' élèves du lycée ne servent plus). Parmi eux, ' + Z + ' font aussi partie du club.';
+    else if (cas === 'P_M(S)') intro = 'L\'indice est la condition : on ne regarde que les ' + Y + ' élèves du club (les ' + N + ' élèves du lycée ne servent plus). Parmi eux, ' + Z + ' font aussi de l\'AS.';
+    else if (cas === 'P_{bar(S)}(M)') intro = 'La condition est « ne pas faire d\'AS » : on ne regarde que les ' + (N - X) + ' élèves restants (' + N + ' - ' + X + '). Parmi eux, ceux du club sont ' + (Y - Z) + ' : on enlève les ' + Z + ' qui font aussi de l\'AS.';
+    else if (cas === 'P_{bar(S)}(bar(M))') intro = 'La condition est « ne pas faire d\'AS » : on ne regarde que les ' + (N - X) + ' élèves restants (' + N + ' - ' + X + '). Parmi eux, ' + (Y - Z) + ' font le club (' + Y + ' - ' + Z + '), donc ' + hors + ' ne font pas non plus le club (' + (N - X) + ' - ' + (Y - Z) + ').';
+    else if (cas === 'P(bar(S) cap bar(M))') intro = 'Il n\'y a pas de condition : on compte parmi les ' + N + ' élèves du lycée. Ceux qui font l\'AS ou le club sont ' + (X + Y - Z) + ' (' + X + ' + ' + Y + ' - ' + Z + ' : on retire les ' + Z + ' élèves comptés deux fois). Les autres, qui ne font ni l\'un ni l\'autre, sont donc ' + hors + '.';
+    else intro = 'Il n\'y a pas de condition : on compte parmi les ' + N + ' élèves du lycée. Ceux qui font l\'AS ou le club (ou les deux) sont ' + (X + Y - Z) + ' : on additionne ' + X + ' et ' + Y + ', puis on retire les ' + Z + ' élèves comptés deux fois.';
+    var cond = cas.indexOf('P_') === 0;
+    var simple = dstr(f) || ftxt(f), calc = cas + '=' + ex[0] + (simple !== ex[0] ? '=' + simple : '');     /* on termine par la valeur simplifiée */
+    var expl = intro + '\n' + m(calc) + '.' + (cond ? '\nÀ retenir : on divise toujours par l\'effectif de ce qui suit « sachant que » (l\'indice de ' + m('P') + ').' : '');
     if (Math.random() < 0.55) {
-      var o = qcmP(enonce, f, [fc(Z, X), fc(Z, Y), fc(Z, N), fc(Y - Z, N - X), fc(hors, N - X), fc(hors, N), fc(X + Y - Z, N), fc(X, N), fc(Y, N), fc(X - Z, N), fc(Y - Z, N)], expl + ' Les autres valeurs divisent par une mauvaise condition ou oublient de conditionner.', 'Tableau à double entrée', { _cas: cas });
+      var o = qcmP(enonce, f, [
+        W(fc(Z, X), m('P_S(M)') + ' (on a divisé par les ' + X + ' élèves de l\'AS)'),
+        W(fc(Z, Y), m('P_M(S)') + ' (on a divisé par les ' + Y + ' élèves du club)'),
+        W(fc(Z, N), m('P(S cap M)') + ' (les élèves qui font les deux, sur tout le lycée, sans condition)'),
+        W(fc(Y - Z, N - X), m('P_{bar(S)}(M)') + ' (on s\'est limité aux ' + (N - X) + ' élèves qui ne font pas d\'AS)'),
+        W(fc(hors, N - X), m('P_{bar(S)}(bar(M))') + ' (parmi les ' + (N - X) + ' élèves qui ne font pas d\'AS, ceux qui ne font pas le club non plus)'),
+        W(fc(hors, N), m('P(bar(S) cap bar(M))') + ' (les élèves qui ne font ni l\'AS ni le club, sur tout le lycée)'),
+        W(fc(X + Y - Z, N), m('P(S cup M)') + ' (les élèves qui font l\'AS ou le club, sur tout le lycée)'),
+        W(fc(X, N), m('P(S)') + ' (tous les élèves de l\'AS, sur tout le lycée)'),
+        W(fc(Y, N), m('P(M)') + ' (tous les élèves du club, sur tout le lycée)'),
+        W(fc(X - Z, N), m('P(S cap bar(M))') + ' (les élèves de l\'AS qui ne font pas le club, sur tout le lycée)'),
+        W(fc(Y - Z, N), m('P(bar(S) cap M)') + ' (les élèves du club qui ne font pas l\'AS, sur tout le lycée)')
+      ], expl, 'Tableau à double entrée', { _cas: cas });
       if (o) return o;
     }
     return sortieP(enonce, f, expl, 'Tableau à double entrée', { _cas: cas });
@@ -813,13 +843,34 @@
     else if (cas === 'P_B(A)') { f = fdiv(pAB, pB); ex = m('P(B)=' + dstr(pB)) + ' par les probabilités totales, puis ' + m('P_B(A)=frac(P(A cap B),P(B))=frac(' + dstr(pAB) + ',' + dstr(pB) + ')=' + (dstr(f) || ftxt(f))); }
     else { f = fdiv(pAnB, fsub(un, pB)); ex = m('P(bar(B))=1-' + dstr(pB) + '=' + dstr(fsub(un, pB))) + ' et ' + m('P(A cap bar(B))=P(A)*P_A(bar(B))=' + dec(pa / 10) + '*' + dec(1 - p1 / 10) + '=' + dstr(pAnB)) + ', puis ' + m('P_{bar(B)}(A)=frac(' + dstr(pAnB) + ',' + dstr(fsub(un, pB)) + ')=' + (dstr(f) || ftxt(f))); }
     var enonce = 'Un arbre pondéré décrit deux événements ' + m('A') + ' et ' + m('B') + ' avec ' + vP('P(A)', PA) + ', ' + vP('P_A(B)', PB1) + ' et ' + vP('P_{bar(A)}(B)', PB2) + '. Calculer ' + m(cas) + '.';
+    var intros = {
+      'P(A cap B)': 'On cherche la probabilité du chemin « ' + m('A') + ' puis ' + m('B') + ' » : on multiplie ses deux branches.',
+      'P(bar(A) cap B)': 'On cherche la probabilité du chemin « non ' + m('A') + ' puis ' + m('B') + ' » : on multiplie ses deux branches. La première vaut ' + m('1-P(A)') + ' (les deux branches de départ ont une somme égale à 1).',
+      'P(B)': m('B') + ' peut arriver par deux chemins (en passant par ' + m('A') + ' ou par ' + m('bar(A)') + ') : on calcule la probabilité de chaque chemin en multipliant ses branches, puis on additionne les deux.',
+      'P(bar(B))': 'On calcule d\'abord ' + m('P(B)') + ' avec les deux chemins qui mènent à ' + m('B') + ', puis le contraire : ' + m('P(bar(B))=1-P(B)') + '.',
+      'P_B(A)': 'On cherche ' + m('A') + ' sachant ' + m('B') + ' : on divise la probabilité du chemin « ' + m('A') + ' puis ' + m('B') + ' » par ' + m('P(B)') + ' (tous les chemins qui mènent à ' + m('B') + ').',
+      'P_{bar(B)}(A)': 'On cherche ' + m('A') + ' sachant non ' + m('B') + ' : on divise la probabilité du chemin « ' + m('A') + ' puis non ' + m('B') + ' » par ' + m('P(bar(B))') + ' (tous les chemins qui mènent à non ' + m('B') + ').'
+    };
+    var exArbre = intros[cas] + '\n' + ex + '.';
     if (Math.random() < 0.55) {
-      var somme = fadd(PB1, PB2), pool = [pAB, pnAB, pB, pAnB, fsub(un, pB), PB1, PB2, PA, fdiv(pAB, pB), fdiv(pnAB, pB), fsub(un, PA)];
-      if (fval(somme) <= 1) pool.push(somme);
-      var o = qcmP(enonce, f, pool, ex + '. Les autres valeurs sont des confusions classiques : un seul chemin, une probabilité conditionnelle prise pour une intersection, ou une somme non pondérée.', 'Plusieurs chemins', { _cas: cas });
+      var somme = fadd(PB1, PB2), pool = [
+        W(pAB, m('P(A cap B)') + ' (le chemin « ' + m('A') + ' puis ' + m('B') + ' » seul, sans l\'autre chemin ni division)'),
+        W(pnAB, m('P(bar(A) cap B)') + ' (le chemin « non ' + m('A') + ' puis ' + m('B') + ' » seul)'),
+        W(pB, m('P(B)') + ' (les deux chemins vers ' + m('B') + ' additionnés)'),
+        W(pAnB, m('P(A cap bar(B))') + ' (le chemin « ' + m('A') + ' puis non ' + m('B') + ' »)'),
+        W(fsub(un, pB), m('P(bar(B))') + ' (le contraire de ' + m('P(B)') + ')'),
+        W(PB1, m('P_A(B)') + ' (une branche seule, qui n\'est pas un chemin entier)'),
+        W(PB2, m('P_{bar(A)}(B)') + ' (une branche seule, qui n\'est pas un chemin entier)'),
+        W(PA, m('P(A)') + ' (la première branche seulement)'),
+        W(fdiv(pAB, pB), m('P_B(A)') + ' (la probabilité dans l\'autre sens : ' + m('A') + ' sachant ' + m('B') + ')'),
+        W(fdiv(pnAB, pB), m('P_B(bar(A))') + ' (non ' + m('A') + ' sachant ' + m('B') + ')'),
+        W(fsub(un, PA), m('P(bar(A))') + ' (la première branche vers non ' + m('A') + ')')
+      ];
+      if (fval(somme) <= 1) pool.push(W(somme, 'la somme ' + m('P_A(B)+P_{bar(A)}(B)') + ' des deux branches du second niveau, qui ne sont pas pondérées par ' + m('P(A)') + ' et ' + m('P(bar(A))')));
+      var o = qcmP(enonce, f, pool, exArbre, 'Plusieurs chemins', { _cas: cas });
       if (o) return o;
     }
-    return sortieP(enonce, f, ex + '.', 'Plusieurs chemins', { _cas: cas });
+    return sortieP(enonce, f, exArbre, 'Plusieurs chemins', { _cas: cas });
   };
 
   G['maths-proba-independance'] = function () {
@@ -919,9 +970,61 @@
   };
   /* catégorie des générateurs (voir quiz/categories.json) : tous des « calculs », sauf exception listée ici (nom : catégorie) */
   var CAT = root.QUIZ_GEN_CAT = root.QUIZ_GEN_CAT || {};
+  /* rappel de méthode ajouté à la fin de l'explication de chaque générateur (un paragraphe : la règle, puis le piège le plus courant) */
+  var AIDE = {
+    'maths-discriminant': 'À retenir : $Delta=b^2-4ac$. On repère d\'abord $a$, $b$ et $c$ avec leur signe (un terme absent vaut $0$). Piège : $b^2$ est toujours positif, et $-4ac$ devient positif quand $a$ et $c$ sont de signes opposés.',
+    'maths-nb-solutions': 'À retenir : $Delta<0$, aucune solution réelle ; $Delta=0$, une solution double ; $Delta>0$, deux solutions distinctes.',
+    'maths-resoudre': 'À retenir : $x=frac(-b pm sqrt(Delta),2a)$. Piège : le dénominateur est $2a$ (et non $a$), et il est négatif quand $a<0$. Contrôle : la somme des deux solutions doit valoir $-frac(b,a)$.',
+    'maths-forme-canonique': 'À retenir : $alpha=-frac(b,2a)$, $beta=-frac(Delta,4a)$ et la forme canonique est $a(x-alpha)^2+beta$. Pièges : le signe de $alpha$ dans la parenthèse ($x-alpha$), et le facteur $a$ devant.',
+    'maths-racine-evidente': 'Méthode : on remplace $x$ par $0$, $1$, $-1$, $2$ ; le nombre pour lequel on obtient $0$ est une racine. Une valeur qui ne donne pas $0$ n\'est pas une racine.',
+    'maths-racine-evidente-cubique': 'Méthode : on remplace $x$ par $0$, $1$, $-1$, $2$ ; le nombre pour lequel on obtient $0$ est une racine évidente. Une valeur qui ne donne pas $0$ n\'est pas une racine.',
+    'maths-evaluer-polynome': 'Méthode : on remplace $x$ par la valeur dans chaque terme, en mettant les nombres négatifs entre parenthèses. Piège : $(-2)^2=4$ mais $(-2)^3=-8$. Un résultat nul veut dire que la valeur est une racine.',
+    'maths-identification-cubique': 'Méthode : on développe $(x-r)(ax^2+bx+c)$, puis on compare les coefficients de $x^3$, de $x^2$, de $x$ et le terme constant avec ceux de $P(x)$.',
+    'maths-factorisation': 'À retenir : $a(x-x_1)(x-x_2)$ si $Delta>0$, et $a(x-x_0)^2$ si $Delta=0$. Pièges : oublier le facteur $a$, et écrire dans chaque parenthèse le signe contraire de la racine ($x-(-2)=x+2$).',
+    'maths-signe-trinome': 'Méthode : $Delta$, racines, signe de $a$, tableau de signes, lecture de $S$. Le trinôme est du signe de $a$ à l\'extérieur des racines et du signe de $-a$ entre elles ; crochets fermés pour $>=$ ou $<=$, ouverts pour $>$ ou $<$.',
+    'maths-somme-produit': 'À retenir : $S=-frac(b,a)$ et $P=frac(c,a)$, sans calculer les racines. Piège : le signe moins ne concerne que la somme.',
+    'maths-somme-produit-equation': 'À retenir : une équation dont les solutions ont pour somme $S$ et pour produit $P$ s\'écrit $x^2-Sx+P=0$ : le signe devant $Sx$ est l\'opposé de celui de $S$, et le terme constant est $P$ lui-même.',
+    'maths-somme-produit-nombres': 'Méthode : les deux nombres sont les solutions de $x^2-Sx+P=0$. Contrôle : leur somme doit valoir $S$ et leur produit $P$.',
+    'maths-racine-evidente-autre': 'Méthode : avec une racine connue $r$, le produit des racines donne l\'autre : $x_2=frac(P,r)$. On peut aussi utiliser la somme : $x_2=S-r$.',
+    'maths-bicarree': 'Méthode : on pose $X=x^2$ et on résout en $X$ ; on élimine les $X<0$ ; chaque $X>0$ donne deux solutions ($pm sqrt(X)$) et $X=0$ n\'en donne qu\'une ($x=0$).',
+    'maths-parametre': 'Méthode : on écrit $Delta$ en fonction de $m$ : deux solutions si $Delta>0$, une solution double si $Delta=0$, aucune si $Delta<0$. On résout ensuite l\'équation ou l\'inéquation d\'inconnue $m$.',
+    'maths-valeurs-interdites': 'Méthode : les valeurs interdites sont celles qui annulent le dénominateur : on résout « dénominateur $=0$ ». Le numérateur n\'intervient pas.',
+    'maths-suite-terme': 'Méthode : on remplace $n$ (formule explicite) ou le terme précédent (récurrence) par sa valeur, en respectant les signes. Une suite définie par récurrence se calcule de proche en proche, sans sauter d\'étape.',
+    'maths-suite-point': 'À retenir : le point qui représente $u_n$ a pour coordonnées $(n;u_n)$ : l\'abscisse est le rang, l\'ordonnée est la valeur du terme.',
+    'maths-suite-variation': 'Méthode : on étudie le signe de $u_{n+1}-u_n$ : positif ou nul, la suite est croissante ; négatif ou nul, décroissante ; de signe variable, elle n\'est ni l\'un ni l\'autre.',
+    'maths-suite-rang': 'Méthode : on calcule $u_{n+1}-u_n$, puis on résout l\'inéquation « supérieur ou égal à $0$ » d\'inconnue $n$ ; le plus petit entier qui convient est le rang cherché.',
+    'maths-suite-stationnaire': 'À retenir : une suite est stationnaire quand tous ses termes sont égaux, c\'est-à-dire quand $u_{n+1}-u_n=0$ pour tout $n$.',
+    'maths-discriminant-parametre': 'Méthode : on repère $a$, $b$, $c$ (ils peuvent contenir $m$), puis on calcule $b^2-4ac$ en développant avec soin le carré de $b$ et en distribuant le signe moins de $-4ac$ à tous les termes de $c$.',
+    'maths-parametre-cours': 'Méthode : on écrit $Delta$ en fonction de $m$ et on le factorise. C\'est un trinôme en $m$ de coefficient dominant positif : il est positif à l\'extérieur de ses racines et négatif entre elles (deux solutions pour $Delta>0$, aucune pour $Delta<0$, une double pour $Delta=0$).',
+    'maths-expressions-racines': 'Méthode : on exprime l\'expression avec $S$ et $P$ sans calculer les racines : $x_1^2+x_2^2=S^2-2P$, $(x_1-x_2)^2=S^2-4P$, $frac(1,x_1)+frac(1,x_2)=frac(S,P)$.',
+    'maths-inequation-quotient': 'Méthode : on cherche les racines du numérateur et du dénominateur, puis on dresse le tableau de signes du quotient. Les valeurs qui annulent le dénominateur sont toujours exclues (crochets ouverts), même pour une inégalité large.',
+    'maths-inequation-cubique': 'Méthode : on factorise avec la racine évidente, on place les trois racines dans un tableau de signes et on lit le signe du produit. Une inégalité large inclut les racines, une inégalité stricte les exclut.',
+    'maths-irrationnelle': 'Méthode : on élève au carré pour supprimer la racine, on résout, puis on vérifie la condition « second membre positif ou nul » : une valeur qui ne la respecte pas est une fausse solution.',
+    'maths-polynome-nb-racines': 'Méthode : on factorise par $(x-r)$ et on compte les racines du trinôme restant avec $Delta$. Si l\'une d\'elles est égale à $r$, elle se confond avec la racine évidente : on compte les racines distinctes.',
+    'maths-multi-discriminant': 'Méthode : on calcule le discriminant de chaque équation et on garde celles dont le signe convient ; il faut cocher toutes les bonnes équations et aucune autre.',
+    'maths-multi-racines': 'Méthode : on remplace $x$ par chaque nombre proposé ; ceux pour lesquels on obtient $0$ sont des racines. Il faut cocher toutes les racines et aucun autre nombre.',
+    'maths-suite-variation-diff': 'Méthode : on écrit $u_{n+1}$ en remplaçant $n$ par $n+1$, on met $u_{n+1}-u_n$ au même dénominateur, puis on étudie le signe. Quand le dénominateur est positif, le signe du numérateur suffit.',
+    'maths-suite-recurrence-carre': 'Méthode : on étudie le signe de $u_{n+1}-u_n$ en fonction de $u_n$ (ici un produit comme $u_n(u_n-1)$), selon que les termes sont inférieurs ou supérieurs à $1$.',
+    'maths-suite-parametre': 'Méthode : $u_{n+1}-u_n$ dépend de $n$ et de $a$. Comme $2n+1$ est le plus petit pour $n=0$, c\'est en $n=0$ que la condition sur $a$ est la plus exigeante.',
+    'maths-suite-points-multi': 'Méthode : pour chaque point $(n;y)$, on calcule $u_n$ et on compare à $y$ : le point appartient au nuage si $y=u_n$. Il faut cocher tous les bons points.',
+    'maths-suite-ordre-termes': 'Méthode : on calcule chacun des termes demandés, puis on les range du plus petit au plus grand. On ne suppose pas que la suite est croissante.',
+    'maths-proba-reunion': 'À retenir : $P(A cup B)=P(A)+P(B)-P(A cap B)$ et $P(bar(A))=1-P(A)$. Le contraire d\'une réunion est l\'intersection des contraires, et inversement.',
+    'maths-proba-conditionnelle': 'À retenir : $P_A(B)=frac(P(A cap B),P(A))$ et $P(A cap B)=P(A)*P_A(B)$ : on divise ou on multiplie par la probabilité de la condition, l\'événement placé en indice.',
+    'maths-proba-arbre': 'À retenir : on multiplie les probabilités le long d\'un chemin, et on additionne les chemins qui mènent au même événement. Les branches d\'un même nœud ont une somme égale à $1$.',
+    'maths-proba-independance': 'À retenir : $A$ et $B$ sont indépendants quand $P(A cap B)=P(A)*P(B)$, ce qui équivaut à $P_A(B)=P(B)$ ; dans ce cas $bar(A)$ et $B$ le sont aussi.',
+    'maths-suite-seuil': 'Méthode : on suit le programme. À chaque passage dans la boucle, $n$ augmente de $1$ et $u$ est recalculé ; la boucle s\'arrête quand la condition « tant que » devient fausse. $n$ compte les passages, pas le nombre de termes calculés.',
+    'maths-suite-minoration': 'Méthode : on écrit $u_{n+1}-u_n$ en fonction de $u_n$, puis on utilise la minoration (ou la majoration) pour encadrer cette différence. Si le signe n\'est pas déterminé, on ne peut pas conclure.',
+    'maths-proba-suite': 'Méthode : probabilités totales avec la partition $(C_n,bar(C_n))$ : $u_{n+1}=P(C_n)*P_{C_n}(C_{n+1})+P(bar(C_n))*P_{bar(C_n)}(C_{n+1})$. Chaque branche est multipliée par la probabilité de son point de départ.'
+  };
   Object.keys(NIVEAU).forEach(function (nom) {
     var f = G[nom];
     CAT[nom] = CAT[nom] || 'calcul';
-    G[nom] = function () { var q = f(); if (!q.niveau) q.niveau = NIVEAU[nom]; if (!q.cat) q.cat = CAT[nom]; return q; };
+    G[nom] = function () {
+      var q = f();
+      if (!q.niveau) q.niveau = NIVEAU[nom];
+      if (!q.cat) q.cat = CAT[nom];
+      if (AIDE[nom] && q.expl && q.expl.indexOf(AIDE[nom]) < 0) q.expl += '\n' + AIDE[nom];   /* certains générateurs se rappellent eux-mêmes : on n'ajoute le rappel qu'une fois */
+      return q;
+    };
   });
 })(typeof window !== 'undefined' ? window : globalThis);
