@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Entraînement express</title>
+<style>:root{--bg:#131A2B;--card:#1B2438;--line:#2C3752;--tx:#E8ECF5;--mute:#A9B3CB;--acc:#7FB2F0;--onacc:#0B1220;--lamp:#F2C46B;--ok:#7FD3A0;--okbg:#16322A;--ko:#F28B82;--kobg:#3A2326;--c1:#7FB2F0;--c2:#A3D977;--c3:#F2A56B}
+@media (prefers-color-scheme:light){:root{--bg:#F5F6FA;--card:#fff;--line:#D5DAE6;--tx:#1B2438;--mute:#56627D;--acc:#1F5FA8;--onacc:#fff;--lamp:#B7791F;--ok:#1E7B4F;--okbg:#E3F3EA;--ko:#B3261E;--kobg:#FBE7E5;--c1:#1F5FA8;--c2:#3E6B14;--c3:#9A4A0C}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:74rem;margin:0 auto;padding:0 16px}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .w{padding-top:10px;padding-bottom:10px}
+h1{font-size:1.25rem;margin:0 0 2px}
+.sub{margin:0;color:var(--mute);font-size:.9rem}
+.prog{display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
+.bar{flex:1 1 8rem;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+#compte{font-size:.85rem;color:var(--mute)}
+.intro{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:16px 0}
+.intro p{margin:.3rem 0}.intro ul{margin:.4rem 0 0;padding-left:1.2rem}
+.intro code,.aide code,.fb code,.enonce code{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:0 .3em;font-size:.92em}
+.page{display:block;padding-bottom:40px}
+#som{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;margin:0 -16px;padding-left:16px;padding-right:16px;scrollbar-width:thin}
+.pill{flex:0 0 auto;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--tx);border:1px solid var(--line);background:var(--card);border-radius:99px;min-width:44px;min-height:44px;padding:0 4px;justify-content:center}
+.pill .n{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;font-weight:700}
+.pill .t{display:none}
+.pill.ok{border-color:var(--ok)}.pill.ok .n{background:var(--ok);color:var(--onacc)}
+.pill.ko{border-color:var(--ko)}.pill.ko .n{background:var(--ko);color:var(--onacc)}
+h2.chap{font-size:1.05rem;margin:26px 0 10px;color:var(--mute);text-transform:none;letter-spacing:0}
+.ex{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 16px;scroll-margin-top:7.5rem}
+.ex header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.8rem}
+.tag{font-weight:700}.tag.c1{color:var(--c1)}.tag.c2{color:var(--c2)}.tag.c3{color:var(--c3)}
+.dur{color:var(--mute)}
+.ex h2{font-size:1.15rem;margin:6px 0 10px;display:flex;gap:10px;align-items:center}
+.num{display:inline-grid;place-items:center;flex:0 0 auto;width:30px;height:30px;border-radius:50%;background:var(--line);font-size:.9rem}
+.enonce p{margin:.4rem 0}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;overflow-x:auto;font:14px/1.5 ui-monospace,Consolas,monospace;margin:.6rem 0}
+.m{display:inline-block;max-width:100%;overflow-x:auto;overflow-y:hidden;vertical-align:middle;scrollbar-width:thin}
+.m math{font-size:1.12em;padding:.2em 0}
+.champs{display:grid;gap:12px;margin:14px 0 6px}
+.champ{border-radius:12px;padding:10px 12px;border:1px solid var(--line)}
+.champ.juste{border-color:var(--ok);background:var(--okbg)}
+.champ.faux{border-color:var(--ko);background:var(--kobg)}
+.lab{display:block;font-weight:600;margin-bottom:6px}
+.in{width:100%;min-height:46px;font:inherit;font-size:1.05rem;color:var(--tx);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.in:focus,.b:focus-visible,.opt input:focus-visible+.o,.pill:focus-visible,.sy:focus-visible{outline:3px solid var(--lamp);outline-offset:2px}
+.choix{display:grid;gap:8px}
+.opt{display:block;cursor:pointer}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .o{display:flex;align-items:center;min-height:46px;border:1px solid var(--line);border-radius:10px;padding:6px 12px;background:var(--bg)}
+.opt input:checked+.o{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.fb{font-size:.92rem;margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 10px}
+.fb:empty{display:none}
+.v{color:var(--ok);font-weight:700}.x{color:var(--ko);font-weight:700}.mt{color:var(--lamp)}
+.pg{flex-basis:100%}
+.att{flex-basis:100%;color:var(--mute)}
+.symb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.sy{min-width:44px;min-height:44px;font:inherit;font-size:1.05rem;color:var(--tx);background:var(--bg);border:1px solid var(--line);border-radius:10px}
+.aide{font-size:.8rem;color:var(--mute);flex:1 1 12rem}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 4px}
+.b{min-height:46px;padding:0 18px;border-radius:12px;font:inherit;font-weight:700;cursor:pointer;border:1px solid var(--line);color:var(--tx);background:var(--bg)}
+.b.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.b.sec{font-weight:600}
+.bilan{border-radius:12px;padding:10px 14px;margin:12px 0 8px}
+.bilan.bon{background:var(--okbg);border:1px solid var(--ok)}
+.bilan.rate{background:var(--kobg);border:1px solid var(--ko)}
+.meth{border-left:4px solid var(--lamp);padding:2px 0 2px 14px;margin:8px 0}
+.meth h3{font-size:1rem;margin:4px 0}
+.meth ol{padding-left:1.3rem;margin:.4rem 0}.meth li{margin:.5rem 0}
+.ret{margin:.6rem 0}
+.det summary{cursor:pointer;color:var(--acc);min-height:44px;display:flex;align-items:center}
+.foot{margin:28px 0 0;text-align:center}
+@media (min-width:900px){
+  .page{display:grid;grid-template-columns:17rem minmax(0,48rem);gap:32px;justify-content:center;align-items:start}
+  #som{position:sticky;top:6.5rem;flex-direction:column;overflow:visible;margin:0;padding:0;gap:6px}
+  .pill{justify-content:flex-start;border-radius:12px;padding:4px 10px 4px 4px;min-height:44px}
+  .pill .t{display:block;font-size:.9rem;line-height:1.25}
+  h2.chap:first-child{margin-top:0}
+  .ex{padding:20px 24px}
+  .champs{grid-template-columns:1fr 1fr}
+  .champs .champ:only-child{grid-column:1/-1}
+}
+@media (min-width:1280px){body{font-size:17px}}
+@media print{.top{position:static}#som,.actions,.symb{display:none}}
+/* sur le site, un lien « Retour à la fiche » collant est ajouté en haut : on décale l'en-tête et le sommaire dessous */
+.back~.top{top:2.7rem}
+.back~.w .ex{scroll-margin-top:10.5rem}
+@media (min-width:900px){.back~.w #som{top:9.3rem}}
+body>.back{margin-left:0!important;margin-right:0!important}
+</style>
+<style id="veilleuse">@font-face{font-family:Figtree;src:url(../../assets/figtree-latin.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@media screen{:root{--ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;--display:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+ --bg:#F4F6FB;--paper:#FFFFFF;--ink:#161C2D;--muted:#586380;--line:#D9DFEC;--soft:#EBEFF7;--grid:#E3E8F2;--core1:#17233D;--core2:#2D4A7A;
+ --c1:#2D5FA8;--c2:#5E4BB0;--c3:#1F7A5A;--c4:#B85A14;--c5:#B03A5E;--c6:#4E5A74;--c7:#8A6410;
+ --l1:#2D5FA8;--l2:#5E4BB0;--l3:#1F7A5A;--l4:#B85A14;--l5:#B03A5E;--l6:#4E5A74;--l7:#8A6410;
+ --fr:#2D5FA8;--eu:#5E4BB0;--gr:#1F7A5A;--rev:#B03A5E;--nat:#B85A14;--cul:#8A6410;
+ --r1:#2D5FA8;--r2:#1E4A8C;--r3:#B03A5E;--r4:#6B7A96;--band:rgba(176,58,94,.08);--ok:#E5F4EA;--okl:#1C7A3D}}
+@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#131A2B;--paper:#1B2438;--ink:#ECEFF6;--muted:#9AA6BF;--line:#2A3650;--soft:#222D45;--grid:#232E47;--core1:#1E2A47;--core2:#33466E;
+ --l1:#7FB2F0;--l2:#B8A6F0;--l3:#7FD0A8;--l4:#F2A56B;--l5:#E58FA9;--l6:#A9B4CC;--l7:#E5C06B;
+ --fr:#7FB2F0;--eu:#B8A6F0;--gr:#7FD0A8;--rev:#E58FA9;--nat:#F2A56B;--cul:#E5C06B;
+ --r1:#4A7BE0;--r2:#2F5CBF;--r3:#D4455A;--r4:#6B7A96;--band:rgba(229,143,169,.1);--ok:#16301F;--okl:#6FD694;color-scheme:dark}}
+/* carte mentale : la disposition en bulles (noyau au centre, traits) a besoin de ~1650 px pour les branches à formules larges (arbre pondéré de Ch3). De 1100 à 1699 px (portables), deux colonnes de branches empilées sous le noyau : rien n'est tronqué ; dès 1700 px, bulles et traits, sur une carte plus large */
+@media screen and (min-width:1100px) and (max-width:1699px){
+svg.lines{display:none}
+.map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 2.6rem;align-items:start}
+.core{grid-column:1/-1;order:-1;display:block;aspect-ratio:auto;border-radius:18px;padding:1.2rem 1.3rem;margin:0 0 1.8rem}
+.col{gap:1.8rem}
+.br,.col.r .br{flex-direction:column;align-items:stretch;gap:10px;margin:0}
+.hub{order:-1;width:auto;height:auto;border-radius:14px;display:block;text-align:left;padding:.7rem 1rem}
+.hub b{font-size:1.02rem}
+}
+@media screen and (min-width:1700px){.map{max-width:1640px}}
+/* « Pour bien comprendre » (sous la carte) : sur ordinateur, les groupes s'étalent sur la largeur, les explications en 2 ou 3 colonnes de cartes ; téléphone : une colonne */
+@media screen and (min-width:900px){
+.detail{max-width:84rem}
+.detail>p{max-width:46rem;font-size:1.05rem}
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(22rem,1fr));gap:1rem 2.4rem;margin:0 0 2.4rem}
+.dg h3{grid-column:1/-1;margin:0}
+.dg article{margin:0}
+.dg article h4{font-size:1.08rem}
+.dg article p{font-size:1.02rem}
+}
+@media screen{body{margin:0;padding-top:0}
+.hub small,.core small,.dg h3 small,section.s>h2 small,.tag,.concl .h,.box h2,th{text-transform:none;letter-spacing:0}}
+.back{display:block;position:sticky;top:0;z-index:50;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 1rem;padding:.7rem max(16px,env(safe-area-inset-left,0px));background:var(--paper,#1B2438);color:var(--ink,#ECEFF6);border-bottom:1px solid var(--line,#2A3650);font:600 .9rem var(--ui,system-ui),sans-serif;text-decoration:none}
+/* formule plus large que l'écran (320 px) : elle défile dans sa case au lieu d'élargir la page */
+@media screen{.fm,.leaf p,.dg p,.lv p{max-width:100%;overflow-x:auto;overflow-y:hidden}.leaf p math,.dg p math{padding:.2em 0}}
+.back:active{background:var(--soft,#222D45)}
+.back:focus-visible{outline:2px solid var(--ink,#F2C46B);outline-offset:-2px}
+</style>
+<style>@page{size:A4;margin:11mm}@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
+@media print{
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--paper:#fff;--ink:#111;--muted:#444;--line:#bbb;--soft:#f3f3f3;
+  --core1:#1b2a41;--core2:#27486b;--l1:#2f62c9;--l2:#7240c0;--l3:#0e7c77;--l4:#bf5b08;--l5:#c42f45;--l6:#566176;--l7:#94650f;color-scheme:light}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:#fff!important;padding:0!important;font-size:10pt}
+.back,.ctl,svg.lines{display:none!important}
+.top{display:none!important}
+.map{page:land;display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px 11px;max-width:none!important;align-items:start;font-size:9pt;zoom:.88}
+.col{display:contents!important}
+.core{grid-column:1/-1;order:-3;margin:0!important;padding:.45rem 1rem!important}
+.core h2{font-size:1.15rem!important;margin:.1rem 0!important}.core p{display:none!important}
+.br{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;margin:0!important;break-inside:avoid}
+.hub{order:-1;width:auto!important;height:auto!important;border-radius:10px!important;display:block!important;text-align:left!important;padding:.4rem .8rem!important}
+.lv{gap:6px!important}
+.leaf{break-inside:avoid;padding:.3rem .65rem .35rem!important}.leaf b{font-size:.9rem!important}.leaf p{font-size:.78rem!important;margin-top:.1rem!important}
+.rev .leaf p{display:block!important}
+.rev .leaf:not(.open) b::after{content:""!important}
+.detail{page:port;break-before:page;margin:0!important;max-width:none!important}
+.dg,.dg article{break-inside:avoid}
+.dg h3{break-after:avoid}
+.foot{page:port;margin-top:.8rem!important}
+}
+</style>
+<a class="back" href="./">‹ Retour à la fiche, Entraînement express pour la composition</a></head><body>
+<header class="top"><div class="w"><h1>Entraînement express : composition de maths</h1>
+<p class="sub">12 exercices calqués sur les annales (T1 et T2) avec d'autres valeurs, environ 1 h 20 en tout</p>
+<div class="prog"><div class="bar"><i id="barre"></i></div><span id="compte"></span></div></div></header>
+<div class="w">
+<div class="intro"><p><strong>Comment ça marche.</strong> Chaque exercice reprend la forme d'un exercice des annales du T1 et du T2 (l'étiquette en haut dit lequel), avec d'autres nombres tirés au hasard. Tu tapes ta réponse, la page la corrige. Si c'est faux, tu vois <strong>l'erreur probable</strong>, puis <strong>la méthode pas à pas avec tes nombres</strong>, puis tu refais avec d'autres nombres.</p>
+<ul><li>Fractions : <code>3/2</code> ; décimaux : <code>0,75</code> ; racines : <code>sqrt(5)</code> ou <code>√(5)</code> ; puissances : <code>n^2</code>.</li>
+<li>Plusieurs réponses : sépare-les par un point-virgule, dans l'ordre que tu veux : <code>2 ; -3</code>.</li>
+<li>Prends ton temps sur les rouges, passe vite sur ceux que tu réussis du premier coup. Ta progression reste sur cet appareil.</li></ul></div>
+<div class="page"><nav id="som" aria-label="Exercices"></nav><main id="liste"></main></div>
+<p class="foot"><button type="button" class="b sec" id="raz">Tout remettre à zéro</button></p>
+</div>
+<script>/* Entraînement express composition de maths : moteur (sans DOM) = lecture des réponses + 16 exercices à nombres tirés au hasard.
+   Mini-syntaxe d'affichage : celle de quiz.js (frac(a,b), sqrt(x), Delta, inf, cup, bar(A), x^2, u_{n+1}…), entre $…$. */
+(function (root) {
+  'use strict';
+
+  /* ---------- hasard et petits outils ---------- */
+  function ri(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function pick(t) { return t[Math.floor(Math.random() * t.length)]; }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = ri(0, i), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = a % b; a = b; b = t; } return a; }
+  function rd(x) { return Math.round(x * 1e9) / 1e9; }
+  function N(x) { return String(rd(x)); }                       // nombre -> source mini-syntaxe (point décimal)
+  function Pp(x) { return x < 0 ? '(' + N(x) + ')' : N(x); }    // entre parenthèses s'il est négatif
+  function rat(n, d) { if (d < 0) { n = -n; d = -d; } var g = gcd(n, d) || 1; return { n: n / g, d: d / g }; }
+  function frs(n, d) { var r = rat(n, d); if (r.d === 1) return N(r.n); return (r.n < 0 ? '-' : '') + 'frac(' + Math.abs(r.n) + ',' + r.d + ')'; }   // fraction réduite, mini-syntaxe
+  function M(s) { return '$' + s + '$'; }
+  function poly(coefs, vars) {                                   // « 2x^2-3x+1 » à partir de [2,-3,1] et ['x^2','x','']
+    var s = '';
+    for (var i = 0; i < coefs.length; i++) {
+      var c = coefs[i]; if (c === 0) continue;
+      var ab = Math.abs(c), v = vars[i], corps = v === '' ? N(ab) : (ab === 1 ? v : N(ab) + v);
+      s += (s === '' ? (c < 0 ? '-' : '') : (c < 0 ? '-' : '+')) + corps;
+    }
+    return s || '0';
+  }
+  function dec(x) { var s = N(Math.round(x * 1e4) / 1e4); return s; }   // 4 décimales au plus
+
+  /* ---------- lecture d'une saisie ---------- */
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[−–—]/g, '-').replace(/[×·⋅]/g, '*').replace(/÷/g, '/').replace(/√/g, 'sqrt')
+      .replace(/²/g, '^2').replace(/³/g, '^3').replace(/\*\*/g, '^').replace(/racine/g, 'sqrt').replace(/\s+/g, '')
+      .replace(/(\d),(\d)/g, '$1.$2');
+  }
+  function parse(src, vars) {                                    // renvoie une fonction f(env) ou null
+    var s = norm(src), toks = [], re = /\d+(?:\.\d+)?|\.\d+|[a-z]+|[-+*\/^()]/y, pos = 0, m;
+    vars = vars || [];
+    while (pos < s.length) { re.lastIndex = pos; m = re.exec(s); if (!m) return null; toks.push(m[0]); pos = re.lastIndex; }
+    if (!toks.length) return null;
+    var i = 0, bad = false;
+    function peek() { return toks[i]; }
+    function debut(t) { return t !== undefined && (/^[\d.a-z]/.test(t) || t === '('); }
+    function mk(f, g, op) {
+      if (op === '+') return function (e) { return f(e) + g(e); };
+      if (op === '-') return function (e) { return f(e) - g(e); };
+      if (op === '*') return function (e) { return f(e) * g(e); };
+      return function (e) { return f(e) / g(e); };
+    }
+    function expr() { var f = term(); while (peek() === '+' || peek() === '-') { var op = toks[i++], g = term(); f = mk(f, g, op); } return f; }
+    function term() {
+      var f = unary();
+      for (;;) {
+        var t = peek();
+        if (t === '*' || t === '/') { i++; f = mk(f, unary(), t); }
+        else if (debut(t)) f = mk(f, unary(), '*');
+        else break;
+      }
+      return f;
+    }
+    function unary() {
+      if (peek() === '-') { i++; var f = unary(); return function (e) { return -f(e); }; }
+      if (peek() === '+') { i++; return unary(); }
+      return power();
+    }
+    function power() {
+      var b = atom();
+      if (peek() === '^') { i++; var x = unary(); return function (e) { return Math.pow(b(e), x(e)); }; }
+      return b;
+    }
+    function atom() {
+      var t = toks[i++];
+      if (t === undefined) { bad = true; return function () { return NaN; }; }
+      if (/^[\d.]/.test(t)) { var v = parseFloat(t); return function () { return v; }; }
+      if (t === '(') { var f = expr(); if (peek() === ')') i++; else bad = true; return f; }
+      if (t === 'sqrt') { var a = peek() === '(' ? atom() : power(); return function (e) { return Math.sqrt(a(e)); }; }
+      if (/^[a-z]+$/.test(t)) {
+        var letters = vars.indexOf(t) >= 0 ? [t] : t.split(''), g = null;
+        for (var k = 0; k < letters.length; k++) {
+          if (vars.indexOf(letters[k]) < 0) { bad = true; return function () { return NaN; }; }
+          g = (function (g0, nom) { var h = function (e) { return e[nom]; }; return g0 ? mk(g0, h, '*') : h; })(g, letters[k]);
+        }
+        return g;
+      }
+      bad = true; return function () { return NaN; };
+    }
+    var f = expr();
+    if (bad || i < toks.length) return null;
+    return f;
+  }
+  function lireNombre(s) { var f = parse(s, []); if (!f) return null; var v = f({}); return isFinite(v) ? v : null; }
+  function lireListe(s) {
+    var t = String(s).replace(/[{}]/g, '').replace(/\s+(ou|et)\s+/gi, ';').replace(/\|/g, ';');
+    if (t.indexOf(';') < 0 && /,\s/.test(t)) t = t.replace(/,\s+/g, ';');
+    var parts = t.split(';').map(function (x) { return x.trim(); }).filter(function (x) { return x.length; }), out = [];
+    if (!parts.length) return null;
+    for (var k = 0; k < parts.length; k++) {
+      var v = lireNombre(parts[k].toLowerCase().replace(/^[a-z]\w*\s*=\s*/, ''));
+      if (v === null) return null;
+      out.push(v);
+    }
+    out.sort(function (a, b) { return a - b; });
+    return out.filter(function (x, j) { return j === 0 || Math.abs(x - out[j - 1]) > 1e-7; });
+  }
+  function memeListe(a, b, tol) {
+    var x = a.slice().sort(function (p, q) { return p - q; }).filter(function (v, j, t) { return j === 0 || Math.abs(v - t[j - 1]) > 1e-7; });
+    var y = b.slice().sort(function (p, q) { return p - q; }).filter(function (v, j, t) { return j === 0 || Math.abs(v - t[j - 1]) > 1e-7; });
+    if (x.length !== y.length) return false;
+    for (var k = 0; k < x.length; k++) if (Math.abs(x[k] - y[k]) > tol) return false;
+    return true;
+  }
+  var POINTS = [-2.3, -0.7, 0.4, 1.3, 2.9, 5.1];
+  function memeExpr(f, g, vars) {
+    for (var k = 0; k < POINTS.length; k++) {
+      var e = {}; vars.forEach(function (v, j) { e[v] = POINTS[(k + j * 2) % POINTS.length]; });
+      var a = f(e), b = g(e);
+      if (!isFinite(a) || Math.abs(a - b) > 1e-7 * (1 + Math.abs(b))) return false;
+    }
+    return true;
+  }
+
+  /* Vérifie une saisie : { lu: bool, ok: bool, piege: message|null }.  Champ : type num | list | expr | choix. */
+  function verifier(ch, saisie) {
+    var r = { lu: true, ok: false, piege: null }, u, k;
+    if (ch.type === 'choix') { r.ok = saisie === ch.rep; return r; }
+    if (ch.type === 'num') {
+      u = lireNombre(saisie); if (u === null) { r.lu = false; return r; }
+      r.ok = ch.ok ? ch.ok(u) : Math.abs(u - ch.val) <= (ch.tol || 1e-6);
+    } else if (ch.type === 'list') {
+      u = lireListe(saisie); if (u === null) { r.lu = false; return r; }
+      r.ok = memeListe(u, ch.vals, ch.tol || 1e-6);
+    } else if (ch.type === 'expr') {
+      u = parse(saisie, ch.vars); if (!u) { r.lu = false; return r; }
+      r.ok = memeExpr(u, ch.f, ch.vars);
+    }
+    if (!r.ok && ch.pieges) {
+      for (k = 0; k < ch.pieges.length; k++) if (ch.pieges[k].test(u)) { r.piege = ch.pieges[k].msg; break; }
+    }
+    return r;
+  }
+  function pgNum(v, msg) { return { test: function (u) { return typeof u === 'number' && Math.abs(u - v) <= 1e-6; }, msg: msg }; }
+  function pgListe(vals, msg) { return { test: function (u) { return Array.isArray(u) && memeListe(u, vals, 1e-6); }, msg: msg }; }
+  function pgExpr(g, vars, msg) { return { test: function (u) { return typeof u === 'function' && memeExpr(u, g, vars); }, msg: msg }; }
+
+  /* ---------- les exercices ---------- */
+  var EX = [];
+
+  /* 1. Discriminant et racines */
+  EX.push({ id: 'delta', chap: 1, src: 'Cours, à savoir faire', titre: 'Discriminant et racines', min: 6, make: function () {
+    var a, b, c, D, s;
+    do { a = pick([-3, -2, -1, 1, 2, 3, 4]); b = ri(-9, 9); c = ri(-9, 9); D = b * b - 4 * a * c; s = Math.round(Math.sqrt(Math.max(D, 0))); }
+    while (!(b !== 0 && c !== 0 && D > 0 && s * s === D));
+    var den = 2 * a, n1 = -b - s, n2 = -b + s, x1 = n1 / den, x2 = n2 / den;
+    var sol = [x1, x2], trD = [];
+    if (b < 0) trD.push(pgNum(-b * b - 4 * a * c, 'Tu as pris $(' + b + ')^2 = ' + (-b * b) + '$. Le carré d\'un nombre négatif est positif : $(' + b + ')^2 = ' + b * b + '$.'));
+    trD.push(pgNum(b * b + 4 * a * c, 'Tu as calculé $b^2 + 4ac$. La formule est $b^2 - 4ac$ : le signe moins est devant le $4ac$, et $c$ garde son propre signe.'));
+    if (a * c < 0) trD.push(pgNum(b * b - 4 * Math.abs(a * c), 'Le signe de $a$ et celui de $c$ comptent : ici $4ac = ' + 4 * a * c + '$, donc $-4ac = +' + (-4 * a * c) + '$ (moins par moins).'));
+    var pgS = [];
+    if (Math.abs(a) !== 1) pgS.push(pgListe([(-b - s) / 2, (-b + s) / 2], 'Au dénominateur il faut $2a = ' + den + '$ et pas $2$.'));
+    pgS.push(pgListe([(b - s) / den, (b + s) / den], 'Le numérateur commence par $-b = ' + (-b) + '$ : tu as utilisé $b = ' + b + '$.'));
+    return {
+      enonce: ['Résoudre dans $RR$ : ' + M(poly([a, b, c], ['x^2', 'x', '']) + '=0') + '.'],
+      champs: [
+        { lab: '$Delta$ =', type: 'num', val: D, aff: M(N(D)), pieges: trD, ph: 'un nombre' },
+        { lab: 'Solutions', type: 'list', vals: sol, aff: M(frs(n1, den) + ' ; ' + frs(n2, den)), pieges: pgS, ph: 'ex. 2 ; -3/2' }],
+      etapes: [
+        'On repère $a = ' + a + '$, $b = ' + b + '$, $c = ' + c + '$ (avec leur signe).',
+        M('Delta = b^2-4ac = ' + Pp(b) + '^2-4*' + Pp(a) + '*' + Pp(c) + ' = ' + b * b + '-' + Pp(4 * a * c) + ' = ' + D),
+        '$Delta = ' + D + ' > 0$ : deux solutions distinctes. $sqrt(' + D + ') = ' + s + '$ et $2a = ' + den + '$.',
+        M('x_1 = frac(-b-sqrt(Delta),2a) = frac(-' + Pp(b) + '-' + s + ',' + den + ') = frac(' + n1 + ',' + den + ') = ' + frs(n1, den)),
+        M('x_2 = frac(-b+sqrt(Delta),2a) = frac(-' + Pp(b) + '+' + s + ',' + den + ') = frac(' + n2 + ',' + den + ') = ' + frs(n2, den)),
+        'Contrôle : la somme des racines vaut $-frac(b,a) = ' + frs(-b, a) + '$ et le produit $frac(c,a) = ' + frs(c, a) + '$ (c\'est bien le cas).'],
+      retenir: 'Écrire $a$, $b$, $c$ avec leurs signes, puis $Delta$, puis seulement les racines ; le dénominateur est $2a$ (pas $2$).' };
+  } });
+
+  /* 2. Signe d'un trinôme et inéquation */
+  EX.push({ id: 'ineq', chap: 1, src: 'Cours, à savoir faire', titre: 'Inéquation du second degré', min: 7, make: function () {
+    var r1 = ri(-5, 3), r2 = ri(r1 + 1, 5), a = pick([-3, -2, -1, 1, 2]), b = -a * (r1 + r2), c = a * r1 * r2;
+    var op = pick(['>=', '<=', '>', '<']), ferme = op.length === 2, posit = op[0] === '>';
+    var entre = a > 0 ? !posit : posit;                           // l'ensemble des solutions est-il entre les racines ?
+    function iv(ent, f) {
+      return ent ? (f ? '[' : ']') + r1 + ';' + r2 + (f ? ']' : '[')
+        : ']-inf;' + r1 + (f ? ']' : '[') + ' cup ' + (f ? '[' : ']') + r2 + ';+inf[';
+    }
+    var bonne = iv(entre, ferme), opts = [bonne, iv(!entre, ferme), iv(entre, !ferme), iv(!entre, !ferme)], idx = shuffle([0, 1, 2, 3]);
+    var D = b * b - 4 * a * c, s = Math.round(Math.sqrt(D)), sg = a > 0 ? '+' : '-', sgIn = a > 0 ? '-' : '+';
+    return {
+      enonce: ['Résoudre dans $RR$ : ' + M(poly([a, b, c], ['x^2', 'x', '']) + ' ' + op + ' 0') + '.'],
+      champs: [
+        { lab: 'Racines du trinôme', type: 'list', vals: [r1, r2], aff: M(r1 + ' ; ' + r2), ph: 'ex. -2 ; 3' },
+        { lab: 'Ensemble des solutions', type: 'choix', opts: idx.map(function (k) { return M(opts[k]); }), rep: idx.indexOf(0), aff: M(bonne) }],
+      etapes: [
+        M('Delta = ' + Pp(b) + '^2-4*' + Pp(a) + '*' + Pp(c) + ' = ' + D + ' >0') + ' : deux racines, ' + M('sqrt(' + D + ') = ' + s) + '.',
+        M('x_1 = frac(-' + Pp(b) + '-' + s + ',' + 2 * a + ') = ' + r1 + ' ; x_2 = frac(-' + Pp(b) + '+' + s + ',' + 2 * a + ') = ' + r2) + ' (rangées dans l\'ordre croissant).',
+        'Le coefficient de $x^2$ est $a = ' + a + '$ : le trinôme est du signe de $a$ **à l\'extérieur** des racines et du signe contraire **entre** les racines. Signe : $' + sg + '$ sur $]-inf;' + r1 + '[$, $' + sgIn + '$ sur $]' + r1 + ';' + r2 + '[$, $' + sg + '$ sur $]' + r2 + ';+inf[$.',
+        'On cherche $' + (posit ? '>' : '<') + (ferme ? '=' : '') + ' 0$ : on garde les zones ' + (posit ? '$+$' : '$-$') + (ferme ? ', racines comprises (crochets fermés)' : ', racines exclues (crochets ouverts)') + '.',
+        'Ensemble des solutions : ' + M(bonne) + '.'],
+      retenir: 'Racines, puis signe de $a$, puis tableau de signes ; les crochets sont fermés pour $\\leq$ et $\\geq$, ouverts pour $<$ et $>$.'.replace(/\\leq/g, '<=').replace(/\\geq/g, '>=') };
+  } });
+
+  /* 3. Équation bicarrée */
+  EX.push({ id: 'bicarree', chap: 1, src: 'Cours, à savoir faire', titre: 'Équation bicarrée', min: 6, make: function () {
+    var cas = pick(['deux', 'un', 'un']), X1, X2, a = pick([1, 1, 2]);
+    if (cas === 'deux') { X1 = pick([1, 4, 9]); do { X2 = pick([1, 4, 9, 16]); } while (X2 === X1); }
+    else { X1 = pick([1, 4, 9, 16]); X2 = -pick([1, 2, 3, 4, 5, 6, 8]); }
+    var b = -a * (X1 + X2), c = a * X1 * X2, pos = [X1, X2].filter(function (x) { return x > 0; }), sols = [];
+    pos.forEach(function (x) { sols.push(Math.sqrt(x), -Math.sqrt(x)); });
+    var D = b * b - 4 * a * c, s = Math.round(Math.sqrt(D));
+    return {
+      enonce: ['Résoudre dans $RR$ : ' + M(poly([a, b, c], ['x^4', 'x^2', '']) + '=0') + '.', 'On pose $X = x^2$.'],
+      champs: [
+        { lab: 'Valeurs de $X$', type: 'list', vals: [X1, X2], aff: M(X1 + ' ; ' + X2), ph: 'ex. 4 ; -1' },
+        { lab: 'Solutions en $x$', type: 'list', vals: sols, aff: M(sols.map(N).join(' ; ')), ph: 'ex. -2 ; 2',
+          pieges: [pgListe(pos.map(Math.sqrt), 'Chaque $X>0$ donne **deux** solutions : $x = sqrt(X)$ et $x = -sqrt(X)$.'),
+                   pgListe([X1, X2], 'Ce sont les valeurs de $X = x^2$ ; il faut revenir à $x$ avec $x^2 = X$.')] }],
+      etapes: [
+        M('X = x^2') + ' : l\'équation devient ' + M(poly([a, b, c], ['X^2', 'X', '']) + '=0') + '.',
+        M('Delta = ' + Pp(b) + '^2-4*' + Pp(a) + '*' + Pp(c) + ' = ' + D) + ', ' + M('sqrt(' + D + ') = ' + s) + '. ' + M('X_1 = frac(-' + Pp(b) + '-' + s + ',' + 2 * a + ') = ' + frs(-b - s, 2 * a) + ' ; X_2 = frac(-' + Pp(b) + '+' + s + ',' + 2 * a + ') = ' + frs(-b + s, 2 * a)) + ' (somme $' + frs(-b, a) + '$, produit $' + frs(c, a) + '$).',
+        'Comme $X = x^2 >= 0$, on **rejette** toute valeur négative de $X$' + (X2 < 0 ? ' : $X = ' + X2 + '$ est rejetée.' : ' (ici les deux sont positives, on les garde).'),
+        pos.map(function (x) { return 'Pour $X = ' + x + '$ : $x^2 = ' + x + '$ donc $x = ' + N(Math.sqrt(x)) + '$ ou $x = ' + N(-Math.sqrt(x)) + '$.'; }).join(' '),
+        'Ensemble des solutions : ' + M('set(' + sols.map(N).join(' ; ') + ')') + '.'],
+      retenir: 'Poser $X = x^2$, résoudre, **rejeter les $X<0$**, puis chaque $X>0$ donne deux solutions $\\pm sqrt(X)$.'.replace('\\pm', 'pm') };
+  } });
+
+  /* ---------- aides communes aux exercices d'annale ---------- */
+  function sqs(n) { var k = 1, d; for (d = 2; d * d <= n; d++) while (n % (d * d) === 0) { n /= d * d; k *= d; } return { k: k, m: n }; }     // n = k² m
+  function cs(k) { return k === 0 ? '' : (k < 0 ? '-' : '+') + Math.abs(k); }                                                        // constante signée « +3 », « -2 », ''
+  function bornes(liste, ferme) {                                                                                                    // [[a,b],…] -> « ]-inf;1[ cup ]2;+inf[ »
+    return liste.map(function (I) {
+      var lo = I[0] === -Infinity ? '-inf' : N(I[0]), hi = I[1] === Infinity ? 'inf' : N(I[1]);
+      return (I[0] === -Infinity || !ferme ? ']' : '[') + lo + ';' + (I[1] === Infinity ? '+' : '') + hi + (I[1] === Infinity || !ferme ? '[' : ']');
+    }).join(' cup ');
+  }
+  function plus(s) { return s.charAt(0) === '-' ? s : '+' + s; }
+  var VF = ['vrai', 'faux'];
+
+  /* 4. [Annale T1, exercice 1] Équation symétrique du 4e degré */
+  EX.push({ id: 'symetrique', chap: 1, src: 'Annale T1, exercice 1', titre: 'Équation symétrique du 4e degré', min: 8, make: function () {
+    var P = pick([[-4, -6], [-3, -5], [-5, -7], [-3, -4], [-4, -5], [-6, -8], [3, 5], [4, 6], [-3, -6], [5, 7], [-4, -7], [3, -5], [-3, 5], [-5, -6]]), X1 = P[0], X2 = P[1];
+    var a = -(X1 + X2), c = X1 * X2, mid = c + 2;
+    var det = [X1, X2].map(function (X) { var D = X * X - 4, r = sqs(D); return { X: X, D: D, k: r.k, m: r.m, s: Math.sqrt(D) }; });
+    function forme(d, sg) {
+      if (d.X % 2 === 0 && d.k % 2 === 0) return N(d.X / 2) + sg + (d.k / 2 === 1 ? '' : d.k / 2) + 'sqrt(' + d.m + ')';
+      return 'frac(' + d.X + sg + (d.k === 1 ? '' : d.k) + 'sqrt(' + d.m + '),2)';
+    }
+    var sols = [];
+    det.forEach(function (d) { sols.push({ v: (d.X - d.s) / 2, t: forme(d, '-') }, { v: (d.X + d.s) / 2, t: forme(d, '+') }); });
+    sols.sort(function (p, q) { return p.v - q.v; });
+    return {
+      enonce: ['Soit l\'équation (E) dans $RR$ : ' + M(poly([1, a, mid, a, 1], ['x^4', 'x^3', 'x^2', 'x', '']) + ' = 0') + '. Comme $0$ n\'est pas solution, on peut diviser par $x^2$.',
+               'On pose ' + M('X = x + frac(1,x)') + ' et on rappelle que ' + M('x^2 + frac(1,x^2) = X^2 - 2') + '. Si $x$ est solution de (E), alors $X$ est solution de (E″) : ' + M(poly([1, a, 0], ['X^2', 'X', '']) + ' + c = 0') + '.'],
+      champs: [
+        { lab: 'Valeur de $c$', type: 'num', val: c, aff: M(N(c)), ph: 'un entier', pieges: [pgNum(mid, 'Tu as pris le coefficient de $x^2$. Il faut retrancher $2$ : $x^2 + frac(1,x^2) = X^2 - 2$, donc $c = ' + mid + ' - 2$.')] },
+        { lab: 'Solutions de (E″), c\'est-à-dire les valeurs de $X$', type: 'list', vals: [X1, X2], aff: M(Math.min(X1, X2) + ' ; ' + Math.max(X1, X2)), ph: 'ex. -4 ; -6' },
+        { lab: 'Solutions de (E), en valeurs exactes', type: 'list', vals: sols.map(function (s) { return s.v; }), tol: 1e-6, aff: M(sols.map(function (s) { return s.t; }).join(' ; ')), ph: 'ex. -2-sqrt(3) ; -2+sqrt(3) ; …',
+          pieges: [pgListe([X1, X2], 'Ce sont les valeurs de $X = x + frac(1,x)$. Il faut revenir à $x$ : $x + frac(1,x) = X$ donne $x^2 - Xx + 1 = 0$.')] }],
+      etapes: [
+        'On divise (E) par $x^2$ : ' + M(poly([1, a, mid, a, 1], ['x^2', 'x', '', 'frac(1,x)', 'frac(1,x^2)']) + ' = 0') + ', puis on regroupe : ' + M(poly([1, a, mid], ['(x^2+frac(1,x^2))', '(x+frac(1,x))', '']) + ' = 0') + '.',
+        'Avec $X = x + frac(1,x)$ : ' + M('(X^2-2)' + (a < 0 ? '-' : '+') + Math.abs(a) + 'X' + cs(mid) + ' = 0') + ', soit ' + M(poly([1, a, c], ['X^2', 'X', '']) + ' = 0') + '. Donc $c = ' + mid + ' - 2 = ' + c + '$.',
+        'On cherche deux nombres de somme $' + (-a) + '$ et de produit $' + c + '$ : ' + M('X = ' + X1) + ' et ' + M('X = ' + X2) + ' (on peut aussi calculer $Delta$).'].concat(det.map(function (d) {
+          return 'Si ' + M('X = ' + d.X) + ' : ' + M('x + frac(1,x) = ' + d.X) + ' donne ' + M('x^2 ' + (d.X < 0 ? '+' : '-') + ' ' + Math.abs(d.X) + 'x + 1 = 0') + '. ' + M('Delta = ' + Pp(d.X) + '^2 - 4 = ' + d.D) +
+            (d.k > 1 ? ' = ' + M(d.k + '^2 * ' + d.m) + ', donc ' + M('sqrt(Delta) = ' + d.k + 'sqrt(' + d.m + ')') : ', donc ' + M('sqrt(Delta) = sqrt(' + d.m + ')')) + '. Solutions : ' + M(forme(d, '-')) + ' et ' + M(forme(d, '+')) + '.';
+        })).concat(['Ensemble des solutions de (E) : ' + M('set(' + sols.map(function (s) { return s.t; }).join(' ; ') + ')') + '. Les solutions de (E) sont celles de (E′), puisque $x != 0$.']),
+      retenir: 'Diviser par $x^2$, poser $X = x + frac(1,x)$ avec $x^2 + frac(1,x^2) = X^2 - 2$ (**le $-2$ !**), résoudre en $X$, puis **une équation $x^2 - Xx + 1 = 0$ par valeur de $X$**.' };
+  } });
+
+  /* 5. [Annale T1, exercice 2, partie C] Chiffres d'un nombre */
+  EX.push({ id: 'chiffres', chap: 1, src: 'Annale T1, exercice 2 (partie C)', titre: 'Chiffres d\'un nombre', min: 6, make: function () {
+    var a, b; do { a = ri(1, 8); b = ri(1, 9); } while (a === b);
+    var S = a + b, k = 10 * b + a - a * b, Nn = 10 * a + b, Nr = 10 * b + a, autre = a - 9, p = -(S - 9), q = -(k - S), D = p * p - 4 * q, s = Math.round(Math.sqrt(D));
+    return {
+      enonce: ['Déterminer un entier naturel $N$ à deux chiffres tel que la somme des chiffres donne $' + S + '$ et que, si on ajoute $' + k + '$ au produit des chiffres, on obtienne un entier naturel $N\'$ qui a les mêmes chiffres que $N$ mais disposés dans un ordre différent.',
+               'On note $N = ab$ : $a$ est le chiffre des dizaines et $b$ celui des unités. On obtient, en remplaçant $a$ par $' + S + ' - b$, une équation du second degré en $b$.'],
+      champs: [
+        { lab: 'Racines de cette équation en $b$', type: 'list', vals: [b, autre], aff: M(autre + ' ; ' + b), ph: 'ex. -3 ; 7', pieges: [pgListe([b], 'L\'équation a **deux** racines : $' + autre + '$ et $' + b + '$. C\'est ensuite qu\'on rejette celle qui n\'est pas un chiffre.')] },
+        { lab: 'Le nombre $N$', type: 'num', val: Nn, aff: M(N(Nn)), ph: 'un entier à deux chiffres', pieges: [pgNum(Nr, '$' + Nr + '$ est $N\'$ (chiffres dans l\'autre ordre). $N = ab$ a pour dizaines $a = ' + a + '$ et pour unités $b = ' + b + '$.')] }],
+      etapes: [
+        'Les conditions donnent le système ' + M('a + b = ' + S) + ' et ' + M('ab + ' + k + ' = 10b + a') + ' ($N\' = ba = 10b + a$).',
+        'On remplace $a = ' + S + ' - b$ : ' + M('(' + S + '-b)b + ' + k + ' = 10b + ' + S + ' - b') + ', donc ' + M(poly([1, p, q], ['b^2', 'b', '']) + ' = 0') + '.',
+        M('Delta = ' + Pp(p) + '^2 - 4*' + Pp(q) + ' = ' + D) + ', ' + M('sqrt(' + D + ') = ' + s) + ' : ' + M('b = frac(' + (-p) + '-' + s + ',2) = ' + frs(-p - s, 2)) + ' ou ' + M('b = frac(' + (-p) + '+' + s + ',2) = ' + frs(-p + s, 2)) + '.',
+        'Un chiffre est positif : on rejette $' + autre + '$, donc $b = ' + b + '$ et $a = ' + S + ' - ' + b + ' = ' + a + '$.',
+        'Le nombre cherché est $N = ' + Nn + '$. Contrôle : $' + a + ' + ' + b + ' = ' + S + '$ ; $' + a + ' * ' + b + ' + ' + k + ' = ' + (a * b + k) + ' = N\'$ avec $N\' = ' + Nr + '$.'],
+      retenir: 'Écrire $N = 10a + b$ ; traduire chaque phrase par une équation ; substituer pour n\'avoir qu\'une inconnue ; **rejeter** la racine qui n\'est pas un chiffre.' };
+  } });
+
+  /* 6. [Annale T2, exercice 4] Polynôme à paramètre de degré 3 */
+  EX.push({ id: 'poly', chap: 1, src: 'Annale T2, exercice 4', titre: 'Polynôme de degré 3 à paramètre', min: 8, make: function () {
+    var r2, r3, mm = pick([1, 1, 2]);
+    do { r2 = pick([-3, -2, 1, 2, 3, 4]); r3 = pick([-3, -2, 1, 2, 3, 4]); } while (r2 === r3);
+    var b = -mm * (r2 + r3), c = mm * r2 * r3, p = mm + b, q = b + c, s = c;
+    var racines = [-1, r2, r3].sort(function (x, y) { return x - y; }), op = pick(['>', '>', '<', '>=', '<=']), ferme = op.length === 2, posit = op[0] === '>';
+    var I = [[-Infinity, racines[0]], [racines[0], racines[1]], [racines[1], racines[2]], [racines[2], Infinity]];       // P a le signe de mm sur la dernière zone, puis alterne
+    var bonnes = [];
+    I.forEach(function (J, k) { var signe = (mm > 0) ? (k % 2 === 1 ? 1 : -1) : (k % 2 === 1 ? -1 : 1); if ((signe > 0) === posit) bonnes.push(J); });
+    var bonne = bornes(bonnes, ferme), compl = bornes(I.filter(function (J) { return bonnes.indexOf(J) < 0; }), ferme);
+    var opts = [bonne, compl, bornes(bonnes, !ferme), bornes(I.filter(function (J) { return bonnes.indexOf(J) < 0; }), !ferme)], idx = shuffle([0, 1, 2, 3]);
+    var Dq = b * b - 4 * mm * c, sq = Math.round(Math.sqrt(Dq));
+    var poste = plus(poly([p, q, s], ['x^2', 'x', '']));
+    return {
+      enonce: ['Soit le polynôme $P$ défini par ' + M('P(x) = mx^3' + poste) + ', avec $m$ réel non nul.',
+               '1. Déterminer $m$ pour que $-1$ soit racine de $P$. Par la suite, $m$ a cette valeur.',
+               '2. Déterminer les réels $a$, $b$, $c$ tels que, pour tout $x$, ' + M('P(x) = (x+1)(ax^2+bx+c)') + '.',
+               '3. Résoudre ' + M('P(x) ' + op + ' 0') + '.'],
+      champs: [
+        { lab: 'Valeur de $m$', type: 'num', val: mm, aff: M(N(mm)), ph: 'un entier', pieges: [pgNum(-mm, 'Attention au signe : $P(-1) = -m + ' + Pp(p) + ' - ' + Pp(q) + ' + ' + Pp(s) + ' = 0$, donc $m = ' + mm + '$ (le terme en $m$ est $m * (-1)^3 = -m$).')] },
+        { lab: 'Valeur de $a$', type: 'num', val: mm, aff: M(N(mm)), ph: 'un nombre' },
+        { lab: 'Valeur de $b$', type: 'num', val: b, aff: M(N(b)), ph: 'un nombre', pieges: [pgNum(p, 'Tu as pris le coefficient de $x^2$. En développant, le coefficient de $x^2$ est $a + b$, donc $b = ' + p + ' - ' + mm + '$.')] },
+        { lab: 'Valeur de $c$', type: 'num', val: c, aff: M(N(c)), ph: 'un nombre', pieges: [pgNum(-c, 'Le terme constant du produit $(x+1)(ax^2+bx+c)$ est $1 * c = c$ : pas son opposé.')] },
+        { lab: 'Ensemble solution de $P(x) ' + op + ' 0$', type: 'choix', opts: idx.map(function (k) { return M(opts[k]); }), rep: idx.indexOf(0), aff: M(bonne) }],
+      etapes: [
+        M('P(-1) = -m + ' + Pp(p) + ' - ' + Pp(q) + ' + ' + Pp(s) + ' = 0') + ' donne ' + M('m = ' + p + ' - ' + Pp(q) + ' + ' + Pp(s) + ' = ' + mm) + '.',
+        'En développant : ' + M('(x+1)(ax^2+bx+c) = ax^3 + (a+b)x^2 + (b+c)x + c') + '. Par identification : ' + M('a = ' + mm) + ', ' + M('a + b = ' + p) + ', ' + M('b + c = ' + q) + ', ' + M('c = ' + s) + '. D\'où ' + M('b = ' + p + ' - ' + mm + ' = ' + b) + ' et ' + M('c = ' + c) + ' (contrôle : $b + c = ' + (b + c) + ' = ' + q + '$).',
+        'Donc ' + M('P(x) = (x+1)(' + poly([mm, b, c], ['x^2', 'x', '']) + ')') + '. Le trinôme : ' + M('Delta = ' + Pp(b) + '^2 - 4*' + mm + '*' + Pp(c) + ' = ' + Dq) + ', ' + M('sqrt(' + Dq + ') = ' + sq) + ', racines $' + r2 + '$ et $' + r3 + '$.',
+        'Racines de $P$ rangées : $' + racines.join('$, $') + '$. Tableau de signes (le signe de $P$ à droite de la dernière racine est celui de $m = ' + mm + '$, positif, puis il alterne) : ' + [3, 2, 1, 0].map(function (k) { var J = I[k], signe = k % 2 === 1 ? '+' : '-'; return 'sur ' + M(bornes([J], false)) + ' : $' + signe + '$'; }).join(' ; ') + '.',
+        'On veut $P(x) ' + op + ' 0$ : ' + (posit ? 'les zones $+$' : 'les zones $-$') + (ferme ? ', racines comprises' : ', racines exclues') + '. Ensemble solution : ' + M(bonne) + '.'],
+      retenir: '$P(r) = 0$ donne $m$ ; **identification** des coefficients de $(x - r)(ax^2+bx+c)$ ; racines du trinôme ; tableau de signes à trois facteurs, puis lecture avec les bons crochets.' };
+  } });
+
+  /* 7. [Annale T1, exercice 3] Vrai ou faux avec justification */
+  EX.push({ id: 'vraifaux', chap: 2, src: 'Annale T1, exercice 3', titre: 'Vrai ou faux, avec justification', min: 7, make: function () {
+    var al = pick([1, 2, 2, 3]), be = pick([-4, -3, -2, -1, 1]), ga = pick([1, 2, 3, -1]), cl = pick(['croissante', 'décroissante']), d0 = al + be;
+    var v1 = cl === 'croissante' ? d0 >= 0 : false, un = poly([al, be, ga], ['n^2', 'n', '']);
+    var lam = pick([2, 3, 5, -2, -3, -1]), mu = pick([-3, -1, 2, 4]), v2 = lam > 0;
+    var VAR = [
+      { t: 'Si tous les termes d\'une suite sont négatifs, alors la suite est décroissante.', v: false, e: 'Faux. Contre-exemple : $u_n = -frac(1,n)$ ($n >= 1$) a tous ses termes négatifs ($-1$, $-frac(1,2)$, $-frac(1,3)$…) mais **croît** vers $0$. Le signe des termes ne donne pas le sens de variation.' },
+      { t: 'Si tous les termes d\'une suite sont positifs, alors la suite est croissante.', v: false, e: 'Faux. Contre-exemple : $u_n = frac(1,n)$ ($n >= 1$) a tous ses termes positifs mais **décroît**. Le signe des termes ne donne pas le sens de variation.' },
+      { t: 'Si une suite est croissante, alors tous ses termes sont positifs.', v: false, e: 'Faux. Contre-exemple : $u_n = n - 5$ est croissante mais $u_0 = -5 < 0$.' },
+      { t: 'Si $u_{n+1} - u_n < 0$ pour tout entier $n$, alors la suite $(u_n)$ est décroissante.', v: true, e: 'Vrai. C\'est exactement la méthode : le signe de $u_{n+1} - u_n$ donne le sens de variation.' }];
+    var s3 = pick(VAR), c = pick([-3, -2, 2, 3, -4]), W = pick([1, 2, 3, -1]), vrai4 = c + 1 + W, faux4 = c * c + c + W, dit4 = pick([true, false]), val4 = dit4 ? vrai4 : faux4;
+    function ch(lab, v) { return { lab: lab, type: 'choix', opts: VF, rep: v ? 0 : 1, aff: v ? 'vrai' : 'faux' }; }
+    var e1 = 'Pour tout $n$ : ' + M('u_{n+1} - u_n = (' + poly([al, be, ga], ['(n+1)^2', '(n+1)', '']) + ') - (' + un + ') = ' + poly([2 * al, d0], ['n', ''])) + '. ' +
+      (cl === 'décroissante' ? 'Pour $n = 5$, cette différence vaut $' + (10 * al + d0) + ' > 0$ : $u_6 > u_5$, la suite n\'est pas décroissante. **Faux.**'
+        : (d0 >= 0 ? 'Pour tout $n >= 0$, $' + (2 * al) + 'n >= 0$ et $' + d0 + ' >= 0$, donc $u_{n+1} - u_n >= 0$ : la suite est croissante. **Vrai.**'
+          : 'Pour $n = 0$, $u_1 - u_0 = ' + d0 + ' < 0$ : la suite n\'est pas croissante (elle baisse d\'abord puis monte). **Faux.**'));
+    return {
+      enonce: ['Dire si chaque affirmation est vraie ou fausse, en justifiant.',
+               '1. La suite $(u_n)$ définie sur $NN$ par ' + M('u_n = ' + un) + ' est ' + cl + '.',
+               '2. Si deux suites $(u_n)$ et $(v_n)$ vérifient ' + M('u_n = ' + N(lam) + 'v_n ' + (mu < 0 ? '-' : '+') + ' ' + Math.abs(mu)) + ' pour tout $n$, alors elles ont le même sens de variation.',
+               '3. ' + s3.t,
+               '4. Soit $(w_n)$ définie sur $NN$ par ' + M('w_{n+1} = ' + Pp(c) + '^n + w_n') + ' et ' + M('w_0 = ' + W) + '. Le troisième terme de cette suite est ' + M('w_2 = ' + val4) + '.'],
+      champs: [ch('Affirmation 1', v1), ch('Affirmation 2', v2), ch('Affirmation 3', s3.v), ch('Affirmation 4', dit4)],
+      etapes: [
+        '**1.** ' + e1,
+        '**2.** ' + M('u_{n+1} - u_n = (' + N(lam) + 'v_{n+1}' + cs(mu) + ') - (' + N(lam) + 'v_n' + cs(mu) + ') = ' + N(lam) + '(v_{n+1} - v_n)') + '. ' +
+          (v2 ? 'Le facteur $' + lam + '$ est positif : $u_{n+1} - u_n$ et $v_{n+1} - v_n$ ont le même signe, donc les suites ont le même sens de variation. **Vrai.**'
+            : 'Le facteur $' + lam + '$ est négatif : $u_{n+1} - u_n$ et $v_{n+1} - v_n$ ont des signes **opposés** (si $v$ croît, $u$ décroît). **Faux.**'),
+        '**3.** ' + s3.e,
+        '**4.** Le premier terme est $w_0$, donc le troisième est $w_2$. ' + M('w_1 = ' + Pp(c) + '^0 + w_0 = 1 + ' + Pp(W) + ' = ' + (1 + W)) + ' ; ' + M('w_2 = ' + Pp(c) + '^1 + w_1 = ' + Pp(c) + ' + ' + Pp(1 + W) + ' = ' + vrai4) + '. ' +
+          (dit4 ? 'L\'affirmation annonce $' + val4 + '$ : **Vrai.**' : 'L\'affirmation annonce $' + val4 + '$, mais $w_2 = ' + vrai4 + '$ (l\'exposant est $n$ = le rang du terme de départ, pas $n+1$). **Faux.**')],
+      retenir: 'Vrai : le prouver par un calcul de $u_{n+1} - u_n$. Faux : donner **un contre-exemple** précis. Le signe des termes n\'est pas le sens de variation.' };
+  } });
+
+  /* 8. [Annale T1, exercice 4, questions 1 à 4] Capital avec intérêts et retrait */
+  EX.push({ id: 'capital', chap: 2, src: 'Annale T1, exercice 4', titre: 'Capital avec intérêts et retrait', min: 8, make: function () {
+    var cb = pick([[0.02, 60], [0.02, 100], [0.02, 120], [0.03, 60], [0.03, 90], [0.03, 150], [0.04, 80], [0.04, 100], [0.04, 120], [0.05, 50], [0.05, 100], [0.05, 150]]);
+    var t = cb[0], R = cb[1], S = Math.round(R / t), cas = pick(['min', 'min', 'faible', 'maj']), u0, B;
+    if (cas === 'maj') u0 = S - (S >= 2000 ? pick([500, 1000]) : 500); else u0 = S + pick([500, 1000, 1500]);
+    B = cas === 'faible' ? S - (S >= 2000 ? 1000 : 500) : S;
+    var q = rd(1 + t), u1 = rd(q * u0 - R), u2 = rd(q * u1 - R), rep = cas === 'min' ? 0 : (cas === 'maj' ? 1 : 2), ine = cas === 'maj' ? '<=' : '>=', bord = rd(t * B - R);
+    return {
+      enonce: ['Un investisseur place un capital initial de $' + u0 + '$ euros sur un compte rémunéré. Chaque mois, le capital augmente de $' + dec(t * 100) + '$ % puis l\'investisseur retire $' + R + '$ euros. On note $(u_n)$ la suite définie par ' + M('u_0 = ' + u0) + ', où $u_n$ est le capital (en euros) au début du $n$-ième mois.',
+               'Pour tout entier $n$, on a ' + M('u_{n+1} = k u_n - ' + R) + '. On admet que, pour tout $n$, ' + M('u_n ' + ine + ' ' + B) + '.'],
+      champs: [
+        { lab: 'Valeur de $k$', type: 'num', val: q, aff: M(N(q)), ph: 'un décimal', pieges: [pgNum(t, 'Augmenter de $' + dec(t * 100) + '$ % revient à multiplier par $1 + ' + N(t) + ' = ' + N(q) + '$ : il faut garder le capital $u_n$ lui-même.')] },
+        { lab: '$u_1$ =', type: 'num', val: u1, tol: 0.01, aff: M(N(u1)), ph: 'un nombre', pieges: [pgNum(rd(t * u0 - R), 'Tu as utilisé $' + N(t) + '$ au lieu de $' + N(q) + '$ : il faut ajouter les intérêts au capital.')] },
+        { lab: '$u_2$ =', type: 'num', val: u2, tol: 0.01, aff: M(N(u2)) , ph: 'un nombre' },
+        { lab: 'On peut en déduire que la suite est', type: 'choix', opts: ['croissante', 'décroissante', 'on ne peut pas conclure'], rep: rep, aff: ['croissante', 'décroissante', 'on ne peut pas conclure'][rep] }],
+      etapes: [
+        'Chaque mois : ' + M('u_{n+1} = u_n + ' + N(t) + 'u_n - ' + R + ' = ' + N(q) + 'u_n - ' + R) + ', donc $k = ' + N(q) + '$.',
+        M('u_1 = ' + N(q) + ' * ' + u0 + ' - ' + R + ' = ' + N(rd(q * u0)) + ' - ' + R + ' = ' + N(u1)) + ' ; ' + M('u_2 = ' + N(q) + ' * ' + N(u1) + ' - ' + R + ' = ' + N(u2)) + '.',
+        M('u_{n+1} - u_n = ' + N(q) + 'u_n - ' + R + ' - u_n = ' + N(t) + 'u_n - ' + R) + '.',
+        cas === 'min' ? 'Comme $u_n >= ' + B + '$ : ' + M(N(t) + 'u_n - ' + R + ' >= ' + N(t) + ' * ' + B + ' - ' + R + ' = ' + N(bord)) + ', donc $u_{n+1} - u_n >= 0$ : la suite est **croissante**.'
+          : (cas === 'maj' ? 'Comme $u_n <= ' + B + '$ : ' + M(N(t) + 'u_n - ' + R + ' <= ' + N(t) + ' * ' + B + ' - ' + R + ' = ' + N(bord)) + ', donc $u_{n+1} - u_n <= 0$ : la suite est **décroissante**.'
+            : 'Comme $u_n >= ' + B + '$ : ' + M(N(t) + 'u_n - ' + R + ' >= ' + N(t) + ' * ' + B + ' - ' + R + ' = ' + N(bord)) + ', **négatif** : cette minoration est trop faible pour prouver que $u_{n+1} - u_n >= 0$. Il faudrait $u_n >= ' + S + '$ (car $' + N(t) + ' * ' + S + ' = ' + R + '$). On ne peut pas conclure avec cette information.')],
+      retenir: '$+ t$ % : multiplier par $1 + t$. Sens de variation : $u_{n+1} - u_n = t u_n - R$, et on **encadre $u_n$** par l\'information admise ; le seuil est $R / t$ (ici $' + S + '$). Avec une minoration plus faible, on ne conclut pas.' };
+  } });
+
+  /* 9. [Annale T1, exercice 4, question 6] Forme explicite A q^n + B */
+  EX.push({ id: 'explicite', chap: 2, src: 'Annale T1, exercice 4 (question 6)', titre: 'Forme explicite : sens de variation', min: 4, make: function () {
+    var A = pick([1000, 2000, 500, -1000, -500]), q = pick([1.02, 1.03, 1.05, 1.01, 0.98, 0.95]), B = pick([5000, 2000, 3000, -2000]), K = rd(A * (q - 1)), rep = K > 0 ? 0 : 1;
+    return {
+      enonce: ['On suppose que, pour tout $n$ de $NN$, ' + M('u_n = ' + N(A) + ' * ' + N(q) + '^n' + cs(B)) + '. En déduire le sens de variation de $(u_n)$.',
+               'On écrit ' + M('u_{n+1} - u_n = K * ' + N(q) + '^n') + '.'],
+      champs: [
+        { lab: 'Valeur de $K$', type: 'num', val: K, aff: M(N(K)), ph: 'un nombre', pieges: [pgNum(rd(q - 1), 'Il manque le facteur $' + A + '$ : $u_{n+1} - u_n = A q^n (q-1)$ donc $K = A(q-1)$.')] },
+        { lab: 'La suite $(u_n)$ est', type: 'choix', opts: ['croissante', 'décroissante'], rep: rep, aff: ['croissante', 'décroissante'][rep] }],
+      etapes: [
+        M('u_{n+1} - u_n = (' + N(A) + ' * ' + N(q) + '^{n+1}' + cs(B) + ') - (' + N(A) + ' * ' + N(q) + '^n' + cs(B) + ')') + ' : la constante disparaît.',
+        'On factorise par $' + N(A) + ' * ' + N(q) + '^n$ : ' + M('u_{n+1} - u_n = ' + N(A) + ' * ' + N(q) + '^n (' + N(q) + ' - 1) = ' + N(K) + ' * ' + N(q) + '^n') + '. Donc $K = ' + N(K) + '$.',
+        'Comme $' + N(q) + '^n > 0$, le signe de la différence est celui de $K = ' + N(K) + '$ : ' + (K > 0 ? 'positif, donc $(u_n)$ est **croissante**.' : 'négatif, donc $(u_n)$ est **décroissante**.')],
+      retenir: '$u_{n+1} - u_n = A q^n (q-1)$ : avec $q > 0$, le signe dépend seulement de $A$ et de $q - 1$.' };
+  } });
+
+  /* 10. [Annale T2, exercice 1, question 3] Écrire u_{n+1} */
+  EX.push({ id: 'ecrire', chap: 2, src: 'Annale T2, exercice 1 (question 3)', titre: 'Écrire $u_{n+1}$ et la différence', min: 4, make: function () {
+    var c = pick([2, 3]), d = pick([1, 2, 3, 4]);
+    function f(base, k) { return N(c) + '^{' + base + '}-n' + cs(k); }
+    var opts = [f('n+1', d - 1), f('n+1', d), f('n+1', d + 1), f('n', d - 1)], idx = shuffle([0, 1, 2, 3]);
+    return {
+      enonce: ['Soit la suite $(u_n)$ définie sur $NN$ par ' + M('u_n = ' + N(c) + '^n - n' + cs(d)) + '.'],
+      champs: [
+        { lab: 'Alors $u_{n+1}$ est égal à', type: 'choix', opts: idx.map(function (k) { return M(opts[k]); }), rep: idx.indexOf(0), aff: M(opts[0]) },
+        { lab: '$u_{n+1} - u_n$ =', type: 'expr', vars: ['n'], f: function (e) { return (c - 1) * Math.pow(c, e.n) - 1; }, aff: M(N(c - 1) + ' * ' + N(c) + '^n - 1'), ph: 'ex. 3*2^n-1',
+          pieges: [pgExpr(function (e) { return (c - 1) * Math.pow(c, e.n); }, ['n'], 'Il manque le $-1$ : $-(n+1) - (-n) = -1$, donc la différence contient aussi $-1$.')] }],
+      etapes: [
+        'On remplace $n$ par $n+1$ **partout**, avec des parenthèses : ' + M('u_{n+1} = ' + N(c) + '^{n+1} - (n+1)' + cs(d)) + '.',
+        'On simplifie : ' + M('-(n+1)' + cs(d) + ' = -n' + cs(d - 1)) + ', donc ' + M('u_{n+1} = ' + opts[0]) + '.',
+        M('u_{n+1} - u_n = ' + N(c) + '^{n+1} - ' + N(c) + '^n - 1 = ' + N(c) + '^n(' + N(c) + ' - 1) - 1 = ' + (c - 1) + ' * ' + N(c) + '^n - 1') + '.'],
+      retenir: 'Remplacer $n$ par $n+1$ partout (parenthèses autour de $n+1$), puis développer : le $-n$ devient $-(n+1) = -n - 1$.' };
+  } });
+
+  /* 11. [Annale T2, exercice 5, partie A] Arbre sur deux années, indépendance */
+  EX.push({ id: 'club', chap: 3, src: 'Annale T2, exercice 5 (partie A)', titre: 'Arbre sur deux années', min: 7, make: function () {
+    var p = pick([20, 30, 40, 50]), x = pick([70, 80, 90]), y = pick([10, 20, 30]), ind = pick([false, false, true]);
+    if (ind) y = x;
+    var pi = p / 100, px = x / 100, py = y / 100, inter = rd(pi * px), inter2 = rd((1 - pi) * py), pC2 = rd(inter + inter2), inv = inter / pC2, indep = Math.abs(px - pC2) < 1e-9;
+    return {
+      enonce: ['Dans un lycée, on étudie la participation des élèves à un club scientifique. En 2024, $' + p + '$ % des élèves participent au club. Entre 2024 et 2025, $' + x + '$ % des élèves inscrits au club en 2024 se réinscrivent en 2025, et $' + y + '$ % des élèves qui n\'étaient pas inscrits en 2024 rejoignent le club en 2025.',
+               'On choisit un élève au hasard. $C_1$ : « l\'élève est inscrit en 2024 » ; $C_2$ : « l\'élève est inscrit en 2025 ».'],
+      champs: [
+        { lab: '$P(C_1 cap C_2)$ =', type: 'num', val: inter, aff: M(N(inter)), ph: 'un décimal', pieges: [pgNum(px, 'C\'est $P_{C_1}(C_2) = ' + N(px) + '$. Pour l\'intersection, on **multiplie** : $P(C_1) * P_{C_1}(C_2)$.')] },
+        { lab: '$P(C_2)$ =', type: 'num', val: pC2, aff: M(N(pC2)), ph: 'un décimal', pieges: [pgNum(inter, 'Tu n\'as pris que la branche passant par $C_1$. Un élève peut aussi rejoindre le club en 2025 sans être inscrit en 2024 : on ajoute $P(bar(C_1) cap C_2)$.'), pgNum(rd(px + py), 'On ne **somme pas** les probabilités conditionnelles : on multiplie le long de chaque chemin, puis on additionne les chemins.')] },
+        { lab: 'Sachant que l\'élève est inscrit en 2025, probabilité qu\'il l\'ait été en 2024 (arrondie au millième)', type: 'num', val: inv, tol: 0.0006, aff: M(dec(Math.round(inv * 1000) / 1000)), ph: 'ex. 0,774', pieges: [pgNum(px, '$' + N(px) + '$ est $P_{C_1}(C_2)$ : ici on demande $P_{C_2}(C_1)$, donc on divise par $P(C_2)$.'), pgNum(inter, 'C\'est $P(C_1 cap C_2)$ : pour une probabilité **sachant** $C_2$ il faut diviser par $P(C_2)$.')] },
+        { lab: '$C_1$ et $C_2$ sont-ils indépendants ?', type: 'choix', opts: ['oui, indépendants', 'non, pas indépendants'], rep: indep ? 0 : 1, aff: indep ? 'oui, indépendants' : 'non, pas indépendants' }],
+      etapes: [
+        'Arbre : $P(C_1) = ' + N(pi) + '$, $P(bar(C_1)) = ' + N(rd(1 - pi)) + '$ ; $P_{C_1}(C_2) = ' + N(px) + '$ ; $P_{bar(C_1)}(C_2) = ' + N(py) + '$.',
+        M('P(C_1 cap C_2) = P(C_1) * P_{C_1}(C_2) = ' + N(pi) + ' * ' + N(px) + ' = ' + N(inter)) + '.',
+        'Probabilités totales (partition $C_1$, $bar(C_1)$) : ' + M('P(C_2) = P(C_1 cap C_2) + P(bar(C_1) cap C_2) = ' + N(inter) + ' + ' + N(rd(1 - pi)) + ' * ' + N(py) + ' = ' + N(inter) + ' + ' + N(inter2) + ' = ' + N(pC2)) + '.',
+        M('P_{C_2}(C_1) = frac(P(C_1 cap C_2),P(C_2)) = frac(' + N(inter) + ',' + N(pC2) + ') approx ' + dec(Math.round(inv * 1000) / 1000)) + '.',
+        'Indépendance : $P_{C_1}(C_2) = ' + N(px) + '$ et $P(C_2) = ' + N(pC2) + '$ : ' + (indep ? 'égaux, donc $C_1$ et $C_2$ sont **indépendants**.' : 'différents, donc $C_1$ et $C_2$ ne sont **pas indépendants**.')],
+      retenir: 'Arbre, produit le long d\'un chemin, **somme des chemins** qui mènent à $C_2$ (probabilités totales) ; indépendants $\\iff P_A(B) = P(B)$.'.replace('\\iff', '⇔') };
+  } });
+
+  /* 12. [Annale T2, exercice 5, partie B] Probabilités et suites */
+  EX.push({ id: 'probasuite', chap: 3, src: 'Annale T2, exercice 5 (partie B)', titre: 'Probabilités et suites', min: 8, make: function () {
+    var a = pick([70, 80, 90]), b = pick([5, 10, 20, 30]), kp = a - b, l = b / (100 - kp), lr = rat(b, 100 - kp), u1;
+    do { u1 = Math.round((l + pick([-0.15, -0.1, -0.05, 0.05, 0.1, 0.15])) * 100) / 100; } while (u1 <= 0.01 || u1 >= 0.99 || Math.abs(u1 - l) < 0.015);
+    var kk = kp / 100, mm = b / 100, croit = u1 < l;
+    return {
+      enonce: ['D\'une année à l\'autre, $' + a + '$ % des élèves inscrits au club une année se réinscrivent l\'année suivante, et $' + b + '$ % des élèves qui n\'étaient pas inscrits une année rejoignent le club l\'année suivante.',
+               'On note $C_n$ : « l\'élève est inscrit l\'année $n$ » et ' + M('u_n = P(C_n)') + '. On sait que ' + M('u_1 = ' + N(u1)) + '. On admet que ' + M('u_{n+1} = k u_n + m') + '.'],
+      champs: [
+        { lab: 'Valeur de $k$', type: 'num', val: kk, aff: M(N(kk)), ph: 'un décimal', pieges: [pgNum(a / 100, 'Tu as gardé $' + N(a / 100) + '$. Il faut aussi développer $' + N(mm) + '(1 - u_n) = ' + N(mm) + ' - ' + N(mm) + 'u_n$ : le coefficient de $u_n$ est $' + N(a / 100) + ' - ' + N(mm) + '$.')] },
+        { lab: 'Valeur de $m$', type: 'num', val: mm, aff: M(N(mm)), ph: 'un décimal', pieges: [pgNum(rd(1 - mm), 'C\'est $1 - ' + N(mm) + '$. La constante est $' + N(mm) + '$ (il reste $' + N(mm) + '(1 - u_n)$).')] },
+        { lab: 'Limite de $(u_n)$ (fraction ou décimal)', type: 'num', val: l, tol: 0.0006, aff: M(frs(b, 100 - kp) + ' = ' + dec(l)), ph: 'ex. 1/3',
+          pieges: [pgNum(mm / (1 - a / 100), 'Le dénominateur est $1 - k = 1 - ' + N(kk) + '$, pas $1 - ' + N(a / 100) + '$.')] },
+        { lab: 'On admet $u_n = l + (u_1 - l) * ' + N(kk) + '^{n-1}$. La suite $(u_n)$ est', type: 'choix', opts: ['strictement croissante', 'strictement décroissante'], rep: croit ? 0 : 1, aff: croit ? 'strictement croissante' : 'strictement décroissante' }],
+      etapes: [
+        'Probabilités totales avec la partition $(C_n, bar(C_n))$ : ' + M('u_{n+1} = P(C_n) P_{C_n}(C_{n+1}) + P(bar(C_n)) P_{bar(C_n)}(C_{n+1}) = ' + N(a / 100) + 'u_n + ' + N(mm) + '(1-u_n)') + '.',
+        'On développe : ' + M('u_{n+1} = ' + N(a / 100) + 'u_n + ' + N(mm) + ' - ' + N(mm) + 'u_n = ' + N(kk) + 'u_n + ' + N(mm)) + '. Donc $k = ' + N(kk) + '$ et $m = ' + N(mm) + '$.',
+        'Limite $l$ : elle vérifie $l = k l + m$, donc ' + M('l = frac(m,1-k) = frac(' + N(mm) + ',' + N(rd(1 - kk)) + ')') + ' $= ' + dec(l) + '$ (c\'est $' + frs(b, 100 - kp).replace('frac(', '').replace(',', '/').replace(')', '') + '$).',
+        M('u_{n+1} - u_n = (u_1 - l) * ' + N(kk) + '^n - (u_1 - l) * ' + N(kk) + '^{n-1} = (u_1 - l) * ' + N(kk) + '^{n-1} * (' + N(kk) + ' - 1)') + '. Ici $u_1 - l = ' + dec(u1 - l) + '$ est ' + (croit ? 'négatif' : 'positif') + ', $' + N(kk) + '^{n-1} > 0$ et $' + N(kk) + ' - 1 < 0$.',
+        'Le produit est ' + (croit ? 'positif' : 'négatif') + ' : $(u_n)$ est **strictement ' + (croit ? 'croissante' : 'décroissante') + '**.'],
+      retenir: 'Arbre de $n$ à $n+1$, probabilités totales, développer $b(1-u_n)$ ; limite : $l = m / (1-k)$ ; sens de variation : signe de $(u_1 - l)(k - 1)$ avec $0 < k < 1$.' };
+  } });
+
+  /* ---------- affichage : mini-syntaxe -> MathML (copie de quiz.js, avec ⇔ ≈ ≥ ≤ ≠ en plus) ---------- */
+  var FONCTIONS = { ln: 1, log: 1, exp: 1, lim: 1, max: 1, min: 1 };
+  var OPS = { cup: '∪', cap: '∩', pm: '±', iff: '⇔', approx: '≈' };
+  var GREC = { Delta: 'Δ', alpha: 'α', beta: 'β', pi: 'π', varphi: 'φ', inf: '∞', RR: 'ℝ', NN: 'ℕ' };
+  function mathml(s) {
+    var t = [], re = /\s*(\d+(?:\.\d+)?|[A-Za-z]+|<=|>=|!=|[-+*\/=<>(){}\[\]^_,;|!≈⇔≥≤≠±∞])/g, m, i = 0;
+    while ((m = re.exec(s))) t.push(m[1]);
+    var MOTS = { frac: 1, sqrt: 1, set: 1, bar: 1 };
+    t = t.reduce(function (o, x) {
+      if (/^[A-Za-z]{2,}$/.test(x) && !MOTS[x] && !OPS[x] && !GREC[x] && !FONCTIONS[x]) return o.concat(x.split(''));
+      o.push(x); return o;
+    }, []);
+    function seq(stop) { var o = ''; while (i < t.length && stop.indexOf(t[i]) < 0) { var k = i; o += atom(); if (i === k) i++; } return o; }
+    function script() {
+      var x = t[i];
+      if (x === '{') { i++; var r = seq(['}']); i++; return '<mrow>' + r + '</mrow>'; }
+      if (x === '-') { i++; return '<mrow><mo>−</mo>' + script() + '</mrow>'; }
+      return prim();
+    }
+    function prim() {
+      var x = t[i++], r;
+      if (x === undefined) return '';
+      if (/^\d/.test(x)) return '<mn>' + x.replace('.', ',') + '</mn>';
+      if (x === 'bar' && t[i] === '(') { i++; r = seq([')']); i++; return '<mover accent="true"><mrow>' + r + '</mrow><mo>¯</mo></mover>'; }
+      if (x === 'frac' && t[i] === '(') { i++; var a = seq([',']); i++; var b = seq([')']); i++; return '<mfrac><mrow>' + a + '</mrow><mrow>' + b + '</mrow></mfrac>'; }
+      if (x === 'sqrt' && t[i] === '(') { i++; r = seq([')']); i++; return '<msqrt>' + r + '</msqrt>'; }
+      if (x === 'set' && t[i] === '(') { i++; r = seq([')']); i++; return '<mrow><mo>{</mo>' + r + '<mo>}</mo></mrow>'; }
+      if (OPS[x]) return '<mo>' + OPS[x] + '</mo>';
+      if (x === 'alpha') return '<mi mathvariant="normal">α</mi>';
+      if (GREC[x]) return '<mi>' + GREC[x] + '</mi>';
+      if (/^[A-Za-z]+$/.test(x)) {
+        if (x.length === 1) return '<mi>' + x + '</mi>';
+        if (FONCTIONS[x]) return '<mi mathvariant="normal">' + x + '</mi>';
+        return x.split('').map(function (c) { return '<mi>' + c + '</mi>'; }).join('');
+      }
+      if (x === '(') { r = seq([')']); i++; return '<mrow><mo>(</mo>' + r + '<mo>)</mo></mrow>'; }
+      if (x === '{') { r = seq(['}']); i++; return '<mrow>' + r + '</mrow>'; }
+      var ops = { '*': '×', '-': '−', '<=': '≤', '>=': '≥', '!=': '≠', '<': '&lt;', '>': '&gt;' };
+      return '<mo>' + (ops[x] || x) + '</mo>';
+    }
+    function atom() {
+      var base = prim(), sub = null, sup = null;
+      while (t[i] === '^' || t[i] === '_') { var k = t[i++], sc = script(); if (k === '^') sup = sc; else sub = sc; }
+      if (sub && sup) return '<msubsup>' + base + sub + sup + '</msubsup>';
+      if (sup) return '<msup>' + base + sup + '</msup>';
+      if (sub) return '<msub>' + base + sub + '</msub>';
+      return base;
+    }
+    return '<math>' + seq([]) + '</math>';
+  }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function fmt(s) {                     // $…$ = formule ; **gras** ; `code` ; >= et <= hors formule
+    var p = String(s).replace(/\\iff/g, '⇔').replace(/\\approx/g, '≈').replace(/\\cap/g, 'cap').split('$'), o = '';
+    for (var k = 0; k < p.length; k++) {
+      if (k % 2) o += '<span class="m">' + mathml(p[k]) + '</span>';
+      else o += esc(p[k]).replace(/&gt;=/g, '≥').replace(/&lt;=/g, '≤').replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\n/g, '<br>');
+    }
+    return o.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  root.EXPRESS = { mathml: mathml, fmt: fmt,  EX: EX, verifier: verifier, parse: parse, lireNombre: lireNombre, lireListe: lireListe, memeListe: memeListe, memeExpr: memeExpr, shuffle: shuffle };
+  if (typeof module !== 'undefined') module.exports = root.EXPRESS;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>/* Entraînement express : interface (utilise window.EXPRESS de moteur.js). */
+(function () {
+  'use strict';
+  var X = window.EXPRESS, EX = X.EX, fmt = X.fmt;
+  var CLE = 'express-composition:v1', etat = { ok: {}, ko: {} };
+  try { var brut = localStorage.getItem(CLE); if (brut) etat = JSON.parse(brut); } catch (e) { }
+  function sauver() { try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) { } }
+  function $(s, r) { return (r || document).querySelector(s); }
+  function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h !== undefined) e.innerHTML = h; return e; }
+  var CHAP = { 1: 'Chapitre 1 : second degré', 2: 'Chapitre 2 : suites', 3: 'Chapitre 3 : probabilités' };
+  var liste = $('#liste'), som = $('#som'), cartes = {};
+
+  /* ---------- progression ---------- */
+  function majProgression() {
+    var nb = 0, reste = 0;
+    EX.forEach(function (ex) { if (etat.ok[ex.id]) nb++; else reste += ex.min; });
+    $('#barre').style.width = Math.round(100 * nb / EX.length) + '%';
+    $('#compte').textContent = nb + ' réussi' + (nb > 1 ? 's' : '') + ' sur ' + EX.length + (nb < EX.length ? ' · il reste environ ' + (reste >= 60 ? Math.floor(reste / 60) + ' h ' + (reste % 60 < 10 ? '0' : '') + (reste % 60) : reste + ' min') : ' · bravo');
+    EX.forEach(function (ex, k) {
+      var a = $('#p-' + ex.id); if (!a) return;
+      a.className = 'pill' + (etat.ok[ex.id] ? ' ok' : (etat.ko[ex.id] ? ' ko' : ''));
+    });
+  }
+
+  /* ---------- une carte ---------- */
+  function monter(ex, k) {
+    var sec = el('section', 'ex'); sec.id = 'ex-' + ex.id; cartes[ex.id] = sec;
+    sec.innerHTML = '<header><span class="tag c' + ex.chap + '">' + ex.src + '</span><span class="dur">environ ' + ex.min + ' min</span></header><h2><span class="num">' + (k + 1) + '</span>' + ex.titre.replace(/\$([^$]+)\$/g, function (_, f) { return fmt('$' + f + '$'); }) + '</h2><div class="corps"></div>';
+    nouveau(ex, sec); return sec;
+  }
+  function nouveau(ex, sec) {
+    var q = ex.make(), corps = $('.corps', sec); sec._q = q; sec._fait = false;
+    var h = '<div class="enonce">' + q.enonce.map(function (p) { return '<p>' + fmt(p) + '</p>'; }).join('') + (q.pre ? '<pre>' + q.pre.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</pre>' : '') + '</div><div class="champs">';
+    var texte = false;
+    q.champs.forEach(function (c, i) {
+      h += '<div class="champ" data-i="' + i + '"><label class="lab" for="' + ex.id + '-' + i + '">' + fmt(c.lab) + '</label>';
+      if (c.type === 'choix') {
+        h += '<div class="choix" role="radiogroup">' + c.opts.map(function (o, j) {
+          return '<label class="opt"><input type="radio" name="' + ex.id + '-' + i + '" value="' + j + '"><span class="o">' + (/^</.test(o) || o.indexOf('$') >= 0 ? fmt(o) : fmt(o)) + '</span></label>';
+        }).join('') + '</div>';
+      } else {
+        texte = true;
+        h += '<input class="in" id="' + ex.id + '-' + i + '" type="text" inputmode="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="' + (c.ph || '') + '">';
+      }
+      h += '<div class="fb" aria-live="polite"></div></div>';
+    });
+    h += '</div>';
+    if (texte) h += '<div class="symb" aria-label="Symboles">' + ['√(', '^', '/', ';', '(', ')'].map(function (s) { return '<button type="button" class="sy" data-s="' + s + '">' + s + '</button>'; }).join('') + '<span class="aide">fractions : 3/2 · racines : √(5) · plusieurs réponses : 2 ; -3</span></div>';
+    h += '<div class="actions"><button type="button" class="b pri go">Vérifier</button><button type="button" class="b sec voir">Je ne sais pas, montre-moi la méthode</button></div><div class="res"></div>';
+    corps.innerHTML = h;
+    var dernier = null;
+    corps.querySelectorAll('.in').forEach(function (i) {
+      i.addEventListener('focus', function () { dernier = i; });
+      i.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); verifier(ex, sec); } });
+    });
+    corps.querySelectorAll('.sy').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var i = dernier || corps.querySelector('.in'); if (!i) return;
+        var a = i.selectionStart == null ? i.value.length : i.selectionStart, z = i.selectionEnd == null ? a : i.selectionEnd;
+        i.value = i.value.slice(0, a) + b.getAttribute('data-s') + i.value.slice(z);
+        i.focus(); var p = a + b.getAttribute('data-s').length; try { i.setSelectionRange(p, p); } catch (e) { }
+      });
+    });
+    $('.go', corps).addEventListener('click', function () { verifier(ex, sec); });
+    $('.voir', corps).addEventListener('click', function () { reveler(ex, sec); });
+  }
+  function saisie(sec, c, i) {
+    if (c.type === 'choix') { var r = sec.querySelector('input[name="' + sec._ex + '-' + i + '"]:checked'); return r ? parseInt(r.value, 10) : null; }
+    var v = sec.querySelector('.champ[data-i="' + i + '"] .in').value; return v.trim() === '' ? null : v;
+  }
+  function methode(ex, q) {
+    return '<div class="meth"><h3>Comment on fait, étape par étape</h3><ol>' + q.etapes.map(function (s) { return '<li>' + fmt(s) + '</li>'; }).join('') + '</ol><p class="ret"><strong>À retenir.</strong> ' + fmt(q.retenir) + '</p></div>';
+  }
+  function verifier(ex, sec) {
+    var q = sec._q, rep = [], i, tous = true, vide = false;
+    sec._ex = ex.id;
+    for (i = 0; i < q.champs.length; i++) {
+      var s = saisie(sec, q.champs[i], i), fb = sec.querySelector('.champ[data-i="' + i + '"]');
+      fb.className = 'champ';
+      if (s === null) { vide = true; $('.fb', fb).innerHTML = '<span class="mt">Réponds à cette question.</span>'; rep.push(null); continue; }
+      rep.push(s);
+    }
+    if (vide) return;
+    var res = q.champs.map(function (c, k) { return X.verifier(c, rep[k]); }), illisible = false;
+    res.forEach(function (r, k) {
+      if (!r.lu) { illisible = true; var f = sec.querySelector('.champ[data-i="' + k + '"]'); f.className = 'champ'; $('.fb', f).innerHTML = '<span class="mt">Je n\'ai pas compris cette écriture. Exemples : <code>3/2</code>, <code>-1,5</code>, <code>(1+sqrt(5))/2</code> ; plusieurs valeurs : <code>2 ; -3</code>.</span>'; }
+    });
+    if (illisible) return;
+    var tout = true;
+    res.forEach(function (r, k) {
+      var c = q.champs[k], f = sec.querySelector('.champ[data-i="' + k + '"]');
+      f.className = 'champ ' + (r.ok ? 'juste' : 'faux');
+      $('.fb', f).innerHTML = r.ok ? '<span class="v">✓ Juste</span>'
+        : '<span class="x">✗ Pas tout à fait.</span>' + (r.piege ? ' <span class="pg">' + fmt(r.piege) + '</span>' : '') + ' <span class="att">Réponse attendue : ' + fmt(c.aff) + '</span>';
+      if (!r.ok) tout = false;
+    });
+    finir(ex, sec, tout);
+  }
+  function reveler(ex, sec) {
+    var q = sec._q; sec._ex = ex.id;
+    q.champs.forEach(function (c, k) {
+      var f = sec.querySelector('.champ[data-i="' + k + '"]'); f.className = 'champ';
+      $('.fb', f).innerHTML = '<span class="att">Réponse : ' + fmt(c.aff) + '</span>';
+    });
+    finir(ex, sec, false);
+  }
+  function finir(ex, sec, tout) {
+    var q = sec._q, res = $('.res', sec);
+    if (tout) { etat.ok[ex.id] = true; delete etat.ko[ex.id]; }
+    else if (!etat.ok[ex.id]) etat.ko[ex.id] = true;
+    sauver(); majProgression();
+    res.innerHTML = '<div class="bilan ' + (tout ? 'bon' : 'rate') + '"><strong>' + (tout ? 'Tout est juste. Bien joué.' : 'À reprendre : lis la méthode, puis refais l\'exercice avec d\'autres nombres.') + '</strong></div>' +
+      (tout ? '<p class="ret"><strong>À retenir.</strong> ' + fmt(q.retenir) + '</p><details class="det"><summary>Voir quand même la méthode</summary>' + methode(ex, q) + '</details>' : methode(ex, q)) +
+      '<div class="actions"><button type="button" class="b ' + (tout ? 'sec' : 'pri') + ' autre">Refaire avec d\'autres nombres</button>' + (tout ? '<button type="button" class="b pri suiv">Exercice suivant</button>' : '') + '</div>';
+    $('.autre', res).addEventListener('click', function () { nouveau(ex, sec); sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    var s = $('.suiv', res); if (s) s.addEventListener('click', function () { var k = EX.indexOf(ex) + 1; var c = EX[k] && cartes[EX[k].id]; if (c) c.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    res.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ---------- page ---------- */
+  var chap = 0;
+  EX.forEach(function (ex, k) {
+    if (ex.chap !== chap) { chap = ex.chap; liste.appendChild(el('h2', 'chap', CHAP[chap])); }
+    liste.appendChild(monter(ex, k));
+    var a = el('a', 'pill', '<span class="n">' + (k + 1) + '</span><span class="t">' + fmt(ex.titre) + '</span>'); a.id = 'p-' + ex.id; a.href = '#ex-' + ex.id; a.title = ex.titre.replace(/\$/g, '');
+    som.appendChild(a);
+  });
+  $('#raz').addEventListener('click', function () { if (confirm('Remettre les exercices à zéro ?')) { etat = { ok: {}, ko: {} }; sauver(); location.reload(); } });
+  majProgression();
+})();
+</script></body></html>
