@@ -1,0 +1,51 @@
+/* Page « Transcrire un cours » : chargée après site.css (mêmes jetons de couleur et de police). */
+:root{--warn:#F2A56B;--err:#F08A7A;--ok:#7FD0A8}
+@media (prefers-color-scheme:light){:root{--warn:#9A4A0C;--err:#A63A2B;--ok:#2C7A5B}}
+.barre{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.compte{color:var(--mute);font-size:.85rem;overflow-wrap:anywhere}
+.lien{font:inherit;font-size:.85rem;color:var(--ink2);background:none;border:0;padding:0 2px;min-height:44px;text-decoration:underline;cursor:pointer}
+button.back{font:inherit;background:none;border:0;cursor:pointer;padding:0}
+.petit{font-size:.88rem}
+.formu,label,select,input[type=text],input[type=email],input[type=password],textarea{font:inherit}
+label{display:block;font-size:.88rem;color:var(--ink2);margin:14px 0 4px}
+select,input[type=text],input[type=email],input[type=password],textarea{width:100%;background:var(--s1);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px}
+select:focus-visible,input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--lampe);outline-offset:2px}
+input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+input[type=file]:focus-visible+.btn{outline:2px solid var(--lampe);outline-offset:2px}
+.btn.plein{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.danger{color:var(--err);border-color:currentColor;background:transparent}
+.btn:disabled,select:disabled,input:disabled{opacity:.5;cursor:default}
+button.row{width:100%;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;border-left:0;border-right:0;border-bottom:0}
+.alerte{color:var(--err);font-size:.92rem;margin:.8rem 0 0;overflow-wrap:anywhere}
+.vide{color:var(--mute);padding:1.6rem 0;text-align:center}
+.carte{border-top:1px solid var(--line);padding:12px 0}
+.tete{display:flex;gap:12px;align-items:center}
+.mini{width:48px;height:64px;flex:none;border-radius:6px;border:1px solid var(--line);background:var(--s1);overflow:hidden}
+.mini img{display:block;width:100%;height:100%;object-fit:cover}
+.titre{flex:1;min-width:0}
+.titre b{display:block;font-size:.95rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{display:inline-block;font-size:.78rem;border:1px solid currentColor;border-radius:999px;padding:1px 9px;margin-top:2px}
+.b-attente{color:var(--mute)}.b-cours{color:var(--ink2)}.b-ok{color:var(--ok)}.b-warn{color:var(--warn)}.b-err{color:var(--err)}
+.outils{display:flex;gap:4px;flex:none}
+.outils button{font:inherit;min-width:44px;min-height:44px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;cursor:pointer}
+.outils button:disabled{opacity:.4;cursor:default}
+.signaux{margin:.6rem 0 .2rem;padding-left:1.2rem;color:var(--warn);font-size:.88rem}
+.onglets{display:flex;gap:6px;flex-wrap:wrap;margin:.6rem 0}
+.onglets button{font:inherit;font-size:.88rem;min-height:44px;padding:0 14px;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;cursor:pointer}
+.onglets button[aria-pressed=true]{border-color:var(--ink);font-weight:600}
+textarea{min-height:260px;font:.85rem/1.45 ui-monospace,Consolas,monospace;resize:vertical}
+.apercu{background:var(--s1);border:1px solid var(--line);border-radius:12px;padding:4px 14px;overflow-x:auto;max-width:100%;overflow-wrap:anywhere}
+.apercu h1,.apercu h2,.apercu h3,.apercu h4{line-height:1.25;margin:.9em 0 .4em;color:var(--ink);font-size:1.02rem}
+.apercu h1{font-size:1.2rem}.apercu h2{font-size:1.1rem}
+.apercu blockquote{margin:.8em 0;padding:.2em 12px;border-left:3px solid var(--mute);background:color-mix(in srgb,var(--mute) 10%,transparent);border-radius:0 8px 8px 0}
+.apercu table{border-collapse:collapse;display:block;overflow-x:auto}
+.apercu th,.apercu td{border:1px solid var(--line);padding:4px 8px}
+.apercu img{max-width:100%;height:auto}
+.apercu .tag{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mute);margin-right:6px}
+.apercu mark{background:color-mix(in srgb,#F2C46B 38%,transparent);color:inherit;border-radius:3px}
+.apercu math{font-size:1.08em}
+.apercu math[display=block]{display:block;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+.c-r{color:#E5565B}.c-b{color:#5B9CF0}.c-v{color:#4DB67B}.c-o{color:#E8923A}.c-j{color:#C9A400}.c-p{color:#A27BEA}.c-m{color:#A9774A}
+.cadre{border:1px solid var(--mute);border-radius:4px;padding:0 4px}
+.row2 .btn{flex:1 1 9rem;justify-content:center;text-align:center}
+.barre+h1{margin-top:.6rem}
