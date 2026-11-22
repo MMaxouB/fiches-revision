@@ -187,21 +187,30 @@
   }
 
   /* ---------- vues ---------- */
+  const OEIL = '<svg class="o-ouvert" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>' +
+    '<svg class="o-barre" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.5 6.6C3.7 8.4 2 12 2 12s3.6 7 10 7a10 10 0 0 0 4.4-1M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+  const CADENAS = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>';
   function vueConnexion() {
-    return '<h1>Transcrire un cours</h1><p class="m">Réservé aux comptes créés à la main. Connecte-toi pour déposer des photos de cours.</p>' +
-      '<form id="form-connexion" class="formu"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" value="' + esc(emailSaisi) + '" required>' +
-      '<label for="mdp">Mot de passe</label><input id="mdp" type="password" autocomplete="current-password" required>' +
-      '<button class="lien" data-a="voirmdp" type="button">Afficher le mot de passe</button>' +
+    return '<section class="connexion"><span class="ic grand" aria-hidden="true">' + CADENAS + "</span><h1>Transcrire un cours</h1>" +
+      '<p class="m">Réservé aux comptes créés à la main. Connecte-toi pour déposer des photos de cours.</p>' +
+      '<form id="form-connexion" class="panneau"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" value="' + esc(emailSaisi) + '" required>' +
+      '<label for="mdp">Mot de passe</label><div class="champ"><input id="mdp" type="password" autocomplete="current-password" required>' +
+      '<button class="oeil" data-a="voirmdp" type="button" aria-pressed="false" aria-label="Afficher le mot de passe">' + OEIL + "</button></div>" +
       (erreur ? '<p class="alerte" role="alert">' + esc(erreur) + "</p>" : "") +
-      '<div class="row2"><button class="btn plein" type="submit">' + (chargement ? "Connexion…" : "Se connecter") + "</button></div></form>";
+      '<button class="btn plein large" type="submit"' + (chargement ? " disabled" : "") + ">" + (chargement ? "Connexion…" : "Se connecter") + "</button></form></section>";
   }
-  const enTete = (retour) => '<div class="barre">' + (retour ? '<button class="back" data-a="accueil" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Bibliothèque</button>' : "<span></span>") +
-    '<span class="compte">' + esc(session.user.email) + (admin ? ' <button class="lien" data-a="tdb" type="button">Tableau de bord</button>' : "") + ' <button class="lien" data-a="sortir" type="button">Se déconnecter</button></span></div>';
+  const enTete = () => {
+    const actif = vue === "tdb" ? "tdb" : vue === "nouveau" && !(nv && nv.ajout) ? "nouveau" : "biblio";
+    const onglet = (id, lib) => '<button class="tab" role="tab" data-a="onglet" data-o="' + id + '" aria-selected="' + (actif === id) + '" type="button">' + lib + "</button>";
+    return '<header class="appbar"><div class="compte"><span class="ic" aria-hidden="true">' + esc(session.user.email.charAt(0).toUpperCase()) + '</span><span class="mail">' + esc(session.user.email) +
+      '</span><button class="btn pet" data-a="sortir" type="button">Se déconnecter</button></div>' +
+      '<nav class="tabs" role="tablist" aria-label="Sections">' + onglet("biblio", "Bibliothèque") + onglet("nouveau", 'Nouveau<span class="long"> chapitre</span>') + (admin ? onglet("tdb", 'Tableau<span class="long"> de bord</span>') : "") + "</nav></header>";
+  };
   const lignequota = () => quota ? '<p class="m petit">Pages transcrites aujourd\'hui : ' + quota.utilisees + " sur " + quota.quota + ".</p>" : "";
 
   function vueAccueil() {
     let h = enTete(false) + "<h1>Transcrire un cours</h1><p class=\"m\">Dépose les photos d'un chapitre : le texte est transcrit en Markdown, prêt à copier ou à télécharger.</p>" + lignequota() +
-      '<div class="row2"><button class="btn plein" data-a="nouveau" type="button">Nouveau chapitre</button></div>';
+'';
     if (erreur) h += '<p class="alerte" role="alert">' + esc(erreur) + "</p>";
     if (chargement && !chapitres) h += '<p class="m">Chargement…</p>';
     else if (chapitres && !chapitres.length) h += '<p class="vide">Aucun chapitre pour l\'instant.</p>';
@@ -325,9 +334,15 @@
     const b = e.target.closest("button[data-a]");
     if (!b) return;
     const a = b.dataset.a, i = +b.dataset.i;
-    if (a === "voirmdp") { const m = $("#mdp"), v = m.type === "password"; m.type = v ? "text" : "password"; b.textContent = v ? "Masquer le mot de passe" : "Afficher le mot de passe"; return; }
+    if (a === "voirmdp") { const m = $("#mdp"), v = m.type === "password"; m.type = v ? "text" : "password"; b.setAttribute("aria-pressed", String(v)); b.setAttribute("aria-label", v ? "Masquer le mot de passe" : "Afficher le mot de passe"); return; }
     try {
       if (a === "sortir") deconnexion();
+      else if (a === "onglet") {
+        const o = b.dataset.o; erreur = "";
+        if (o === "tdb") { vue = "tdb"; chargerTdb(); }
+        else if (o === "nouveau") { nv = nouveau(); vue = "nouveau"; rendre(); }
+        else { vue = "accueil"; courant = null; if (!chapitres) chargerAccueil(); else rendre(); }
+      }
       else if (a === "tdb") { vue = "tdb"; erreur = ""; chargerTdb(); }
       else if (a === "tsave") {
         const id = b.dataset.u, champ = document.querySelector('input[data-q="' + id + '"]'), v = champ.value.trim(), q = v === "" ? null : Number(v);

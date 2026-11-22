@@ -1,10 +1,6 @@
 /* Page « Transcrire un cours » : chargée après site.css (mêmes jetons de couleur et de police). */
 :root{--warn:#F2A56B;--err:#F08A7A;--ok:#7FD0A8}
 @media (prefers-color-scheme:light){:root{--warn:#9A4A0C;--err:#A63A2B;--ok:#2C7A5B}}
-.barre{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.compte{color:var(--mute);font-size:.85rem;overflow-wrap:anywhere}
-.lien{font:inherit;font-size:.85rem;color:var(--ink2);background:none;border:0;padding:0 2px;min-height:44px;text-decoration:underline;cursor:pointer}
-button.back{font:inherit;background:none;border:0;cursor:pointer;padding:0}
 .petit{font-size:.88rem}
 .formu,label,select,input[type=text],input[type=email],input[type=password],textarea{font:inherit}
 label{display:block;font-size:.88rem;color:var(--ink2);margin:14px 0 4px}
@@ -48,7 +44,6 @@ textarea{min-height:260px;font:.85rem/1.45 ui-monospace,Consolas,monospace;resiz
 .c-r{color:#E5565B}.c-b{color:#5B9CF0}.c-v{color:#4DB67B}.c-o{color:#E8923A}.c-j{color:#C9A400}.c-p{color:#A27BEA}.c-m{color:#A9774A}
 .cadre{border:1px solid var(--mute);border-radius:4px;padding:0 4px}
 .row2 .btn{flex:1 1 9rem;justify-content:center;text-align:center}
-.barre+h1{margin-top:.6rem}
 /* ---------- tableau de bord administrateur ---------- */
 input[type=number]{font:inherit;background:var(--s1);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0 12px;min-height:44px;width:100%;box-sizing:border-box}
 .jauge{height:10px;background:var(--line);border-radius:999px;overflow:hidden;margin:.45rem 0}
@@ -64,3 +59,38 @@ input[type=number]{font:inherit;background:var(--s1);color:var(--ink);border:1px
 .row2.lim input{flex:1 1 6rem;max-width:9rem}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (min-width:900px){.jauge{height:12px}}
+
+/* ---------- barre du compte, onglets, connexion ---------- */
+.appbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin:.2rem 0 1rem;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.compte{display:flex;align-items:center;gap:10px;min-width:0;order:1;width:100%}
+.compte .ic{--k:var(--ink2)}
+.compte .mail{flex:1;min-width:0;color:var(--ink2);font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn.pet{min-height:44px;font-size:.88rem;padding:0 .95rem;background:transparent;flex:none}
+.btn.pet:hover{border-color:var(--mute)}
+.tabs{order:2;display:flex;gap:4px;width:100%;padding:4px;border:1px solid var(--line);background:var(--s1);border-radius:999px}
+.tab{flex:1 1 0;min-width:0;font:inherit;font-weight:600;font-size:.88rem;min-height:44px;padding:0 .6rem;border:0;border-radius:999px;background:transparent;color:var(--ink2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected=true]{background:var(--ink);color:var(--bg)}
+.tab:focus-visible{outline:2px solid var(--lampe);outline-offset:2px}
+.tab .long{display:none}
+@media (min-width:560px){.tab{font-size:.95rem;padding:0 1.1rem}.tab .long{display:inline}}
+@media (min-width:900px){
+  .compte{order:2;width:auto}
+  .tabs{order:1;width:auto}
+  .tab{flex:none}
+}
+.connexion{max-width:26rem;margin:1.2rem auto 0}
+@media (min-width:900px){.connexion{margin-top:3rem}}
+.connexion .ic.grand{--k:var(--ink2);width:48px;height:48px;border-radius:12px;margin-bottom:.9rem}
+.connexion .ic.grand svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.panneau{margin-top:1.1rem;padding:6px 18px 20px;background:var(--s1);border:1px solid var(--line);border-radius:12px}
+.panneau .btn.large{width:100%;justify-content:center;margin-top:20px}
+.champ{position:relative}
+.champ input{padding-right:52px}
+.oeil{position:absolute;right:0;top:0;width:48px;height:100%;min-height:44px;display:grid;place-items:center;background:none;border:0;color:var(--mute);cursor:pointer;border-radius:10px}
+.oeil:hover{color:var(--ink)}
+.oeil svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.oeil .o-barre,.oeil[aria-pressed=true] .o-ouvert{display:none}
+.oeil[aria-pressed=true] .o-barre{display:block}
+.appbar+h1{margin-top:.4rem}
+@media (max-width:359px){.tabs{gap:2px;padding:3px}.tab{font-size:.8rem;padding:0 .2rem}}
