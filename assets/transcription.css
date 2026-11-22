@@ -49,3 +49,18 @@ textarea{min-height:260px;font:.85rem/1.45 ui-monospace,Consolas,monospace;resiz
 .cadre{border:1px solid var(--mute);border-radius:4px;padding:0 4px}
 .row2 .btn{flex:1 1 9rem;justify-content:center;text-align:center}
 .barre+h1{margin-top:.6rem}
+/* ---------- tableau de bord administrateur ---------- */
+input[type=number]{font:inherit;background:var(--s1);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:0 12px;min-height:44px;width:100%;box-sizing:border-box}
+.jauge{height:10px;background:var(--line);border-radius:999px;overflow:hidden;margin:.45rem 0}
+.jauge i{display:block;height:100%;background:var(--ok);border-radius:999px}
+.jauge i.plein{background:var(--err)}
+.gros{font-size:1.9rem;font-weight:700;line-height:1.1;margin:.3rem 0}
+.gros small{font-size:.95rem;font-weight:400;color:var(--mute)}
+.jours{list-style:none;margin:.5rem 0 0;padding:0}
+.jours li{display:grid;grid-template-columns:4.2rem 1fr 2.2rem;gap:10px;align-items:center;font-size:.88rem}
+.jours li .jauge{margin:.25rem 0}
+.jours li b{text-align:right}
+.row2.lim{display:flex;gap:8px;align-items:center;margin-top:.5rem}
+.row2.lim input{flex:1 1 6rem;max-width:9rem}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (min-width:900px){.jauge{height:12px}}

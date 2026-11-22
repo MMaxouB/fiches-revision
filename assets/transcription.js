@@ -35,7 +35,7 @@
     }
     return session.access_token;
   }
-  function deconnexion() { session = null; ecrireSession(null); vue = "accueil"; rendre(); }
+  function deconnexion() { session = null; ecrireSession(null); vue = "accueil"; admin = false; tdb = null; rendre(); }
 
   /* ---------- accès aux données (tout passe par les règles RLS) ---------- */
   async function rest(chemin, o) {
@@ -121,6 +121,55 @@
   let nv = null;                                // nouveau chapitre en cours de dépôt
   const nouveau = () => ({ matiere: "maths", titre: "", cartes: [], chapitreId: null, prochain: 1, enCours: false, msg: "", compteur: 0 });
 
+  /* ---------- tableau de bord administrateur (visible seulement si profils.admin = true ; les règles RLS le garantissent côté serveur) ---------- */
+  const LIMITE_OR = 50;                        // requêtes par jour du compte OpenRouter gratuit, partagées entre tous les utilisateurs
+  let admin = false, tdb = null;
+  async function verifierAdmin() {
+    try { const r = await rest("profils?select=admin&user_id=eq." + session.user.id); admin = !!(r && r[0] && r[0].admin); } catch (e) { admin = false; }
+    rendre();
+  }
+  async function chargerTdb() {
+    tdb = Object.assign(tdb || {}, { chargement: true, erreur: "" }); rendre();
+    try {
+      const depuis = encodeURIComponent(new Date(Date.now() - 8 * 864e5).toISOString());
+      const profils = await rest("profils?select=user_id,email,quota,admin&order=email");
+      let usage;
+      try { usage = await rest("usage?select=user_id,cree_le,ok,essais&cree_le=gte." + depuis + "&order=cree_le.desc&limit=3000"); }
+      catch (e) { usage = await rest("usage?select=user_id,cree_le&cree_le=gte." + depuis + "&order=cree_le.desc&limit=3000"); }   // colonnes ok/essais pas encore créées
+      tdb = { profils, usage, chargement: false, erreur: "", msg: "" };
+    } catch (e) { tdb = { chargement: false, erreur: e.message + " (le SQL du tableau de bord a-t-il été lancé ?)" }; }
+    rendre();
+  }
+  function vueTdb() {
+    const h0 = enTete(true) + "<h1>Tableau de bord</h1>";
+    if (!tdb || (tdb.chargement && !tdb.profils)) return h0 + '<p class="m">Chargement…</p>';
+    if (tdb.erreur) return h0 + '<p class="alerte" role="alert">' + esc(tdb.erreur) + "</p>";
+    const defaut = quota && quota.defaut ? quota.defaut : 15, essais = (u) => (u.essais == null ? 1 : u.essais), echec = (u) => u.ok === false;
+    const now = new Date(), minuit = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()), j24 = Date.now() - 864e5;
+    const jourOR = tdb.usage.filter((u) => Date.parse(u.cree_le) >= minuit).reduce((s, u) => s + essais(u), 0);
+    const reset = new Date(minuit + 864e5).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    const barre = (n, max) => '<div class="jauge" role="img" aria-label="' + n + " sur " + max + '"><i class="' + (n >= max ? "plein" : "") + '" style="width:' + Math.min(100, Math.round(n / max * 100)) + '%"></i></div>';
+    let h = h0 + '<section class="carte"><b>Requêtes envoyées à OpenRouter aujourd\'hui</b><p class="gros">' + jourOR + " <small>sur " + LIMITE_OR + "</small></p>" + barre(jourOR, LIMITE_OR) +
+      '<p class="m petit">Compteur remis à zéro à ' + reset + " (minuit UTC). Chaque essai compte, réussi ou non : une transcription peut en consommer jusqu'à 3.</p></section>";
+    // 7 derniers jours (jours UTC)
+    let jours = "";
+    for (let d = 6; d >= 0; d--) {
+      const t0 = minuit - d * 864e5, n = tdb.usage.filter((u) => { const t = Date.parse(u.cree_le); return t >= t0 && t < t0 + 864e5; }).reduce((s, u) => s + essais(u), 0);
+      jours += '<li><span>' + new Date(t0).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", timeZone: "UTC" }) + "</span>" + barre(n, LIMITE_OR) + "<b>" + n + "</b></li>";
+    }
+    h += '<section class="carte"><b>7 derniers jours</b><ul class="jours">' + jours + "</ul></section>";
+    const somme = tdb.profils.reduce((s, p) => s + (Number.isInteger(p.quota) ? p.quota : defaut), 0);
+    h += '<h2 class="sub">Utilisateurs</h2><p class="m petit">Limite = pages transcrites sur 24 h glissantes. Vide = limite par défaut (' + defaut + '). Somme des limites : <b' + (somme > LIMITE_OR ? ' class="alerte"' : "") + ">" + somme + "</b> pour " + LIMITE_OR + " requêtes par jour" + (somme > LIMITE_OR ? " : si tout le monde les utilise, OpenRouter bloquera." : ".") + "</p>";
+    if (tdb.msg) h += '<p class="m petit" role="status">' + esc(tdb.msg) + "</p>";
+    h += tdb.profils.map((p) => {
+      const mes = tdb.usage.filter((u) => u.user_id === p.user_id && Date.parse(u.cree_le) >= j24), ok = mes.filter((u) => !echec(u)).length, ko = mes.filter(echec).length, lim = Number.isInteger(p.quota) ? p.quota : defaut;
+      return '<article class="carte"><div class="tete"><div class="titre"><b>' + esc(p.email || p.user_id) + (p.admin ? " (admin)" : "") + "</b><span class=\"m petit\">" + ok + " sur " + lim + " en 24 h" + (ko ? ", " + ko + " échec" + (ko > 1 ? "s" : "") : "") + "</span></div></div>" + barre(ok, Math.max(lim, 1)) +
+        '<div class="row2 lim"><label class="sr" for="q-' + esc(p.user_id) + '">Limite de ' + esc(p.email || "") + '</label><input id="q-' + esc(p.user_id) + '" data-q="' + esc(p.user_id) + '" type="number" inputmode="numeric" min="0" max="500" step="1" placeholder="' + defaut + '" value="' + (Number.isInteger(p.quota) ? p.quota : "") + '">' +
+        '<button class="btn plein" data-a="tsave" data-u="' + esc(p.user_id) + '" type="button">Enregistrer</button></div></article>';
+    }).join("");
+    return h + '<div class="row2"><button class="btn" data-a="tdb" type="button">' + (tdb.chargement ? "Actualisation…" : "Actualiser") + "</button></div>";
+  }
+
   async function majQuota() { try { const e = await worker("/etat"); quota = e; } catch (e) { /* non bloquant */ } rendre(); }
   async function chargerAccueil() {
     chargement = true; erreur = ""; rendre();
@@ -147,7 +196,7 @@
       '<div class="row2"><button class="btn plein" type="submit">' + (chargement ? "Connexion…" : "Se connecter") + "</button></div></form>";
   }
   const enTete = (retour) => '<div class="barre">' + (retour ? '<button class="back" data-a="accueil" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Bibliothèque</button>' : "<span></span>") +
-    '<span class="compte">' + esc(session.user.email) + ' <button class="lien" data-a="sortir" type="button">Se déconnecter</button></span></div>';
+    '<span class="compte">' + esc(session.user.email) + (admin ? ' <button class="lien" data-a="tdb" type="button">Tableau de bord</button>' : "") + ' <button class="lien" data-a="sortir" type="button">Se déconnecter</button></span></div>';
   const lignequota = () => quota ? '<p class="m petit">Pages transcrites aujourd\'hui : ' + quota.utilisees + " sur " + quota.quota + ".</p>" : "";
 
   function vueAccueil() {
@@ -215,7 +264,7 @@
   function rendre() {
     const A = $("#app");
     if (!A) return;
-    A.innerHTML = !session ? vueConnexion() : vue === "nouveau" ? vueNouveau() : vue === "chapitre" ? vueChapitre() : vueAccueil();
+    A.innerHTML = !session ? vueConnexion() : vue === "nouveau" ? vueNouveau() : vue === "chapitre" ? vueChapitre() : vue === "tdb" && admin ? vueTdb() : vueAccueil();
   }
 
   /* ---------- transcription d'un nouveau chapitre (une page à la fois) ---------- */
@@ -234,7 +283,7 @@
         const p = await rest("pages", { methode: "POST", entetes: { Prefer: "return=representation" }, corps: { chapitre_id: nv.chapitreId, numero, markdown: d.markdown,
           signaux: d.signaux.map((s) => s.code), statut: d.a_relire ? "a_relire" : "transcrit", photo_path: chemin, modele: d.modele } });
         Object.assign(c, { statut: "ok", md: d.markdown, signaux: d.signaux, pageId: p[0].id, numero, photoPath: chemin, vue: "apercu" });
-        quota = { utilisees: d.utilisees, quota: d.quota };
+        quota = { utilisees: d.utilisees, quota: d.quota, defaut: quota && quota.defaut };
       } catch (e) { c.statut = "erreur"; c.msg = e.message; }
       rendre();
     }
@@ -247,7 +296,7 @@
     e.preventDefault(); erreur = ""; chargement = true;
     const email = $("#email").value.trim(), mdp = $("#mdp").value;
     emailSaisi = email;
-    try { session = versSession(await appelAuth("token?grant_type=password", { email, password: mdp })); ecrireSession(session); chargement = false; vue = "accueil"; majQuota(); chargerAccueil(); }
+    try { session = versSession(await appelAuth("token?grant_type=password", { email, password: mdp })); ecrireSession(session); chargement = false; vue = "accueil"; majQuota(); verifierAdmin(); chargerAccueil(); }
     catch (err) { chargement = false; erreur = err.message; rendre(); }
   });
   document.addEventListener("change", async (e) => {
@@ -279,6 +328,15 @@
     if (a === "voirmdp") { const m = $("#mdp"), v = m.type === "password"; m.type = v ? "text" : "password"; b.textContent = v ? "Masquer le mot de passe" : "Afficher le mot de passe"; return; }
     try {
       if (a === "sortir") deconnexion();
+      else if (a === "tdb") { vue = "tdb"; erreur = ""; chargerTdb(); }
+      else if (a === "tsave") {
+        const id = b.dataset.u, champ = document.querySelector('input[data-q="' + id + '"]'), v = champ.value.trim(), q = v === "" ? null : Number(v);
+        if (q !== null && !(Number.isInteger(q) && q >= 0 && q <= 500)) { tdb.msg = "La limite doit être un nombre entier entre 0 et 500 (ou vide)."; return rendre(); }
+        const r = await rest("profils?user_id=eq." + id, { methode: "PATCH", corps: { quota: q }, entetes: { Prefer: "return=representation" } });
+        if (!r || !r.length) throw new Error("Modification refusée (compte non administrateur ?).");
+        const p = tdb.profils.find((x) => x.user_id === id); p.quota = q;
+        tdb.msg = "Limite de " + (p.email || "l'utilisateur") + " : " + (q === null ? "par défaut" : q) + " (enregistré)."; rendre();
+      }
       else if (a === "accueil") { vue = "accueil"; courant = null; erreur = ""; if (!chapitres) chargerAccueil(); else rendre(); }
       else if (a === "nouveau") { nv = nouveau(); vue = "nouveau"; rendre(); }
       else if (a === "nterminer") { if (nv.chapitreId) ouvrir(nv.chapitreId, { titre: nv.titre, matiere: nv.matiere }); else { vue = "accueil"; if (!chapitres) chargerAccueil(); else rendre(); } }
@@ -308,5 +366,5 @@
   });
 
   rendre();
-  if (session) { majQuota(); chargerAccueil(); }
+  if (session) { majQuota(); verifierAdmin(); chargerAccueil(); }
 })();
