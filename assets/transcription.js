@@ -124,6 +124,7 @@
   const nouveau = () => ({ matiere: "maths", titre: "", cartes: [], chapitreId: null, prochain: 1, enCours: false, msg: "", compteur: 0 });
 
   /* ---------- tableau de bord administrateur (visible seulement si profils.admin = true ; les règles RLS le garantissent côté serveur) ---------- */
+  const barre = (n, max, doux) => '<div class="jauge" role="img" aria-label="' + n + " sur " + max + '"><i class="' + (n >= max && !doux ? "plein" : "") + '" style="width:' + Math.min(100, Math.round(n / max * 100)) + '%"></i></div>';
   const LIMITE_OR = 50;                        // requêtes par jour du compte OpenRouter gratuit, partagées entre tous les utilisateurs
   let admin = false, tdb = null;
   async function verifierAdmin() {
@@ -138,9 +139,23 @@
       let usage;
       try { usage = await rest("usage?select=user_id,cree_le,ok,essais&cree_le=gte." + depuis + "&order=cree_le.desc&limit=3000"); }
       catch (e) { usage = await rest("usage?select=user_id,cree_le&cree_le=gte." + depuis + "&order=cree_le.desc&limit=3000"); }   // colonnes ok/essais pas encore créées
-      tdb = { profils, usage, chargement: false, erreur: "", msg: "" };
+      let pages = null;                         // pages de tous (métadonnées seulement) ; null tant que le SQL des pages n'est pas lancé
+      try { pages = await rest("pages?select=id,numero,user_id,statut,signaux,chapitre_id,chapitres(titre,matiere)&order=cree_le.desc&limit=3000"); } catch (e) { pages = null; }
+      tdb = { profils, usage, pages, chargement: false, erreur: "", msg: "" };
     } catch (e) { tdb = { chargement: false, erreur: e.message + " (le SQL du tableau de bord a-t-il été lancé ?)" }; }
     rendre();
+  }
+  const COURT = { doutes: "doutes", schema: "schéma", boucle: "boucle", invente: "texte inventé", petite: "photo petite", sciences: "maths ou sciences", vide: "vide" };
+  function sectionAVerifier(emailDe) {
+    if (!tdb.pages) return '<h2 class="sub">Pages à vérifier</h2><p class="m petit">Pas encore disponible : relance le SQL du tableau de bord (étape 6) dans Supabase.</p>';
+    const aV = tdb.pages.filter((p) => p.statut === "a_relire"), total = tdb.pages.length;
+    let h = '<h2 class="sub">Pages à vérifier</h2><section class="carte"><p class="gros">' + aV.length + " <small>à relire sur " + total + " page" + (total > 1 ? "s" : "") + "</small></p>" + barre(aV.length, Math.max(total, 1), true) + "</section>";
+    if (!aV.length) return h + '<p class="m petit">Rien à vérifier : toutes les pages sont relues.</p>';
+    const parChap = new Map();
+    for (const p of aV) { if (!parChap.has(p.chapitre_id)) parChap.set(p.chapitre_id, { titre: p.chapitres ? p.chapitres.titre : "Chapitre", matiere: p.chapitres ? p.chapitres.matiere : "", user: p.user_id, pages: [], signaux: new Set() }); const c = parChap.get(p.chapitre_id); c.pages.push(p.numero); (p.signaux || []).forEach((x) => { if (COURT[x]) c.signaux.add(COURT[x]); }); }
+    h += '<ul class="rows aver">' + [...parChap.values()].map((c) => '<li class="aver-l"><b>' + esc(c.titre) + "</b><small>" + esc(emailDe(c.user)) + (c.matiere ? ", " + esc(nomMat(c.matiere)) : "") + ", page" + (c.pages.length > 1 ? "s " : " ") + c.pages.sort((x, y) => x - y).join(", ") +
+      (c.signaux.size ? " (" + [...c.signaux].join(", ") + ")" : "") + "</small></li>").join("") + "</ul>";
+    return h;
   }
   function vueTdb() {
     const h0 = enTete(true) + "<h1>Tableau de bord</h1>";
@@ -150,7 +165,6 @@
     const now = new Date(), minuit = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()), j24 = Date.now() - 864e5;
     const jourOR = tdb.usage.filter((u) => Date.parse(u.cree_le) >= minuit).reduce((s, u) => s + essais(u), 0);
     const reset = new Date(minuit + 864e5).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-    const barre = (n, max) => '<div class="jauge" role="img" aria-label="' + n + " sur " + max + '"><i class="' + (n >= max ? "plein" : "") + '" style="width:' + Math.min(100, Math.round(n / max * 100)) + '%"></i></div>';
     let h = h0 + '<section class="carte"><b>Requêtes envoyées à OpenRouter aujourd\'hui</b><p class="gros">' + jourOR + " <small>sur " + LIMITE_OR + "</small></p>" + barre(jourOR, LIMITE_OR) +
       '<p class="m petit">Compteur remis à zéro à ' + reset + " (minuit UTC). Chaque essai compte, réussi ou non : une transcription peut en consommer jusqu'à 3.</p></section>";
     // 7 derniers jours (jours UTC)
@@ -160,12 +174,14 @@
       jours += '<li><span>' + new Date(t0).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", timeZone: "UTC" }) + "</span>" + barre(n, LIMITE_OR) + "<b>" + n + "</b></li>";
     }
     h += '<section class="carte"><b>7 derniers jours</b><ul class="jours">' + jours + "</ul></section>";
+    const emailDe = (id) => { const p = tdb.profils.find((x) => x.user_id === id); return p && p.email ? p.email : "compte inconnu"; };
+    h += sectionAVerifier(emailDe);
     const somme = tdb.profils.reduce((s, p) => s + (Number.isInteger(p.quota) ? p.quota : defaut), 0);
     h += '<h2 class="sub">Utilisateurs</h2><p class="m petit">Limite = pages transcrites sur 24 h glissantes. Vide = limite par défaut (' + defaut + '). Somme des limites : <b' + (somme > LIMITE_OR ? ' class="alerte"' : "") + ">" + somme + "</b> pour " + LIMITE_OR + " requêtes par jour" + (somme > LIMITE_OR ? " : si tout le monde les utilise, OpenRouter bloquera." : ".") + "</p>";
     if (tdb.msg) h += '<p class="m petit" role="status">' + esc(tdb.msg) + "</p>";
     h += tdb.profils.map((p) => {
       const mes = tdb.usage.filter((u) => u.user_id === p.user_id && Date.parse(u.cree_le) >= j24), ok = mes.filter((u) => !echec(u)).length, ko = mes.filter(echec).length, lim = Number.isInteger(p.quota) ? p.quota : defaut;
-      return '<article class="carte"><div class="tete"><div class="titre"><b>' + esc(p.email || p.user_id) + (p.admin ? " (admin)" : "") + "</b><span class=\"m petit\">" + ok + " sur " + lim + " en 24 h" + (ko ? ", " + ko + " échec" + (ko > 1 ? "s" : "") : "") + "</span></div></div>" + barre(ok, Math.max(lim, 1)) +
+      return '<article class="carte"><div class="tete"><div class="titre"><b>' + esc(p.email || p.user_id) + (p.admin ? " (admin)" : "") + "</b><span class=\"m petit\">" + ok + " sur " + lim + " en 24 h" + (ko ? ", " + ko + " échec" + (ko > 1 ? "s" : "") : "") + (tdb.pages ? "<br>Pages : " + tdb.pages.filter((x) => x.user_id === p.user_id).length + " au total, " + tdb.pages.filter((x) => x.user_id === p.user_id && x.statut === "a_relire").length + " à relire" : "") + "</span></div></div>" + barre(ok, Math.max(lim, 1)) +
         '<div class="row2 lim"><label class="sr" for="q-' + esc(p.user_id) + '">Limite de ' + esc(p.email || "") + '</label><input id="q-' + esc(p.user_id) + '" data-q="' + esc(p.user_id) + '" type="number" inputmode="numeric" min="0" max="500" step="1" placeholder="' + defaut + '" value="' + (Number.isInteger(p.quota) ? p.quota : "") + '">' +
         '<button class="btn plein" data-a="tsave" data-u="' + esc(p.user_id) + '" type="button">Enregistrer</button></div></article>';
     }).join("");
@@ -175,7 +191,7 @@
   async function majQuota() { try { const e = await worker("/etat"); quota = e; } catch (e) { /* non bloquant */ } rendre(); }
   async function chargerAccueil() {
     chargement = true; erreur = ""; rendre();
-    try { chapitres = await rest("chapitres?select=id,matiere,titre,cree_le,pages(count)&order=cree_le.desc"); } catch (e) { erreur = e.message; }
+    try { chapitres = await rest("chapitres?select=id,matiere,titre,cree_le,pages(count)&user_id=eq." + session.user.id + "&order=cree_le.desc"); } catch (e) { erreur = e.message; }
     chargement = false; rendre();
   }
   async function ouvrir(id, meta) {

@@ -94,3 +94,7 @@ input[type=number]{font:inherit;background:var(--s1);color:var(--ink);border:1px
 .oeil[aria-pressed=true] .o-barre{display:block}
 .appbar+h1{margin-top:.4rem}
 @media (max-width:359px){.tabs{gap:2px;padding:3px}.tab{font-size:.8rem;padding:0 .2rem}}
+.aver{list-style:none;margin:.2rem 0 0;padding:0;border-top:1px solid var(--line)}
+.aver-l{padding:10px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.aver-l b{display:block;font-size:.95rem}
+.aver-l small{display:block;color:var(--mute);font-size:.85rem;line-height:1.35;margin-top:2px}
