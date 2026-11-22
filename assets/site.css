@@ -64,7 +64,7 @@ a{color:inherit}
 .nl a:focus-visible,.brand:focus-visible{outline:2px solid var(--lampe);outline-offset:2px}
 .nl .hm{display:none}
 @media (min-width:560px){.nl .hm{display:inline-flex}}
-@media (max-width:429px){.brand span{display:none}}
+@media (max-width:429px){.brand span{display:none}.nl a{padding:0 .6rem;font-size:.9rem}}
 .btn.pri{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
 /* ---------- accueil ---------- */
@@ -119,3 +119,4 @@ a{color:inherit}
 .chip:focus-visible{outline:2px solid var(--lampe);outline-offset:2px}
 .cours h2{scroll-margin-top:72px;font-size:1.05rem}
 
+@media (max-width:359px){.nl{gap:0}.nl a{padding:0 .45rem;font-size:.86rem}.navin,.navin.lg{padding-left:12px}}
