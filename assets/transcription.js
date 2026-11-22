@@ -10,7 +10,7 @@
     ["fr", "Français"], ["hg", "Histoire-Géographie"], ["emc", "EMC"], ["ang", "Anglais"], ["angp", "Anglais+"], ["dnl", "DNL"], ["ita", "Italien"]];
   const nomMat = (c) => (MATIERES.find((m) => m[0] === c) || [0, c])[1];
   const SIGNAUX = { doutes: "Passages douteux, notés [?…] ou [illisible]", schema: "Schéma ou figure : le moteur les lit mal",
-    boucle: "Lignes répétées : probable boucle du moteur", invente: "Texte probablement inventé par le moteur (photo trop petite, floue ou de travers) : refais la photo", vide: "Texte presque vide", sciences: "Maths et sciences : à vérifier avec la photo",
+    boucle: "Lignes répétées : probable boucle du moteur", petite: "Photo trop petite : le moteur se trompe, la page sera relue d'après la photo", invente: "Texte probablement inventé par le moteur (photo trop petite, floue ou de travers) : refais la photo", vide: "Texte presque vide", sciences: "Maths et sciences : à vérifier avec la photo",
     relu_claude: "Relue de nuit par Claude : garde un œil sur les formules et les chiffres" };
   const CHEVRON = '<svg class="go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
 
@@ -74,6 +74,7 @@
   }
   async function preparer(file, rot) {
     const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const petite = Math.max(bmp.width, bmp.height) < 1400;      // photo d'origine trop petite pour le moteur
     const k = Math.min(1, 2000 / Math.max(bmp.width, bmp.height)), w = Math.round(bmp.width * k), h = Math.round(bmp.height * k), cote = rot % 180 !== 0;
     const c = document.createElement("canvas");
     c.width = cote ? h : w; c.height = cote ? w : h;
@@ -82,6 +83,7 @@
     if (bmp.close) bmp.close();
     const H = c.height, r = Math.round(H * 0.05), mid = Math.floor(H / 2);
     return {
+      petite,
       haut: await versB64(await versBlob(recadrer(c, 0, mid + r), 0.88)),
       bas: await versB64(await versBlob(recadrer(c, mid - r, H), 0.88)),
       complet: await versBlob(recadrer(c, 0, H, 1600), 0.8),
@@ -285,7 +287,7 @@
       c.statut = "cours"; rendre();
       try {
         const img = await preparer(c.file, c.rot);
-        const d = await worker("/transcrire", { images: [img.haut, img.bas], matiere: nv.matiere });
+        const d = await worker("/transcrire", { images: [img.haut, img.bas], matiere: nv.matiere, petite: img.petite });
         if (!nv.chapitreId) { const r = await rest("chapitres", { methode: "POST", corps: { matiere: nv.matiere, titre: nv.titre.trim() }, entetes: { Prefer: "return=representation" } }); nv.chapitreId = r[0].id; }
         const numero = nv.prochain++, chemin = session.user.id + "/" + nv.chapitreId + "/" + numero + "-" + Date.now() + ".jpg";
         await envoyerPhoto(chemin, img.complet);
