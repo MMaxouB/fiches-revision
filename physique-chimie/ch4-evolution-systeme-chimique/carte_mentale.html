@@ -1,0 +1,272 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Carte mentale · chapitre 4</title><style>
+/* Carte mentale : un noyau au centre, sept branches colorées de chaque côté ; sur téléphone elle se lit comme un plan en cartes. */
+:root{
+  --ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  --bg:#e9edf3; --paper:#ffffff; --ink:#18202f; --muted:#57617a; --line:#d5dbe6; --soft:#f3f5f9;
+  --core1:#1b2a41; --core2:#27486b;
+  --c1:#2f62c9; --c2:#7240c0; --c3:#0e7c77; --c4:#bf5b08; --c5:#c42f45; --c6:#566176; --c7:#94650f;
+  --l1:#2f62c9; --l2:#7240c0; --l3:#0e7c77; --l4:#bf5b08; --l5:#c42f45; --l6:#566176; --l7:#94650f;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532;
+  --core1:#0b1220; --core2:#1f3a5c;
+  --l1:#7fa8ff; --l2:#bf9bff; --l3:#5fd6cf; --l4:#ffb061; --l5:#ff8d9b; --l6:#b3bdd2; --l7:#e5b75f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532;
+  --core1:#0b1220; --core2:#1f3a5c;
+  --l1:#7fa8ff; --l2:#bf9bff; --l3:#5fd6cf; --l4:#ffb061; --l5:#ff8d9b; --l6:#b3bdd2; --l7:#e5b75f; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 3rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.top{max-width:1500px;margin:0 auto 1.4rem;display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-end;justify-content:space-between}
+.top h1{font:700 clamp(1.5rem,3.6vw,2.1rem)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.top p{margin:.35rem 0 0;color:var(--muted);max-width:44rem}
+.ctl{display:flex;flex-wrap:wrap;gap:.5rem}
+.ctl button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem .95rem}
+.ctl button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:700}
+
+.map{position:relative;max-width:1500px;margin:0 auto}
+.col{display:flex;flex-direction:column;gap:22px}
+.br{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.hub{border-radius:14px;background:var(--c);color:#fff;padding:.7rem 1rem;position:relative;z-index:1}
+.hub small{display:block;font:700 .7rem var(--ui);letter-spacing:.09em;text-transform:uppercase;opacity:.85}
+.hub b{display:block;font:700 1.02rem/1.2 var(--display)}
+.lv{display:flex;flex-direction:column;gap:9px}
+.leaf{--cl:var(--l1);position:relative;z-index:1;border:2px solid var(--cl);border-radius:16px;background:var(--paper);padding:.5rem .85rem .55rem}
+.leaf b{display:block;font-size:.95rem;line-height:1.25}
+.leaf>b math{font-size:1em}
+.leaf p{margin:.2rem 0 0;font-size:.86rem;color:var(--muted)}
+.leaf .dg{color:var(--cl);font-weight:700}
+.rev .leaf{cursor:pointer}
+.rev .leaf p{display:none}
+.rev .leaf.open p{display:block}
+.rev .leaf:not(.open) b::after{content:" +";color:var(--cl);font-weight:700}
+.core{position:relative;z-index:1;background:radial-gradient(circle at 30% 25%,var(--core2),var(--core1));color:#fff;border-radius:18px;padding:1.2rem 1.3rem;margin-bottom:1.6rem;text-align:center}
+.core small{display:block;font:700 .72rem var(--ui);letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.core h2{font:700 1.5rem/1.15 var(--display);margin:.35rem 0 .5rem;text-wrap:balance}
+.core .yr{display:inline-block;border:1.5px solid rgba(255,255,255,.55);border-radius:999px;padding:.1rem .8rem;font-weight:700}
+.core p{margin:.7rem 0 0;font-size:.9rem;opacity:.9}
+svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0}
+.foot{max-width:1500px;margin:1.6rem auto 0;color:var(--muted);font-size:.88rem}
+
+.b1{--c:var(--c1);--cl:var(--l1)}.b2{--c:var(--c2);--cl:var(--l2)}.b3{--c:var(--c3);--cl:var(--l3)}.b4{--c:var(--c4);--cl:var(--l4)}
+.b5{--c:var(--c5);--cl:var(--l5)}.b6{--c:var(--c6);--cl:var(--l6)}.b7{--c:var(--c7);--cl:var(--l7)}
+
+@media (min-width:1100px){
+  .map{display:grid;grid-template-columns:1fr minmax(250px,290px) 1fr;gap:0 clamp(60px,7vw,110px);align-items:center}
+  .core{margin:0;border-radius:50%;aspect-ratio:1;display:flex;flex-direction:column;justify-content:center;padding:1.8rem}
+  .col{gap:30px}
+  .br{flex-direction:row;align-items:center;gap:clamp(40px,4.5vw,70px);margin:0}
+  .col.r .br{flex-direction:row}
+  .hub{flex:none;width:136px;height:136px;border-radius:50%;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:.6rem}
+  .hub b{font-size:.9rem}
+  .lv{flex:1;min-width:0}
+}
+@media (max-width:1099px){svg.lines{display:none}.map{display:flex;flex-direction:column}.core{order:-1;margin-bottom:1.2rem}.hub{order:-1}.br{margin-bottom:12px}}
+
+.detail{max-width:46rem;margin:3rem auto 0}
+.detail h2{font:700 1.5rem var(--display);letter-spacing:-.01em;margin:0 0 .3rem}
+.detail>p{margin:0 0 1.6rem;color:var(--muted)}
+.dg{margin:0 0 1.8rem}
+.dg h3{display:flex;gap:.6rem;align-items:baseline;margin:0 0 .6rem;padding:.55rem .9rem;border-radius:10px;background:var(--c);color:#fff;font:700 1.05rem var(--display)}
+.dg h3 small{font:700 .7rem var(--ui);letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.dg article{border-left:3px solid var(--cl);padding:.1rem 0 .1rem .9rem;margin:0 0 1rem}
+.dg article h4{margin:0 0 .15rem;font-size:1rem}
+.dg article p{margin:.15rem 0 0;line-height:1.6}
+/* mode intégré (Notion) : liste compacte sur deux colonnes, sans le détail (il est dans la page) */
+.emb body{padding:8px}
+.emb .top h1,.emb .top p,.emb #detail,.emb .foot,.emb svg.lines{display:none}
+.emb .top{margin-bottom:.6rem}
+.emb .map{display:grid;grid-template-columns:1fr;gap:12px;align-items:start;max-width:none}
+.emb .col{display:contents}
+.emb .br{flex-direction:column;align-items:stretch;gap:8px;margin:0}
+.emb .hub{order:-1;width:auto;height:auto;border-radius:12px;display:block;text-align:left;padding:.55rem .9rem}
+.emb .core{order:-2;grid-column:1/-1;margin:0;aspect-ratio:auto;border-radius:12px;display:block;padding:.7rem 1rem}
+.emb .core h2{font-size:1.2rem;margin:.2rem 0 .3rem}
+.emb .core p{display:none}
+@media (min-width:620px){.emb .map{grid-template-columns:1fr 1fr}}
+
+.b8{--c:var(--c8);--cl:var(--l8)}
+:root{--c8:#8a3d8f;--l8:#8a3d8f}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--c8:#e29be6;--l8:#e29be6}}
+:root[data-theme="dark"]{--c8:#e29be6;--l8:#e29be6}
+
+math{font-size:1.06em}
+math.big{math-style:normal}
+.leaf p math{color:var(--ink)}
+.leaf p{font-size:.92rem;line-height:1.7}
+.dg article p{line-height:1.8}
+.leaf{overflow-wrap:anywhere}
+</style>
+<style id="veilleuse">@font-face{font-family:Figtree;src:url(../../assets/figtree-latin.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@media screen{:root{--ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;--display:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+ --bg:#F4F6FB;--paper:#FFFFFF;--ink:#161C2D;--muted:#586380;--line:#D9DFEC;--soft:#EBEFF7;--grid:#E3E8F2;--core1:#17233D;--core2:#2D4A7A;
+ --c1:#2D5FA8;--c2:#5E4BB0;--c3:#1F7A5A;--c4:#B85A14;--c5:#B03A5E;--c6:#4E5A74;--c7:#8A6410;
+ --l1:#2D5FA8;--l2:#5E4BB0;--l3:#1F7A5A;--l4:#B85A14;--l5:#B03A5E;--l6:#4E5A74;--l7:#8A6410;
+ --fr:#2D5FA8;--eu:#5E4BB0;--gr:#1F7A5A;--rev:#B03A5E;--nat:#B85A14;--cul:#8A6410;
+ --r1:#2D5FA8;--r2:#1E4A8C;--r3:#B03A5E;--r4:#6B7A96;--band:rgba(176,58,94,.08);--ok:#E5F4EA;--okl:#1C7A3D}}
+@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#131A2B;--paper:#1B2438;--ink:#ECEFF6;--muted:#9AA6BF;--line:#2A3650;--soft:#222D45;--grid:#232E47;--core1:#1E2A47;--core2:#33466E;
+ --l1:#7FB2F0;--l2:#B8A6F0;--l3:#7FD0A8;--l4:#F2A56B;--l5:#E58FA9;--l6:#A9B4CC;--l7:#E5C06B;
+ --fr:#7FB2F0;--eu:#B8A6F0;--gr:#7FD0A8;--rev:#E58FA9;--nat:#F2A56B;--cul:#E5C06B;
+ --r1:#4A7BE0;--r2:#2F5CBF;--r3:#D4455A;--r4:#6B7A96;--band:rgba(229,143,169,.1);--ok:#16301F;--okl:#6FD694;color-scheme:dark}}
+/* carte mentale : la disposition en bulles (noyau au centre, traits) a besoin de ~1650 px pour les branches à formules larges (arbre pondéré de Ch3). De 1100 à 1699 px (portables), deux colonnes de branches empilées sous le noyau : rien n'est tronqué ; dès 1700 px, bulles et traits, sur une carte plus large */
+@media screen and (min-width:1100px) and (max-width:1699px){
+svg.lines{display:none}
+.map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 2.6rem;align-items:start}
+.core{grid-column:1/-1;order:-1;display:block;aspect-ratio:auto;border-radius:18px;padding:1.2rem 1.3rem;margin:0 0 1.8rem}
+.col{gap:1.8rem}
+.br,.col.r .br{flex-direction:column;align-items:stretch;gap:10px;margin:0}
+.hub{order:-1;width:auto;height:auto;border-radius:14px;display:block;text-align:left;padding:.7rem 1rem}
+.hub b{font-size:1.02rem}
+}
+@media screen and (min-width:1700px){.map{max-width:1640px}}
+/* « Pour bien comprendre » (sous la carte) : sur ordinateur, les groupes s'étalent sur la largeur, les explications en 2 ou 3 colonnes de cartes ; téléphone : une colonne */
+@media screen and (min-width:900px){
+.detail{max-width:84rem}
+.detail>p{max-width:46rem;font-size:1.05rem}
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(22rem,1fr));gap:1rem 2.4rem;margin:0 0 2.4rem}
+.dg h3{grid-column:1/-1;margin:0}
+.dg article{margin:0}
+.dg article h4{font-size:1.08rem}
+.dg article p{font-size:1.02rem}
+}
+@media screen{body{margin:0;padding-top:0}
+.hub small,.core small,.dg h3 small,section.s>h2 small,.tag,.concl .h,.box h2,th{text-transform:none;letter-spacing:0}}
+.back{display:block;position:sticky;top:0;z-index:50;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 1rem;padding:.7rem max(16px,env(safe-area-inset-left,0px));background:var(--paper,#1B2438);color:var(--ink,#ECEFF6);border-bottom:1px solid var(--line,#2A3650);font:600 .9rem var(--ui,system-ui),sans-serif;text-decoration:none}
+/* formule plus large que l'écran (320 px) : elle défile dans sa case au lieu d'élargir la page */
+@media screen{.fm,.leaf p,.dg p,.lv p{max-width:100%;overflow-x:auto;overflow-y:hidden}.leaf p math,.dg p math{padding:.2em 0}}
+.back:active{background:var(--soft,#222D45)}
+.back:focus-visible{outline:2px solid var(--ink,#F2C46B);outline-offset:-2px}
+</style>
+<style>@page{size:A4;margin:11mm}@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
+@media print{
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--paper:#fff;--ink:#111;--muted:#444;--line:#bbb;--soft:#f3f3f3;
+  --core1:#1b2a41;--core2:#27486b;--l1:#2f62c9;--l2:#7240c0;--l3:#0e7c77;--l4:#bf5b08;--l5:#c42f45;--l6:#566176;--l7:#94650f;color-scheme:light}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:#fff!important;padding:0!important;font-size:10pt}
+.back,.ctl,svg.lines{display:none!important}
+.top{display:none!important}
+.map{page:land;display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px 11px;max-width:none!important;align-items:start;font-size:9pt;zoom:.88}
+.col{display:contents!important}
+.core{grid-column:1/-1;order:-3;margin:0!important;padding:.45rem 1rem!important}
+.core h2{font-size:1.15rem!important;margin:.1rem 0!important}.core p{display:none!important}
+.br{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;margin:0!important;break-inside:avoid}
+.hub{order:-1;width:auto!important;height:auto!important;border-radius:10px!important;display:block!important;text-align:left!important;padding:.4rem .8rem!important}
+.lv{gap:6px!important}
+.leaf{break-inside:avoid;padding:.3rem .65rem .35rem!important}.leaf b{font-size:.9rem!important}.leaf p{font-size:.78rem!important;margin-top:.1rem!important}
+.rev .leaf p{display:block!important}
+.rev .leaf:not(.open) b::after{content:""!important}
+.detail{page:port;break-before:page;margin:0!important;max-width:none!important}
+.dg,.dg article{break-inside:avoid}
+.dg h3{break-after:avoid}
+.foot{page:port;margin-top:.8rem!important}
+}
+</style>
+<a class="back" href="./">‹ Retour à la fiche, Évolution d’un système chimique</a></head><body>
+
+<header class="top">
+  <div>
+    <h1>Physique-Chimie · Chapitre 4 : l'essentiel à retenir</h1>
+    <p>Évolution d'un système chimique : l'essentiel à retenir, en une carte.</p>
+  </div>
+  <div class="ctl">
+    <button id="rev" aria-pressed="false">Mode révision : cacher les formules</button>
+    <button id="all">Tout ouvrir</button>
+  </div>
+</header>
+<main class="map" id="map">
+  <svg class="lines" id="lines" aria-hidden="true"></svg>
+  <div class="col l" id="cl"></div>
+  <section class="core" id="core">
+    <small>Physique-Chimie · Première</small>
+    <h2>Faire évoluer un système chimique</h2>
+    <span class="yr">Chapitre 4</span>
+    <p>Écrire des réactions d'oxydo-réduction, puis suivre l'avancement et trouver le réactif limitant avec un tableau.</p>
+  </section>
+  <div class="col r" id="cr"></div>
+</main>
+<section class="detail" id="detail"><h2>Pour bien comprendre</h2><p>Relis ces détails pour comprendre chaque bulle, puis apprends seulement la carte par cœur.</p></section>
+<p class="foot">† = ajout absent du cours. En mode révision, touche une bulle pour afficher sa formule et teste-toi à voix haute.</p>
+
+<script>
+(function(){
+"use strict";
+var B=[{"n": 1, "side": "l", "small": "Ch4 · I", "t": "Couples oxydant/réducteur", "leaves": [["Oxydant, réducteur", "capte ou cède des électrons"], ["Oxydation, réduction", "perte d&#x27;électrons ; gain d&#x27;électrons"], ["Demi-équation", "<math><mi>O<\/mi><mi>x<\/mi><mo>+<\/mo><mi>n<\/mi><msup><mi>e<\/mi><mrow><mo>−<\/mo><\/mrow><\/msup><mo>=<\/mo><mi>R<\/mi><mi>e<\/mi><mi>d<\/mi><\/math>"], ["Écrire une demi-équation", "5 étapes dans l&#x27;ordre"]], "det": ["Deux espèces qui se transforment l&#x27;une en l&#x27;autre par gain ou perte d&#x27;électrons sont conjuguées et forment un couple oxydant/réducteur. L&#x27;oxydant est l&#x27;entité susceptible de capter un ou plusieurs électrons ; le réducteur est l&#x27;entité susceptible d&#x27;en céder un ou plusieurs.", "Une oxydation correspond à une perte d&#x27;électrons, une réduction à un gain d&#x27;électrons.", "La demi-équation électronique associée à un couple Ox/Red traduit la transformation possible d&#x27;une des espèces conjuguées en l&#x27;autre. <math><mi>n<\/mi><msup><mi>e<\/mi><mrow><mo>−<\/mo><\/mrow><\/msup><\/math> représente le nombre <math><mi>n<\/mi><\/math> d&#x27;électrons perdus ou gagnés. Exemples : <math><msup><mtext>Al<\/mtext><mrow><mn>3<\/mn><mo>+<\/mo><\/mrow><\/msup><mo>+<\/mo><mn>3<\/mn><msup><mi>e<\/mi><mrow><mo>−<\/mo><\/mrow><\/msup><mo>=<\/mo><msub><mtext>Al<\/mtext><mrow><mo stretchy=\"false\">(<\/mo><mi>s<\/mi><mo stretchy=\"false\">)<\/mo><\/mrow><\/msub><\/math> et <math><msup><mtext>Sn<\/mtext><mrow><mn>2<\/mn><mo>+<\/mo><\/mrow><\/msup><mo>+<\/mo><mn>2<\/mn><msup><mi>e<\/mi><mrow><mo>−<\/mo><\/mrow><\/msup><mo>=<\/mo><msub><mtext>Sn<\/mtext><mrow><mo stretchy=\"false\">(<\/mo><mi>s<\/mi><mo stretchy=\"false\">)<\/mo><\/mrow><\/msub><\/math>.", "1) Placer l&#x27;oxydant et le réducteur de part et d&#x27;autre du signe égal. 2) Ajuster les nombres stœchiométriques pour conserver les éléments autres que H et O. 3) Conserver l&#x27;élément O avec des molécules <math><msub><mtext>H<\/mtext><mn>2<\/mn><\/msub><mtext>O<\/mtext><\/math>. 4) Conserver l&#x27;élément H avec des ions <math><msup><mtext>H<\/mtext><mrow><mo>+<\/mo><\/mrow><\/msup><\/math>. 5) Conserver la charge électrique avec des électrons <math><msup><mi>e<\/mi><mrow><mo>−<\/mo><\/mrow><\/msup><\/math>. Exemple : <math><msubsup><mtext>MnO<\/mtext><mn>4<\/mn><mrow><mo>−<\/mo><\/mrow><\/msubsup><mo>+<\/mo><mn>8<\/mn><msup><mtext>H<\/mtext><mrow><mo>+<\/mo><\/mrow><\/msup><mo>+<\/mo><mn>5<\/mn><msup><mi>e<\/mi><mrow><mo>−<\/mo><\/mrow><\/msup><mo>=<\/mo><msup><mtext>Mn<\/mtext><mrow><mn>2<\/mn><mo>+<\/mo><\/mrow><\/msup><mo>+<\/mo><mn>4<\/mn><msub><mtext>H<\/mtext><mn>2<\/mn><\/msub><mtext>O<\/mtext><\/math>."]}, {"n": 2, "side": "l", "small": "Ch4 · I", "t": "Réaction d'oxydo-réduction", "leaves": [["Pas d&#x27;électrons", "combiner deux demi-équations"], ["Trois étapes", "réactif à gauche ; multiplier ; additionner"], ["Milieu acide", "convention par défaut"], ["Milieu basique", "ajouter autant de <math><msup><mtext>HO<\/mtext><mrow><mo>−<\/mo><\/mrow><\/msup><\/math> que de <math><msup><mtext>H<\/mtext><mrow><mo>+<\/mo><\/mrow><\/msup><\/math>"]], "det": ["L&#x27;équation d&#x27;une réaction d&#x27;oxydo-réduction ne fait pas apparaître d&#x27;électrons : on combine les demi-équations des deux couples en présence, de façon à égaliser le nombre d&#x27;électrons cédés et captés.", "1) Pour chaque couple, écrire la demi-équation avec le réactif à gauche. 2) Multiplier les demi-équations pour qu&#x27;elles aient autant d&#x27;électrons. 3) Additionner et simplifier. Exemple : <math><mn>2<\/mn><mspace width=\"0.167em\" /><msub><mtext>Al<\/mtext><mrow><mo stretchy=\"false\">(<\/mo><mi>s<\/mi><mo stretchy=\"false\">)<\/mo><\/mrow><\/msub><mo>+<\/mo><mn>3<\/mn><mspace width=\"0.167em\" /><msubsup><mtext>Sn<\/mtext><mrow><mo stretchy=\"false\">(<\/mo><mi>a<\/mi><mi>q<\/mi><mo stretchy=\"false\">)<\/mo><\/mrow><mrow><mn>2<\/mn><mo>+<\/mo><\/mrow><\/msubsup><mi>⟶<\/mi><mn>2<\/mn><mspace width=\"0.167em\" /><msubsup><mtext>Al<\/mtext><mrow><mo stretchy=\"false\">(<\/mo><mi>a<\/mi><mi>q<\/mi><mo stretchy=\"false\">)<\/mo><\/mrow><mrow><mn>3<\/mn><mo>+<\/mo><\/mrow><\/msubsup><mo>+<\/mo><mn>3<\/mn><mspace width=\"0.167em\" /><msub><mtext>Sn<\/mtext><mrow><mo stretchy=\"false\">(<\/mo><mi>s<\/mi><mo stretchy=\"false\">)<\/mo><\/mrow><\/msub><\/math> († le cours écrit <math><msup><mtext>Al<\/mtext><mrow><mn>3<\/mn><mo>+<\/mo><\/mrow><\/msup><\/math> sans le coefficient <math><mn>2<\/mn><\/math>).", "Par convention, les demi-équations et les équations sont écrites en milieu acide.", "On écrit d&#x27;abord comme en milieu acide, puis on ajoute autant de <math><msup><mtext>HO<\/mtext><mrow><mo>−<\/mo><\/mrow><\/msup><\/math> que de <math><msup><mtext>H<\/mtext><mrow><mo>+<\/mo><\/mrow><\/msup><\/math> des deux côtés de la flèche et on simplifie (<math><msup><mtext>H<\/mtext><mrow><mo>+<\/mo><\/mrow><\/msup><mo>+<\/mo><msup><mtext>HO<\/mtext><mrow><mo>−<\/mo><\/mrow><\/msup><\/math> donnent <math><msub><mtext>H<\/mtext><mn>2<\/mn><\/msub><mtext>O<\/mtext><\/math>). Exemple du cours : <math><mn>5<\/mn><mspace width=\"0.167em\" /><msup><mtext>Fe<\/mtext><mrow><mn>2<\/mn><mo>+<\/mo><\/mrow><\/msup><mo>+<\/mo><msubsup><mtext>MnO<\/mtext><mn>4<\/mn><mrow><mo>−<\/mo><\/mrow><\/msubsup><mo>+<\/mo><mn>4<\/mn><mspace width=\"0.167em\" /><msub><mtext>H<\/mtext><mn>2<\/mn><\/msub><mtext>O<\/mtext><mi>⟶<\/mi><mn>5<\/mn><mspace width=\"0.167em\" /><msup><mtext>Fe<\/mtext><mrow><mn>3<\/mn><mo>+<\/mo><\/mrow><\/msup><mo>+<\/mo><msup><mtext>Mn<\/mtext><mrow><mn>2<\/mn><mo>+<\/mo><\/mrow><\/msup><mo>+<\/mo><mn>8<\/mn><mspace width=\"0.167em\" /><msup><mtext>HO<\/mtext><mrow><mo>−<\/mo><\/mrow><\/msup><\/math>."]}, {"n": 3, "side": "r", "small": "Ch4 · II", "t": "Avancement et réactif limitant", "leaves": [["Stœchiométrie", "proportions de l&#x27;équation"], ["Réactif limitant", "totalement consommé"], ["Avancement <math><mi>x<\/mi><\/math>", "en mol, de <math><mn>0<\/mn><\/math> à <math><msub><mi>x<\/mi><mi>f<\/mi><\/msub><\/math>"], ["Totale ou non", "<math><msub><mi>x<\/mi><mi>f<\/mi><\/msub><mo>=<\/mo><msub><mi>x<\/mi><mrow><mi>m<\/mi><mi>a<\/mi><mi>x<\/mi><\/mrow><\/msub><\/math> ou <math><msub><mi>x<\/mi><mi>f<\/mi><\/msub><mo>&lt;<\/mo><msub><mi>x<\/mi><mrow><mi>m<\/mi><mi>a<\/mi><mi>x<\/mi><\/mrow><\/msub><\/math>"]], "det": ["La stœchiométrie désigne les relations de proportionnalité entre les quantités de matière consommées des réactifs et entre les quantités de matière formées des produits.", "Dans une réaction chimique, le réactif limitant est le réactif qui est totalement consommé.", "L&#x27;avancement d&#x27;une réaction, noté <math><mi>x<\/mi><\/math>, est une grandeur exprimée en mole qui décrit l&#x27;évolution d&#x27;un système chimique. Il augmente depuis <math><mn>0<\/mn><\/math> mol dans l&#x27;état initial jusqu&#x27;à sa valeur finale <math><msub><mi>x<\/mi><mi>f<\/mi><\/msub><\/math>, l&#x27;avancement final, dans l&#x27;état final.", "Transformation totale : elle s&#x27;arrête par consommation totale d&#x27;un réactif, et l&#x27;avancement final est égal à l&#x27;avancement maximal <math><msub><mi>x<\/mi><mrow><mi>m<\/mi><mi>a<\/mi><mi>x<\/mi><\/mrow><\/msub><\/math> ; les autres réactifs, non entièrement consommés, sont en excès. Transformation non totale : elle s&#x27;arrête alors qu&#x27;aucun réactif n&#x27;a été entièrement consommé, donc <math><msub><mi>x<\/mi><mi>f<\/mi><\/msub><\/math> est inférieur à <math><msub><mi>x<\/mi><mrow><mi>m<\/mi><mi>a<\/mi><mi>x<\/mi><\/mrow><\/msub><\/math>."]}, {"n": 4, "side": "r", "small": "Ch4 · III", "t": "Tableau d'avancement", "leaves": [["Construire le tableau", "équation, état initial, <math><mi>x<\/mi><\/math>, état final"], ["Réactif limitant", "celui qui a le plus petit <math><msub><mi>x<\/mi><mrow><mi>m<\/mi><mi>a<\/mi><mi>x<\/mi><\/mrow><\/msub><\/math>"], ["Mélange stœchiométrique", "réactifs tous consommés"], ["Transformation non totale", "on déduit <math><msub><mi>x<\/mi><mi>f<\/mi><\/msub><\/math> d&#x27;une quantité finale"]], "det": ["La première ligne présente l&#x27;équation ajustée. Les autres lignes donnent les quantités de matière à l&#x27;état initial (<math><mi>x<\/mi><mo>=<\/mo><mn>0<\/mn><\/math>, <math><mi>t<\/mi><mo>=<\/mo><mn>0<\/mn><\/math> s), à un état intermédiaire d&#x27;avancement <math><mi>x<\/mi><\/math> et à l&#x27;état final (<math><mi>x<\/mi><mo>=<\/mo><msub><mi>x<\/mi><mi>f<\/mi><\/msub><\/math>). Les nombres placés devant <math><mi>x<\/mi><\/math> sont les nombres stœchiométriques, précédés de « <math><mo>−<\/mo><\/math> » pour les réactifs et de « <math><mo>+<\/mo><\/math> » pour les produits.", "Pour une transformation totale, on cherche la valeur de l&#x27;avancement maximal pour chacun des réactifs. Le réactif limitant est celui pour lequel <math><msub><mi>x<\/mi><mrow><mi>m<\/mi><mi>a<\/mi><mi>x<\/mi><\/mrow><\/msub><\/math> est la plus petite.", "Un mélange initial est stœchiométrique si les quantités initiales des réactifs sont dans les proportions stœchiométriques. Dans l&#x27;état final, les quantités des réactifs sont nulles : seuls les produits sont présents.", "Le système contient les réactifs restants et les produits formés. La connaissance d&#x27;une quantité de matière finale et des quantités initiales permet de déterminer <math><msub><mi>x<\/mi><mi>f<\/mi><\/msub><\/math>, donc toutes les quantités finales."]}];
+var cl=document.getElementById('cl'),cr=document.getElementById('cr');
+function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!==undefined)e.innerHTML=html;return e}
+B.forEach(function(b){
+  var br=el('div','br b'+b.n);br.dataset.n=b.n;
+  var hub=el('div','hub');hub.appendChild(el('small','',b.small));hub.appendChild(el('b','',b.t));
+  var lv=el('div','lv');
+  b.leaves.forEach(function(l){
+    var f=el('div','leaf');f.tabIndex=0;f.setAttribute('role','button');
+    f.appendChild(el('b','',l[0]));f.appendChild(el('p','',l[1]));
+    lv.appendChild(f);
+  });
+  if(b.side==='l'){br.appendChild(lv);br.appendChild(hub)}else{br.appendChild(hub);br.appendChild(lv)}
+  (b.side==='l'?cl:cr).appendChild(br);
+});
+var dsec=document.getElementById('detail');
+B.forEach(function(b){
+  var g=el('div','dg b'+b.n),h=el('h3','',b.t);h.insertBefore(el('small','',b.small),h.firstChild);g.appendChild(h);
+  b.leaves.forEach(function(l,i){
+    var a=el('article');a.appendChild(el('h4','',l[0]));
+    a.appendChild(el('p','',b.det[i]));
+    g.appendChild(a);
+  });
+  dsec.appendChild(g);
+});
+var EMB=false;
+if(EMB)document.documentElement.classList.add('emb');
+var map=document.getElementById('map'),svg=document.getElementById('lines'),core=document.getElementById('core');
+function box(e){var r=e.getBoundingClientRect(),m=map.getBoundingClientRect();return{l:r.left-m.left,t:r.top-m.top,w:r.width,h:r.height}}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+function draw(){
+  svg.innerHTML='';
+  if(EMB)return;
+  if(!window.matchMedia('(min-width:1100px)').matches)return;
+  var m=map.getBoundingClientRect();svg.setAttribute('viewBox','0 0 '+m.width+' '+m.height);
+  var c=box(core),cx=c.l+c.w/2,cy=c.t+c.h/2,cr_=c.w/2;
+  document.querySelectorAll('.br').forEach(function(br){
+    var n=br.dataset.n,col=css('--l'+n),h=box(br.querySelector('.hub')),hx=h.l+h.w/2,hy=h.t+h.h/2,hr=h.w/2;
+    var left=hx<cx,ax=left?hx+hr:hx-hr;
+    var ang=Math.atan2(hy-cy,hx-cx),bx=cx+Math.cos(ang)*cr_,by=cy+Math.sin(ang)*cr_;
+    var dx=bx-ax;
+    path('M'+ax+' '+hy+' C'+(ax+dx*.5)+' '+hy+' '+(bx-dx*.5)+' '+by+' '+bx+' '+by,col,4);
+    br.querySelectorAll('.leaf').forEach(function(lf){
+      var q=box(lf),ly=q.t+q.h/2,lx=left?q.l+q.w:q.l,hxe=left?hx-hr:hx+hr;
+      var d=hxe-lx;
+      path('M'+hxe+' '+hy+' C'+(hxe-d*.5)+' '+hy+' '+(lx+d*.5)+' '+ly+' '+lx+' '+ly,col,2);
+    });
+  });
+}
+function path(d,col,w){
+  var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',col);p.setAttribute('stroke-width',w);p.setAttribute('stroke-linecap','round');
+  svg.appendChild(p);
+}
+function redraw(){requestAnimationFrame(draw)}
+var rev=document.getElementById('rev'),all=document.getElementById('all');
+rev.onclick=function(){var on=rev.getAttribute('aria-pressed')!=='true';rev.setAttribute('aria-pressed',on);map.classList.toggle('rev',on);
+  if(!on)document.querySelectorAll('.leaf.open').forEach(function(l){l.classList.remove('open')});redraw()};
+all.onclick=function(){var open=all.dataset.o!=='1';all.dataset.o=open?'1':'';all.textContent=open?'Tout refermer':'Tout ouvrir';
+  if(open){map.classList.add('rev');rev.setAttribute('aria-pressed','true')}
+  document.querySelectorAll('.leaf').forEach(function(l){l.classList.toggle('open',open)});redraw()};
+function tog(e){var l=e.target.closest('.leaf');if(l&&map.classList.contains('rev')){l.classList.toggle('open');redraw()}}
+map.addEventListener('click',tog);
+map.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tog(e)}});
+window.addEventListener('resize',redraw);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(redraw);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redraw);
+redraw();
+})();
+</script>
+</body></html>
