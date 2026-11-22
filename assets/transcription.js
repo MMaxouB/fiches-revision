@@ -10,7 +10,8 @@
     ["fr", "Français"], ["hg", "Histoire-Géographie"], ["emc", "EMC"], ["ang", "Anglais"], ["angp", "Anglais+"], ["dnl", "DNL"], ["ita", "Italien"]];
   const nomMat = (c) => (MATIERES.find((m) => m[0] === c) || [0, c])[1];
   const SIGNAUX = { doutes: "Passages douteux, notés [?…] ou [illisible]", schema: "Schéma ou figure : le moteur les lit mal",
-    boucle: "Lignes répétées : probable boucle du moteur", vide: "Texte presque vide", sciences: "Maths et sciences : à vérifier avec la photo" };
+    boucle: "Lignes répétées : probable boucle du moteur", vide: "Texte presque vide", sciences: "Maths et sciences : à vérifier avec la photo",
+    relu_claude: "Relue de nuit par Claude : garde un œil sur les formules et les chiffres" };
   const CHEVRON = '<svg class="go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
 
   /* ---------- session ---------- */
@@ -249,13 +250,20 @@
     try { session = versSession(await appelAuth("token?grant_type=password", { email, password: mdp })); ecrireSession(session); chargement = false; vue = "accueil"; majQuota(); chargerAccueil(); }
     catch (err) { chargement = false; erreur = err.message; rendre(); }
   });
-  document.addEventListener("change", (e) => {
+  document.addEventListener("change", async (e) => {
     const t = e.target;
     if (t.id === "matiere" && nv) nv.matiere = t.value;
     else if (t.id === "fichiers" && nv) {
-      [...t.files].filter((f) => f.type.startsWith("image/")).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
-        .forEach((f) => nv.cartes.push({ file: f, url: URL.createObjectURL(f), rot: 0, statut: "attente", md: "", signaux: [], vue: "apercu" }));
-      t.value = ""; rendre();
+      const fichiers = [...t.files].filter((f) => f.type.startsWith("image/")).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+      t.value = "";
+      let couchees = 0;
+      for (const f of fichiers) {
+        let rot = 0;
+        try { const b = await createImageBitmap(f, { imageOrientation: "from-image" }); if (b.width > b.height) { rot = 90; couchees++; } if (b.close) b.close(); } catch (err) { /* dimension inconnue : on garde 0 */ }
+        nv.cartes.push({ file: f, url: URL.createObjectURL(f), rot, statut: "attente", md: "", signaux: [], vue: "apercu" });
+      }
+      if (couchees) nv.msg = couchees + " photo" + (couchees > 1 ? "s étaient couchées" : " était couchée") + " : " + (couchees > 1 ? "je les ai pivotées" : "je l'ai pivotée") + " de 90°. Vérifie que le texte est bien droit sur la vignette, sinon touche ↻ avant de transcrire (une photo à l'envers donne un texte inventé).";
+      rendre();
     }
   });
   document.addEventListener("input", (e) => {
