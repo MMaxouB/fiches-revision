@@ -1,0 +1,243 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Exemples résolus · chapitre LP2</title><style>
+:root{
+  --ui:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  --bg:#e9edf3; --paper:#ffffff; --ink:#18202f; --muted:#57617a; --line:#d5dbe6; --soft:#f3f5f9; --ok:#e5f4ea; --okl:#1c7a3d;
+  --c1:#2f62c9; --c2:#7240c0; --c3:#0e7c77; --c4:#bf5b08; --c5:#c42f45; --c6:#566176; --c7:#94650f;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532; --ok:#16301f; --okl:#6fd694;
+  --c1:#7fa8ff; --c2:#bf9bff; --c3:#5fd6cf; --c4:#ffb061; --c5:#ff8d9b; --c6:#b3bdd2; --c7:#e5b75f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e131b; --paper:#171d28; --ink:#e8ecf4; --muted:#a2abc0; --line:#2b3345; --soft:#1e2532; --ok:#16301f; --okl:#6fd694;
+  --c1:#7fa8ff; --c2:#bf9bff; --c3:#5fd6cf; --c4:#ffb061; --c5:#ff8d9b; --c6:#b3bdd2; --c7:#e5b75f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.5;margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.5rem 3rem}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.wrap{max-width:62rem;margin:0 auto}
+.top{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:flex-end;justify-content:space-between;margin-bottom:1rem}
+.top h1{font:700 clamp(1.5rem,3.6vw,2.1rem)/1.1 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.top p{margin:.35rem 0 0;color:var(--muted);max-width:44rem}
+.ctl button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:.4rem .95rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1.4rem}
+.chips a{display:inline-block;text-decoration:none;color:var(--ink);border:2px solid var(--c);background:var(--paper);border-radius:999px;padding:.2rem .75rem;font-size:.86rem}
+.chips a small{color:var(--c);font-weight:700;margin-right:.3rem}
+section.s{margin:0 0 2.2rem;scroll-margin-top:1rem}
+section.s>h2{display:flex;flex-wrap:wrap;gap:.2rem .6rem;align-items:baseline;margin:0 0 .3rem;padding:.55rem .9rem;border-radius:10px;background:var(--c);color:#fff;font:700 1.15rem var(--display)}
+section.s>h2 small{font:700 .7rem var(--ui);letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.sn{margin:.3rem 0 .9rem;color:var(--muted)}
+details.ex{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;margin:0 0 .8rem;overflow:hidden}
+details.ex>summary{list-style:none;cursor:pointer;padding:.65rem .9rem;display:flex;flex-direction:column;gap:.25rem}
+details.ex>summary::-webkit-details-marker{display:none}
+details.ex>summary::after{content:"+";position:absolute;right:.9rem;font-weight:700;color:var(--c)}
+details.ex[open]>summary::after{content:"−"}
+details.ex>summary{position:relative;padding-right:2.2rem}
+.tag{align-self:flex-start;font:700 .72rem var(--ui);letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--c);border-radius:999px;padding:.1rem .6rem}
+.q{font-weight:700}
+.body{padding:.2rem .9rem .9rem}
+ol.steps{list-style:none;margin:.2rem 0 0;padding:0;counter-reset:st}
+ol.steps>li{counter-increment:st;position:relative;padding:.35rem 0 .35rem 1.9rem;border-top:1px dashed var(--line)}
+ol.steps>li:first-child{border-top:0}
+ol.steps>li::before{content:counter(st);position:absolute;left:0;top:.5rem;width:1.35rem;height:1.35rem;border-radius:50%;background:var(--soft);border:1.5px solid var(--c);color:var(--c);font:700 .75rem/1.2rem var(--ui);text-align:center}
+.lb{color:var(--muted);font-size:.93rem}
+.fm{overflow-x:auto;overflow-y:hidden;max-width:100%;padding:.15rem 0}
+.fm math{font-size:1.12em;padding:.25em 0}
+math{font-size:1.06em}
+math.big{math-style:normal}
+.concl{margin:.7rem 0 0;padding:.55rem .8rem;border-radius:10px;background:var(--ok);border:1px solid var(--okl)}
+.concl .h{font:700 .72rem var(--ui);letter-spacing:.07em;text-transform:uppercase;color:var(--okl)}
+.concl math{font-size:1.12em}
+.nt{margin:.6rem 0 0;font-size:.9rem;color:var(--muted)}
+.dag{font-weight:700;color:var(--c)}
+.tblw{overflow-x:auto;max-width:100%;margin:.2rem 0}
+table.sg{border-collapse:collapse;font-size:.9rem}
+table.sg th,table.sg td{border:1px solid var(--line);padding:.25rem .5rem;text-align:center;white-space:nowrap}
+table.sg thead th{background:var(--soft)}
+table.sg tbody th{text-align:left;background:var(--soft);font-weight:400}
+svg.fig{width:100%;max-width:340px;height:auto;display:block;margin:.4rem 0;background:var(--paper)}
+svg.fig .gr{stroke:var(--line);stroke-width:1}
+svg.fig .ax{stroke:var(--ink);stroke-width:1.6}
+svg.fig .tx{fill:var(--muted);font:11px var(--ui)}
+svg.fig .pu{fill:var(--c1)} svg.fig .pu2{fill:var(--c1);font-weight:700}
+svg.fig .pv{fill:var(--c3)} svg.fig .pv2{fill:var(--c3);font-weight:700}
+svg.fig .cf{fill:none;stroke:var(--c2);stroke-width:2.2}
+svg.fig .cft{fill:var(--c2);font-weight:700}
+svg.fig .dr{stroke:var(--c5);stroke-width:1.8}
+svg.fig .drt{fill:var(--c5);font-weight:700}
+svg.fig .st{fill:none;stroke:var(--c4);stroke-width:1.6;stroke-dasharray:4 3}
+.foot{margin-top:1.4rem;color:var(--muted);font-size:.88rem}
+pre.code{margin:.3rem 0;padding:.6rem .8rem;border-radius:10px;background:var(--soft);border:1px solid var(--line);font:600 .88rem/1.5 ui-monospace,Consolas,Menlo,monospace;overflow-x:auto;max-width:100%}
+@media (max-width:480px){
+  .body{padding:.2rem .5rem .8rem}
+  details.ex>summary{padding-left:.7rem}
+  ol.steps>li{padding-left:1.6rem}
+  table.sg{font-size:.7rem}
+  table.sg th,table.sg td{padding:.18rem .14rem}
+  table.sg thead th{white-space:normal}
+  .fm math{font-size:1.04em}
+}
+/* mode intégré (Notion) : pas d'en-tête, exemples repliés */
+.emb body{padding:8px}
+.emb .top p,.emb .foot,.emb .sn{display:none}
+.emb .top{margin-bottom:.5rem}
+.emb .top h1{font-size:1.15rem}
+.emb .chips{margin-bottom:.8rem}
+.emb section.s{margin-bottom:1.2rem}
+.cd{font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:.92em;background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:0 .3em;white-space:pre-wrap;overflow-wrap:anywhere}</style>
+<style id="veilleuse">@font-face{font-family:Figtree;src:url(../../assets/figtree-latin.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@media screen{:root{--ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;--display:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+ --bg:#F4F6FB;--paper:#FFFFFF;--ink:#161C2D;--muted:#586380;--line:#D9DFEC;--soft:#EBEFF7;--grid:#E3E8F2;--core1:#17233D;--core2:#2D4A7A;
+ --c1:#2D5FA8;--c2:#5E4BB0;--c3:#1F7A5A;--c4:#B85A14;--c5:#B03A5E;--c6:#4E5A74;--c7:#8A6410;
+ --l1:#2D5FA8;--l2:#5E4BB0;--l3:#1F7A5A;--l4:#B85A14;--l5:#B03A5E;--l6:#4E5A74;--l7:#8A6410;
+ --fr:#2D5FA8;--eu:#5E4BB0;--gr:#1F7A5A;--rev:#B03A5E;--nat:#B85A14;--cul:#8A6410;
+ --r1:#2D5FA8;--r2:#1E4A8C;--r3:#B03A5E;--r4:#6B7A96;--band:rgba(176,58,94,.08);--ok:#E5F4EA;--okl:#1C7A3D}}
+@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#131A2B;--paper:#1B2438;--ink:#ECEFF6;--muted:#9AA6BF;--line:#2A3650;--soft:#222D45;--grid:#232E47;--core1:#1E2A47;--core2:#33466E;
+ --l1:#7FB2F0;--l2:#B8A6F0;--l3:#7FD0A8;--l4:#F2A56B;--l5:#E58FA9;--l6:#A9B4CC;--l7:#E5C06B;
+ --fr:#7FB2F0;--eu:#B8A6F0;--gr:#7FD0A8;--rev:#E58FA9;--nat:#F2A56B;--cul:#E5C06B;
+ --r1:#4A7BE0;--r2:#2F5CBF;--r3:#D4455A;--r4:#6B7A96;--band:rgba(229,143,169,.1);--ok:#16301F;--okl:#6FD694;color-scheme:dark}}
+/* carte mentale : la disposition en bulles (noyau au centre, traits) a besoin de ~1650 px pour les branches à formules larges (arbre pondéré de Ch3). De 1100 à 1699 px (portables), deux colonnes de branches empilées sous le noyau : rien n'est tronqué ; dès 1700 px, bulles et traits, sur une carte plus large */
+@media screen and (min-width:1100px) and (max-width:1699px){
+svg.lines{display:none}
+.map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 2.6rem;align-items:start}
+.core{grid-column:1/-1;order:-1;display:block;aspect-ratio:auto;border-radius:18px;padding:1.2rem 1.3rem;margin:0 0 1.8rem}
+.col{gap:1.8rem}
+.br,.col.r .br{flex-direction:column;align-items:stretch;gap:10px;margin:0}
+.hub{order:-1;width:auto;height:auto;border-radius:14px;display:block;text-align:left;padding:.7rem 1rem}
+.hub b{font-size:1.02rem}
+}
+@media screen and (min-width:1700px){.map{max-width:1640px}}
+/* « Pour bien comprendre » (sous la carte) : sur ordinateur, les groupes s'étalent sur la largeur, les explications en 2 ou 3 colonnes de cartes ; téléphone : une colonne */
+@media screen and (min-width:900px){
+.detail{max-width:84rem}
+.detail>p{max-width:46rem;font-size:1.05rem}
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(22rem,1fr));gap:1rem 2.4rem;margin:0 0 2.4rem}
+.dg h3{grid-column:1/-1;margin:0}
+.dg article{margin:0}
+.dg article h4{font-size:1.08rem}
+.dg article p{font-size:1.02rem}
+}
+@media screen{body{margin:0;padding-top:0}
+.hub small,.core small,.dg h3 small,section.s>h2 small,.tag,.concl .h,.box h2,th{text-transform:none;letter-spacing:0}}
+.back{display:block;position:sticky;top:0;z-index:50;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 1rem;padding:.7rem max(16px,env(safe-area-inset-left,0px));background:var(--paper,#1B2438);color:var(--ink,#ECEFF6);border-bottom:1px solid var(--line,#2A3650);font:600 .9rem var(--ui,system-ui),sans-serif;text-decoration:none}
+/* formule plus large que l'écran (320 px) : elle défile dans sa case au lieu d'élargir la page */
+@media screen{.fm,.leaf p,.dg p,.lv p{max-width:100%;overflow-x:auto;overflow-y:hidden}.leaf p math,.dg p math{padding:.2em 0}}
+.back:active{background:var(--soft,#222D45)}
+.back:focus-visible{outline:2px solid var(--ink,#F2C46B);outline-offset:-2px}
+</style>
+<style>@page{size:A4;margin:11mm}@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
+@media print{
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--paper:#fff;--ink:#111;--muted:#444;--line:#bbb;--soft:#f3f3f3;
+  --core1:#1b2a41;--core2:#27486b;--l1:#2f62c9;--l2:#7240c0;--l3:#0e7c77;--l4:#bf5b08;--l5:#c42f45;--l6:#566176;--l7:#94650f;color-scheme:light}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:#fff!important;padding:0!important;font-size:10pt}
+.back,.ctl,svg.lines{display:none!important}
+.top{display:none!important}
+.map{page:land;display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px 11px;max-width:none!important;align-items:start;font-size:9pt;zoom:.88}
+.col{display:contents!important}
+.core{grid-column:1/-1;order:-3;margin:0!important;padding:.45rem 1rem!important}
+.core h2{font-size:1.15rem!important;margin:.1rem 0!important}.core p{display:none!important}
+.br{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;margin:0!important;break-inside:avoid}
+.hub{order:-1;width:auto!important;height:auto!important;border-radius:10px!important;display:block!important;text-align:left!important;padding:.4rem .8rem!important}
+.lv{gap:6px!important}
+.leaf{break-inside:avoid;padding:.3rem .65rem .35rem!important}.leaf b{font-size:.9rem!important}.leaf p{font-size:.78rem!important;margin-top:.1rem!important}
+.rev .leaf p{display:block!important}
+.rev .leaf:not(.open) b::after{content:""!important}
+.detail{page:port;break-before:page;margin:0!important;max-width:none!important}
+.dg,.dg article{break-inside:avoid}
+.dg h3{break-after:avoid}
+.foot{page:port;margin-top:.8rem!important}
+}
+</style>
+<a class="back" href="./">‹ Retour à la fiche, Langages et programmation</a></head><body>
+<div class="wrap">
+<header class="top">
+  <div><h1>NSI · exemples résolus, étape par étape</h1>
+  <p>Chaque notion du chapitre LP2 avec ses variantes (code Python commenté). Touche un exemple pour le déplier.</p></div>
+  <div class="ctl"><button id="tg">Tout ouvrir</button></div>
+</header>
+<nav class="chips" aria-label="Notions"><a href="#typage" style="--c:var(--c1)"><small>LP2</small>Prototype et docstring</a><a href="#portee" style="--c:var(--c2)"><small>LP2</small>Variables locales et globales</a><a href="#pre" style="--c:var(--c3)"><small>LP2</small>Préconditions avec assert</a><a href="#post" style="--c:var(--c4)"><small>LP2</small>Postconditions avec assert</a><a href="#tests" style="--c:var(--c5)"><small>LP2</small>Jeux de tests</a></nav>
+<main><section class="s" id="typage" style="--c:var(--c1)"><h2><small>LP2</small>Prototype et docstring</h2><p class="sn">Réflexe : le nom, les types, puis le docstring juste sous la ligne def.</p><details class="ex"><summary><span class="tag">Écrire et consulter</span><span class="q">Écrire une fonction <span class="cd">carree</span> qui renvoie le carré d&#x27;un flottant, avec son prototype typé et son docstring, puis afficher son aide.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Nom en minuscules avec un verbe ou un nom clair ; on précise le type de l&#x27;entrée <span class="cd">a: float</span> et de la sortie <span class="cd">-&gt; float</span></div></li><li><div class="lb">Programme Python</div><pre class="code" lang="python">def carree(a: float) -&gt; float:
+    &quot;&quot;&quot;
+    Fonction permettant de renvoyer le carré du nombre a qui est en paramètre
+    &quot;&quot;&quot;
+    return a**2
+
+help(carree)</pre></li><li><div class="lb"><span class="cd">help(carree)</span> affiche, dans la console, le prototype et le docstring de la fonction</div></li><li><div class="lb">Sortie dans la console †</div></li><li><div class="lb">Programme Python</div><pre class="code" lang="python">Help on function carree in module __main__:
+
+carree(a: float) -&gt; float
+    Fonction permettant de renvoyer le carré du nombre a qui est en paramètre</pre></li></ol><div class="concl"><div class="h">Conclusion</div><div class="fm"><math display="block"><mtext>prototype typé</mtext><mtext> </mtext><mo>+</mo><mtext> </mtext><mtext>docstring</mtext><mtext> </mtext><mo>+</mo><mtext> </mtext><mtext>help()</mtext></math></div></div><p class="nt">Le cours écrit d&#x27;abord <span class="cd">carree(a)</span> sans typage, puis montre l&#x27;aide avec <span class="cd">carree(a: float) -&gt; float</span> : cet exemple regroupe les deux.</p></div></details></section><section class="s" id="portee" style="--c:var(--c2)"><h2><small>LP2</small>Variables locales et globales</h2><p class="sn">Dans une fonction, une variable qui n&#x27;est ni un paramètre ni déclarée <span class="cd">global</span> n&#x27;a pas de valeur avant d&#x27;être affectée.</p><details class="ex"><summary><span class="tag">Trois fonctions carré</span><span class="q">On écrit les trois fonctions suivantes. Que se passe-t-il pour <span class="cd">carre(3)</span>, <span class="cd">carre_2()</span> et <span class="cd">carre_3()</span> ?</span></summary><div class="body"><ol class="steps"><li><div class="lb">Programme Python</div><pre class="code" lang="python">def carre(x):
+    x = x**2
+    return x
+
+def carre_2():
+    x = x**2
+    return x
+
+def carre_3():
+    global x
+    x = x**2
+    return x</pre></li><li><div class="lb"><span class="cd">carre(3)</span> : <span class="cd">x</span> est le paramètre, donc local. Le calcul se fait et la fonction renvoie <span class="cd">9</span></div></li><li><div class="lb"><span class="cd">carre_2()</span> : la ligne <span class="cd">x = x**2</span> doit lire <span class="cd">x</span> avant de lui donner une valeur, mais <span class="cd">x</span> est local et n&#x27;a pas de valeur : Python lève <span class="cd">UnboundLocalError</span> †</div></li><li><div class="lb"><span class="cd">carre_3()</span> : <span class="cd">global x</span> désigne la variable globale <span class="cd">x</span>. Si elle n&#x27;existe pas, <span class="cd">NameError</span> ; si on a écrit <span class="cd">x = 3</span> avant, la fonction renvoie <span class="cd">9</span> et change la variable globale</div></li></ol><div class="concl"><div class="h">Conclusion</div><div class="fm"><math display="block"><mtext>à privilégier : </mtext><mtext mathvariant="monospace">carre</mtext><mtext> </mtext><mo stretchy="false">(</mo><mtext>variable locale</mtext><mo stretchy="false">)</mo><mo>,</mo><mtext> </mtext><mtext>pas de variable globale</mtext></math></div></div><p class="nt">Le cours demande d&#x27;essayer les trois fonctions et dit seulement qu&#x27;il y en a une qui ne peut pas être interprétée : le détail des messages d&#x27;erreur est un ajout.</p></div></details></section><section class="s" id="pre" style="--c:var(--c3)"><h2><small>LP2</small>Préconditions avec assert</h2><p class="sn">Une précondition se vérifie au début de la fonction, avant tout calcul.</p><details class="ex"><summary><span class="tag">Une fonction fragile</span><span class="q">Voici <span class="cd">get_unite</span>. Que renvoient <span class="cd">get_unite(4567)</span>, <span class="cd">get_unite(45.67)</span> et <span class="cd">get_unite(-6)</span> ?</span></summary><div class="body"><ol class="steps"><li><div class="lb">Programme Python</div><pre class="code" lang="python">def get_unite(n: int) -&gt; int:
+    &quot;&quot;&quot;
+    renvoie le chiffre des unités d&#x27;un entier n
+    &quot;&quot;&quot;
+    while n &gt;= 10:      # répétition tant que n est supérieur ou égal à 10
+        n = n - 10
+    return n</pre></li><li><div class="lb"><span class="cd">get_unite(4567)</span> : on retire 10 tant que <span class="cd">n &gt;= 10</span> ; il reste 7</div></li><li><div class="lb"><span class="cd">get_unite(45.67)</span> : même boucle avec des flottants, il reste <span class="cd">5.670000000000002</span> (arrondi de la machine) : ce n&#x27;est pas un chiffre des unités</div></li><li><div class="lb"><span class="cd">get_unite(-6)</span> : <span class="cd">-6 &gt;= 10</span> est faux, la boucle ne s&#x27;exécute pas : la fonction renvoie <span class="cd">-6</span></div></li></ol><div class="concl"><div class="h">Conclusion</div><div class="fm"><math display="block"><mn>7</mn></math><math display="block"><mn>5.670000000000002</mn></math><math display="block"><mo>−</mo><mn>6</mn><mtext> </mtext><mi>:</mi><mtext> </mtext><mtext>deux résultats ne conviennent pas</mtext></math></div></div></div></details><details class="ex"><summary><span class="tag">Ajouter les préconditions</span><span class="q">Ajouter à <span class="cd">get_unite</span> les deux préconditions : <span class="cd">n</span> est un entier, <span class="cd">n</span> est positif ou nul. Que donnent alors <span class="cd">get_unite(45.67)</span> et <span class="cd">get_unite(-6)</span> ?</span></summary><div class="body"><ol class="steps"><li><div class="lb">Programme Python</div><pre class="code" lang="python">def get_unite(n: int) -&gt; int:
+    &quot;&quot;&quot;
+    renvoie le chiffre des unités d&#x27;un entier n
+    &quot;&quot;&quot;
+    # &quot;Précondition 1&quot;
+    assert type(n) == int, &quot;vous devez entrer un nombre entier.&quot;
+    # &quot;Précondition 2&quot;
+    assert n &gt;= 0, &quot;le nombre étudié doit être positif ou nul.&quot;
+
+    while n &gt;= 10:
+        n = n - 10
+    return n</pre></li><li><div class="lb"><span class="cd">get_unite(45.67)</span> : <span class="cd">type(n) == int</span> est faux, l&#x27;exécution s&#x27;arrête avec <span class="cd">AssertionError: vous devez entrer un nombre entier.</span> †</div></li><li><div class="lb"><span class="cd">get_unite(-6)</span> : le type est bon, mais <span class="cd">n &gt;= 0</span> est faux : <span class="cd">AssertionError: le nombre étudié doit être positif ou nul.</span> †</div></li><li><div class="lb"><span class="cd">get_unite(4567)</span> : les deux conditions sont vraies, les assertions ne font rien et la fonction renvoie <span class="cd">7</span></div></li></ol><div class="concl"><div class="h">Conclusion</div><div class="fm"><math display="block"><mtext>l'appel incorrect s'arrête avec un message clair</mtext></math></div></div><p class="nt">Ordre à respecter : on teste d&#x27;abord le type, puis le signe (comparer une chaîne à un entier provoquerait une erreur de type).</p></div></details></section><section class="s" id="post" style="--c:var(--c4)"><h2><small>LP2</small>Postconditions avec assert</h2><p class="sn">Une postcondition se vérifie juste avant le return, sur la valeur qu&#x27;on va renvoyer.</p><details class="ex"><summary><span class="tag">Les trois postconditions</span><span class="q">Écrire les postconditions de <span class="cd">get_unite</span> : le résultat est un entier, positif ou nul, strictement inférieur à 10.</span></summary><div class="body"><ol class="steps"><li><div class="lb">Juste avant <span class="cd">return n</span>, une assertion par contrainte, avec un message clair</div></li><li><div class="lb">Programme Python</div><pre class="code" lang="python">def get_unite(n: int) -&gt; int:
+    &quot;&quot;&quot;
+    renvoie le chiffre des unités d&#x27;un entier n
+    &quot;&quot;&quot;
+    while n &gt;= 10:
+        n = n - 10
+    # &quot;Postcondition 1&quot;
+    assert type(n) == int, &quot;Le nombre renvoyé devrait être un entier.&quot;
+    # &quot;Postcondition 2&quot;
+    assert n &gt;= 0, &quot;le nombre renvoyé doit être positif ou nul.&quot;
+    # &quot;Postcondition 3&quot;
+    assert n &lt; 10, &quot;le nombre renvoyé doit être inférieur à 10.&quot;
+    return n</pre></li><li><div class="lb">Si la fonction est correcte, les trois assertions sont vraies et ne font rien</div></li></ol><div class="concl"><div class="h">Conclusion</div><div class="fm"><math display="block"><mtext mathvariant="monospace">assert</mtext><mtext> </mtext><mtext>avant le</mtext><mtext> </mtext><mtext mathvariant="monospace">return</mtext></math></div></div></div></details><details class="ex"><summary><span class="tag">Une postcondition qui échoue †</span><span class="q">On a écrit par erreur <span class="cd">n = n - 9</span> dans la boucle. Que se passe-t-il pour <span class="cd">get_unite(10)</span> ?</span></summary><div class="body"><ol class="steps"><li><div class="lb">Programme Python</div><pre class="code" lang="python">def get_unite(n: int) -&gt; int:
+    &quot;&quot;&quot;renvoie le chiffre des unités d&#x27;un entier n&quot;&quot;&quot;
+    assert type(n) == int and n &gt;= 0
+    while n &gt;= 10:
+        n = n - 9          # faute : on retire 9 au lieu de 10
+    assert 0 &lt;= n &lt; 10, &quot;le nombre renvoyé doit être compris entre 0 et 9.&quot;
+    return n</pre></li><li><div class="lb"><span class="cd">n = 10</span> : la boucle retire 9, donc <span class="cd">n</span> vaut <span class="cd">1</span>. La condition <span class="cd">n &gt;= 10</span> est fausse, la boucle s&#x27;arrête</div></li><li><div class="lb"><span class="cd">0 &lt;= 1 &lt; 10</span> est vrai : l&#x27;assertion ne se déclenche pas, mais le résultat est faux (le chiffre des unités de 10 est 0)</div></li><li><div class="lb">Pour <span class="cd">get_unite(25)</span> : 25 devient 16 puis 7 : la fonction renvoie <span class="cd">7</span> au lieu de <span class="cd">5</span></div></li></ol><div class="concl"><div class="h">Conclusion</div><div class="fm"><math display="block"><mtext>une postcondition ne remplace pas les tests : ici elle n'a rien vu</mtext></math></div></div><p class="nt">Cet exemple est un ajout : les postconditions vérifient la forme du résultat, pas sa valeur exacte. C&#x27;est pourquoi on écrit aussi un jeu de tests.</p></div></details></section><section class="s" id="tests" style="--c:var(--c5)"><h2><small>LP2</small>Jeux de tests</h2><p class="sn">Un jeu de tests est une suite d&#x27;assertions : si tout est vrai, rien ne s&#x27;affiche.</p><details class="ex"><summary><span class="tag">Tester ajoute_1</span><span class="q">Écrire un jeu de tests pour <span class="cd">ajoute_1</span>. Que se passe-t-il avec le test faux <span class="cd">assert ajoute_1(2) == -2</span> ?</span></summary><div class="body"><ol class="steps"><li><div class="lb">Programme Python</div><pre class="code" lang="python">def ajoute_1(x):
+    return x + 1
+
+# Jeu de tests
+assert ajoute_1(2) == 3
+assert ajoute_1(-2) == -1</pre></li><li><div class="lb">Les deux assertions sont vraies : l&#x27;exécution ne renvoie rien</div></li><li><div class="lb">Avec <span class="cd">assert ajoute_1(2) == -2</span>, la condition est fausse (<span class="cd">3 != -2</span>)</div></li><li><div class="lb">Programme Python</div><pre class="code" lang="python">assert ajoute_1(2) == -2
+AssertionError</pre></li></ol><div class="concl"><div class="h">Conclusion</div><div class="fm"><math display="block"><mtext>test vrai : rien ; test faux : AssertionError</mtext></math></div></div></div></details><details class="ex"><summary><span class="tag">Choisir les cas †</span><span class="q">Proposer un jeu de tests pour <span class="cd">get_unite</span> (la version avec la boucle <span class="cd">n - 10</span>).</span></summary><div class="body"><ol class="steps"><li><div class="lb">Un cas courant (4567), le plus petit cas (0), le plus grand chiffre (9) et une valeur où le chiffre repasse à 0 (10)</div></li><li><div class="lb">Programme Python</div><pre class="code" lang="python"># Jeu de tests pour get_unite (cas courants et cas limites)
+assert get_unite(0) == 0
+assert get_unite(9) == 9
+assert get_unite(10) == 0
+assert get_unite(4567) == 7</pre></li><li><div class="lb">Ces quatre assertions sont vraies pour la version correcte (<span class="cd">n - 10</span>) ; elles échouent pour la version fautive (<span class="cd">n - 9</span>) : <span class="cd">get_unite(10)</span> y renvoie 1</div></li></ol><div class="concl"><div class="h">Conclusion</div><div class="fm"><math display="block"><mtext>suffisamment de cas pour avoir confiance dans la fonction</mtext></math></div></div></div></details></section></main>
+<p class="foot">† = ajout absent du cours. Les corrections par rapport au cours sont signalées dans les remarques de chaque exemple.</p>
+</div>
+<script>
+(function(){
+var EMB=false,ds=document.querySelectorAll('details.ex'),open=!EMB;
+if(EMB)document.documentElement.classList.add('emb');
+ds.forEach(function(d){d.open=open});
+var b=document.getElementById('tg');
+function lab(){b.textContent=open?'Tout fermer':'Tout ouvrir'}
+b.onclick=function(){open=!open;ds.forEach(function(d){d.open=open});lab()};
+lab();
+})();
+</script>
+</body></html>
