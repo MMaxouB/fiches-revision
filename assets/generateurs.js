@@ -957,6 +957,127 @@
   };
 
   /* ---------- niveau de difficulté de chaque générateur (1 rappel, 2 application, 3 type DS) ---------- */
+  /* ---------- produit scalaire dans le plan (Ch4) : cinq générateurs ---------- */
+  function ratTxt(n, d) { return ftxt(fr(n, d)); }
+  function sortieRat(q, n, d, expl, source, extra) {      /* réponse saisie : entier, ou fraction/décimal si le dénominateur n'est pas 1 */
+    var f = fr(n, d), o = { type: 'saisie', nombre: true, expl: expl, source: source, rep: [fval(f)], tol: 1e-9, aff: m(ftxt(f)) };
+    o.q = f.q === 1 ? q : q + ' (fraction ou décimal accepté)';
+    for (var k in extra) o[k] = extra[k];
+    return o;
+  }
+  function sg(n) { return n < 0 ? par(n) : String(n); }
+
+  G['maths-ps-analytique'] = function () {
+    var v = pick(['dot', 'dot', 'carre', 'orth']), a, b, c, d, k, s;
+    do { a = nz(-6, 6); b = nz(-6, 6); c = nz(-6, 6); d = nz(-6, 6); } while (a * c + b * d === 0 || a * d + b * c === a * c + b * d);
+    var U = 'vec(u)=col(' + a + ',' + b + ')', V = 'vec(v)=col(' + c + ',' + d + ')';
+    if (v === 'dot') return {
+      type: 'saisie', nombre: true, q: 'Dans un repère orthonormé, ' + m(U) + ' et ' + m(V) + '. Calculer ' + m('vec(u) dot vec(v)') + '.', rep: [a * c + b * d], tol: 1e-9, aff: m(String(a * c + b * d)),
+      expl: 'On cherche un produit scalaire à partir des coordonnées, dans un repère orthonormé : on applique la formule analytique. On multiplie les abscisses entre elles, on multiplie les ordonnées entre elles, puis on additionne les deux produits.\n' +
+        m('vec(u) dot vec(v)=' + sg(a) + '*' + sg(c) + '+' + sg(b) + '*' + sg(d) + '=' + sg(a * c) + '+' + sg(b * d) + '=' + (a * c + b * d)) + '.\n' +
+        'Une erreur fréquente est de croiser les coordonnées (abscisse de ' + m('vec(u)') + ' avec ordonnée de ' + m('vec(v)') + ') : on trouverait ' + (a * d + b * c) + ', ce qui n\'est pas la formule. Une autre est de se tromper de signe en multipliant un nombre négatif.',
+      source: 'Formule analytique', _v: v };
+    if (v === 'carre') return {
+      type: 'saisie', nombre: true, q: 'Dans un repère orthonormé, ' + m(U) + '. Calculer ' + m('vec(u) dot vec(u)') + '.', rep: [a * a + b * b], tol: 1e-9, aff: m(String(a * a + b * b)),
+      expl: 'On cherche le carré scalaire de ' + m('vec(u)') + ' : c\'est le produit scalaire de ' + m('vec(u)') + ' par lui-même, donc la formule analytique avec les mêmes coordonnées deux fois.\n' +
+        m('vec(u) dot vec(u)=' + sg(a) + '^2+' + sg(b) + '^2=' + (a * a) + '+' + (b * b) + '=' + (a * a + b * b)) + '.\n' +
+        'Ce nombre est toujours positif ou nul : c\'est le carré de la norme, ' + m('norm(vec(u))^2') + '. Piège : le carré d\'un nombre négatif est positif, ' + m(sg(-Math.abs(a)) + '^2=' + (a * a)) + ' et non ' + m('-' + (a * a)) + '.',
+      source: 'Carré scalaire', _v: v };
+    a = nz(-5, 5); s = nz(-4, 4); d = nz(-5, 5);
+    b = a * s; k = -s * d;
+    return {
+      type: 'saisie', nombre: true, q: 'Dans un repère orthonormé, ' + m('vec(u)=col(' + a + ',' + b + ')') + ' et ' + m('vec(v)=col(k,' + d + ')') + '. Pour quelle valeur du réel ' + m('k') + ' les vecteurs ' + m('vec(u)') + ' et ' + m('vec(v)') + ' sont-ils orthogonaux ?', rep: [k], tol: 1e-9, aff: m(String(k)),
+      expl: 'Deux vecteurs sont orthogonaux si et seulement si leur produit scalaire est nul : on écrit donc ' + m('vec(u) dot vec(v)=0') + ' avec la formule analytique.\n' +
+        m(sg(a) + '*k+' + sg(b) + '*' + sg(d) + '=0') + ', c\'est-à-dire ' + m(a + 'k=' + (-b * d)) + ' (on déplace ' + m(sg(b * d)) + ' de l\'autre côté).\n' +
+        'On divise par ' + m(sg(a)) + ' : ' + m('k=frac(' + (-b * d) + ',' + sg(a) + ')=' + k) + '.\n' +
+        'Vérification : ' + m(sg(a) + '*' + sg(k) + '+' + sg(b) + '*' + sg(d) + '=' + sg(a * k) + '+' + sg(b * d) + '=0') + '. Piège : le produit scalaire doit valoir le nombre ' + m('0') + ' (et non ' + m('1') + ').',
+      source: 'Orthogonalité', _v: 'orth' };
+  };
+
+  G['maths-ps-triangle'] = function () {
+    var v = pick(['tri', 'norme', 'diag']), p, q, r, n = 0, num, den, enonce, calc;
+    if (v === 'diag') {
+      var s, d;
+      do { s = ri(3, 12); d = ri(2, 11); n++; } while (n < 200 && (s === d || (s + d) % 2 !== 0));
+      num = s * s - d * d; den = 4;
+      enonce = 'Dans un parallélogramme construit sur ' + m('vec(u)') + ' et ' + m('vec(v)') + ', les diagonales ont pour normes ' + m('norm(vec(u)+vec(v))=' + s) + ' et ' + m('norm(vec(u)-vec(v))=' + d) + '. Calculer ' + m('vec(u) dot vec(v)') + '.';
+      calc = 'On connaît les deux diagonales ' + m('vec(u)+vec(v)') + ' et ' + m('vec(u)-vec(v)') + ' : on utilise la formule ' + m('vec(u) dot vec(v)=frac(1,4)(norm(vec(u)+vec(v))^2-norm(vec(u)-vec(v))^2)') + '.\n' +
+        m('vec(u) dot vec(v)=frac(1,4)(' + s + '^2-' + d + '^2)=frac(1,4)(' + (s * s) + '-' + (d * d) + ')=frac(' + num + ',4)=' + ratTxt(num, den)) + '.\n' +
+        'Piège : on soustrait les carrés des normes (' + m(s + '^2-' + d + '^2') + ') et non les normes (' + m('(' + s + '-' + d + ')^2') + '), et le coefficient est ' + m('frac(1,4)') + ' (et non ' + m('frac(1,2)') + ').';
+      return sortieRat(enonce, num, den, calc, 'Formules avec les normes', { _v: v, _s: s, _d: d });
+    }
+    do { p = ri(2, 9); q = ri(2, 9); r = ri(2, 9); n++; } while (n < 300 && !(Math.abs(p - q) < r && r < p + q));
+    num = p * p + q * q - r * r; den = 2;
+    if (v === 'tri') {
+      enonce = 'Dans un triangle ' + m('ABC') + ', ' + m('AB=' + p) + ', ' + m('AC=' + q) + ' et ' + m('BC=' + r) + '. Calculer ' + m('ov(AB) dot ov(AC)') + '.';
+      calc = 'On connaît les trois côtés du triangle : on utilise la formule avec les normes, ' + m('ov(AB) dot ov(AC)=frac(1,2)(AB^2+AC^2-BC^2)') + '. Le côté retranché est celui qui ne part pas de ' + m('A') + ', c\'est-à-dire ' + m('BC') + '.\n' +
+        m('ov(AB) dot ov(AC)=frac(1,2)(' + p + '^2+' + q + '^2-' + r + '^2)=frac(1,2)(' + (p * p) + '+' + (q * q) + '-' + (r * r) + ')=frac(' + num + ',2)=' + ratTxt(num, den)) + '.\n' +
+        'Erreur fréquente : retrancher un mauvais côté (par exemple ' + m('AB') + ' au lieu de ' + m('BC') + '), ou additionner les trois carrés.';
+      return sortieRat(enonce, num, den, calc, 'Formules avec les normes', { _v: v, _p: p, _q: q, _r: r });
+    }
+    enonce = 'On donne ' + m('norm(vec(u))=' + p) + ', ' + m('norm(vec(v))=' + q) + ' et ' + m('norm(vec(u)-vec(v))=' + r) + '. Calculer ' + m('vec(u) dot vec(v)') + '.';
+    calc = 'On connaît les normes de ' + m('vec(u)') + ', de ' + m('vec(v)') + ' et de leur différence : on utilise ' + m('vec(u) dot vec(v)=frac(1,2)(norm(vec(u))^2+norm(vec(v))^2-norm(vec(u)-vec(v))^2)') + '.\n' +
+      m('vec(u) dot vec(v)=frac(1,2)(' + p + '^2+' + q + '^2-' + r + '^2)=frac(1,2)(' + (p * p) + '+' + (q * q) + '-' + (r * r) + ')=frac(' + num + ',2)=' + ratTxt(num, den)) + '.\n' +
+      'Piège : on élève chaque norme au carré avant de les combiner ; le calcul ' + m(p + '+' + q + '-' + r) + ' ne donne pas la bonne valeur.';
+    return sortieRat(enonce, num, den, calc, 'Formules avec les normes', { _v: v, _p: p, _q: q, _r: r });
+  };
+
+  G['maths-ps-projete'] = function () {
+    var v = pick(['proj', 'proj', 'rect']), p, h, dans, q;
+    if (v === 'proj') {
+      p = ri(3, 9); dans = Math.random() < 0.5; h = dans ? ri(1, p) : ri(1, 8);
+      var val = (dans ? 1 : -1) * p * h;
+      return {
+        type: 'saisie', nombre: true,
+        q: 'Dans un triangle ' + m('ABC') + ', ' + m('AB=' + p) + '. Le point ' + m('H') + ' est le projeté orthogonal de ' + m('C') + ' sur la droite ' + m('(AB)') + ', avec ' + m('AH=' + h) + ' et ' + (dans ? m('H in [AB]') : m('H') + ' situé de l\'autre côté de ' + m('A') + ' que ' + m('B') + ' sur la droite ' + m('(AB)')) + '. Calculer ' + m('ov(AB) dot ov(AC)') + '.',
+        rep: [val], tol: 1e-9, aff: m(String(val)),
+        expl: 'On remplace ' + m('ov(AC)') + ' par sa projection sur ' + m('(AB)') + ' : ' + m('ov(AB) dot ov(AC)=ov(AB) dot ov(AH)') + '. Ensuite le signe dépend de la position de ' + m('H') + '.\n' +
+          (dans ? m('H') + ' est dans le segment ' + m('[AB]') + ' : les vecteurs ' + m('ov(AB)') + ' et ' + m('ov(AH)') + ' ont le même sens, le produit est positif : ' + m('AB*AH=' + p + '*' + h + '=' + val) + '.'
+                : m('H') + ' est de l\'autre côté de ' + m('A') + ' que ' + m('B') + ' : les vecteurs ' + m('ov(AB)') + ' et ' + m('ov(AH)') + ' sont de sens contraires, le produit est négatif : ' + m('-AB*AH=-' + p + '*' + h + '=' + val) + '.') + '\n' +
+          'Erreur fréquente : oublier le signe moins quand ' + m('H') + ' est de l\'autre côté de ' + m('A') + ' que ' + m('B') + '. Le résultat n\'est pas ' + m('AB*AC') + ' : avec cette formule, on n\'utilise pas la longueur ' + m('AC') + '.',
+        source: 'Formule du projeté orthogonal', _v: v, _p: p, _h: h, _dans: dans };
+    }
+    p = ri(2, 9); q = ri(2, 9);
+    var cas = pick(['ABAC', 'ADAC', 'ABAD', 'ABCD']), res, cal, jus;
+    if (cas === 'ABAC') { res = p * p; cal = 'ov(AB) dot ov(AC)'; jus = 'Le projeté orthogonal de ' + m('C') + ' sur ' + m('(AB)') + ' est ' + m('B') + ' (le côté ' + m('[BC]') + ' est perpendiculaire à ' + m('(AB)') + '), donc ' + m('ov(AB) dot ov(AC)=AB*AB=' + p + '^2=' + res); }
+    else if (cas === 'ADAC') { res = q * q; cal = 'ov(AD) dot ov(AC)'; jus = 'Le projeté orthogonal de ' + m('C') + ' sur ' + m('(AD)') + ' est ' + m('D') + ', donc ' + m('ov(AD) dot ov(AC)=AD*AD=' + q + '^2=' + res); }
+    else if (cas === 'ABAD') { res = 0; cal = 'ov(AB) dot ov(AD)'; jus = 'Les côtés ' + m('[AB]') + ' et ' + m('[AD]') + ' sont perpendiculaires : les vecteurs sont orthogonaux, donc ' + m('ov(AB) dot ov(AD)=0'); }
+    else { res = -p * p; cal = 'ov(AB) dot ov(CD)'; jus = 'Dans un rectangle, ' + m('ov(CD)=-ov(AB)') + ' : ' + m('ov(AB) dot ov(CD)=-AB^2=-' + p + '^2=' + res); }
+    return {
+      type: 'saisie', nombre: true, q: 'Dans le rectangle ' + m('ABCD') + ', ' + m('AB=' + p) + ' et ' + m('AD=' + q) + '. Calculer ' + m(cal) + '.', rep: [res], tol: 1e-9, aff: m(String(res)),
+      expl: 'Le rectangle a quatre angles droits : on cherche un projeté orthogonal ou deux côtés perpendiculaires, ce qui permet de calculer sans angle.\n' + jus + '.\n' +
+        'Piège : le produit scalaire de deux côtés perpendiculaires vaut ' + m('0') + ', et le signe est négatif quand les vecteurs sont de sens contraires.',
+      source: 'Formule du projeté orthogonal', _v: v, _p: p, _q: q, _cas: cas };
+  };
+
+  G['maths-ps-trigo'] = function () {
+    var p = ri(2, 9), q = ri(2, 9), th = pick([0, 60, 90, 120, 180]), c = { 0: [1, 1], 60: [1, 2], 90: [0, 1], 120: [-1, 2], 180: [-1, 1] }[th];
+    var num = p * q * c[0], den = c[1], cs = th === 0 ? '1' : th === 90 ? '0' : th === 180 ? '-1' : th === 60 ? 'frac(1,2)' : '-frac(1,2)';
+    var enonce = 'Dans une figure du plan, ' + m('AB=' + p) + ', ' + m('AC=' + q) + ' et ' + m('(ov(AB),ov(AC))=' + th + ' deg') + '. Calculer ' + m('ov(AB) dot ov(AC)') + '.';
+    var expl = 'On connaît deux longueurs et l\'angle entre les vecteurs : on utilise la formule trigonométrique ' + m('ov(AB) dot ov(AC)=AB*AC*cos(ov(AB),ov(AC))') + '.\n' +
+      'On sait que ' + m('cos ' + th + ' deg=' + cs) + '. Donc ' + m('ov(AB) dot ov(AC)=' + p + '*' + q + '*(' + cs + ')=' + ratTxt(num, den)) + '.\n' +
+      'Erreurs fréquentes : utiliser le sinus au lieu du cosinus, ou oublier le signe moins pour un angle obtus (supérieur à ' + m('90 deg') + ') : le produit scalaire est alors négatif.';
+    return sortieRat(enonce, num, den, expl, 'Formule trigonométrique', { _p: p, _q: q, _th: th });
+  };
+
+  G['maths-ps-normal'] = function () {
+    var x1 = ri(-4, 4), y1 = ri(-4, 4), dx, dy, n = 0, vrai = Math.random() < 0.5, c, d, k;
+    do { dx = ri(-4, 4); dy = ri(-4, 4); n++; } while (n < 100 && dx === 0 && dy === 0);
+    var x2 = x1 + dx, y2 = y1 + dy;
+    k = nz(-2, 2); c = -dy * k; d = dx * k;
+    if (!vrai) { var t = pick([1, 2, 3]); if (t === 1) c += pick([-1, 1]); else if (t === 2) d += pick([-1, 1]); else { c = dy * k; d = dx * k; } }
+    var scal = dx * c + dy * d, est = scal === 0 && !(c === 0 && d === 0);
+    return {
+      type: 'vf', q: 'Une droite ' + m('d') + ' passe par ' + m('A(' + x1 + ' ; ' + y1 + ')') + ' et ' + m('B(' + x2 + ' ; ' + y2 + ')') + '. Le vecteur ' + m('vec(n)=col(' + c + ',' + d + ')') + ' est normal à ' + m('d') + ' (repère orthonormé).', rep: est,
+      expl: 'Un vecteur normal à ' + m('d') + ' est un vecteur non nul orthogonal à un vecteur directeur de ' + m('d') + '. On prend le vecteur directeur ' + m('ov(AB)') + ' et on calcule son produit scalaire avec ' + m('vec(n)') + '.\n' +
+        m('ov(AB)=col(' + x2 + '-' + sg(x1) + ',' + y2 + '-' + sg(y1) + ')=col(' + dx + ',' + dy + ')') + ', puis ' + m('ov(AB) dot vec(n)=' + sg(dx) + '*' + sg(c) + '+' + sg(dy) + '*' + sg(d) + '=' + scal) + '.\n' +
+        (est ? 'Le produit scalaire est nul et ' + m('vec(n)') + ' n\'est pas nul : ' + m('vec(n)') + ' est bien normal à ' + m('d') + '. L\'affirmation est vraie.'
+             : (scal === 0 ? 'Le produit scalaire est nul, mais le vecteur ' + m('vec(n)') + ' est nul : il n\'est donc pas normal. L\'affirmation est fausse.'
+                           : 'Le produit scalaire vaut ' + m(String(scal)) + ', donc il n\'est pas nul : ' + m('vec(n)') + ' n\'est pas orthogonal à la droite. L\'affirmation est fausse.')) +
+        '\nPiège : on teste avec un vecteur directeur de la droite ; un vecteur dont on a seulement échangé les coordonnées n\'est pas forcément normal, il faut aussi changer un signe.',
+      source: 'Vecteur normal', _x1: x1, _y1: y1, _x2: x2, _y2: y2 };
+  };
+
   var NIVEAU = {
     'maths-discriminant': 1, 'maths-nb-solutions': 1, 'maths-resoudre': 2, 'maths-forme-canonique': 2, 'maths-racine-evidente': 1, 'maths-racine-evidente-cubique': 2,
     'maths-evaluer-polynome': 1, 'maths-identification-cubique': 3, 'maths-factorisation': 2, 'maths-signe-trinome': 3, 'maths-somme-produit': 2, 'maths-somme-produit-equation': 2,
@@ -966,7 +1087,8 @@
     'maths-suite-terme': 1, 'maths-suite-point': 1, 'maths-suite-variation': 2, 'maths-suite-rang': 3, 'maths-suite-stationnaire': 2,
     'maths-proba-reunion': 2, 'maths-proba-conditionnelle': 2, 'maths-proba-effectifs': 3, 'maths-proba-arbre': 3, 'maths-proba-independance': 3,
     'maths-suite-variation-diff': 3, 'maths-suite-recurrence-carre': 3, 'maths-suite-parametre': 3, 'maths-suite-points-multi': 2, 'maths-suite-ordre-termes': 2,
-    'maths-suite-seuil': 3, 'maths-suite-minoration': 3, 'maths-proba-suite': 3
+    'maths-suite-seuil': 3, 'maths-suite-minoration': 3, 'maths-proba-suite': 3,
+    'maths-ps-analytique': 2, 'maths-ps-triangle': 3, 'maths-ps-projete': 2, 'maths-ps-trigo': 2, 'maths-ps-normal': 3
   };
   /* catégorie des générateurs (voir quiz/categories.json) : tous des « calculs », sauf exception listée ici (nom : catégorie) */
   var CAT = root.QUIZ_GEN_CAT = root.QUIZ_GEN_CAT || {};
@@ -1014,6 +1136,11 @@
     'maths-proba-independance': 'À retenir : $A$ et $B$ sont indépendants quand $P(A cap B)=P(A)*P(B)$, ce qui équivaut à $P_A(B)=P(B)$ ; dans ce cas $bar(A)$ et $B$ le sont aussi.',
     'maths-suite-seuil': 'Méthode : on suit le programme. À chaque passage dans la boucle, $n$ augmente de $1$ et $u$ est recalculé ; la boucle s\'arrête quand la condition « tant que » devient fausse. $n$ compte les passages, pas le nombre de termes calculés.',
     'maths-suite-minoration': 'Méthode : on écrit $u_{n+1}-u_n$ en fonction de $u_n$, puis on utilise la minoration (ou la majoration) pour encadrer cette différence. Si le signe n\'est pas déterminé, on ne peut pas conclure.',
+    'maths-ps-analytique': 'À retenir : dans un repère orthonormé, on multiplie les abscisses, on multiplie les ordonnées, puis on additionne ; deux vecteurs sont orthogonaux quand ce nombre vaut $0$.',
+    'maths-ps-triangle': 'À retenir : $ov(AB) dot ov(AC)=frac(1,2)(AB^2+AC^2-BC^2)$ dans un triangle ; avec deux vecteurs, $vec(u) dot vec(v)=frac(1,2)(norm(vec(u))^2+norm(vec(v))^2-norm(vec(u)-vec(v))^2)$, et avec les deux diagonales d\'un parallélogramme, $frac(1,4)(norm(vec(u)+vec(v))^2-norm(vec(u)-vec(v))^2)$.',
+    'maths-ps-projete': 'À retenir : $ov(AB) dot ov(AC)=ov(AB) dot ov(AH)$, où $H$ est le projeté orthogonal de $C$ sur $(AB)$ ; le résultat est positif si $ov(AB)$ et $ov(AH)$ ont le même sens, négatif sinon.',
+    'maths-ps-trigo': 'À retenir : $vec(u) dot vec(v)=norm(vec(u))*norm(vec(v))*cos(vec(u),vec(v))$. Valeurs usuelles : $cos 0 deg=1$, $cos 60 deg=frac(1,2)$, $cos 90 deg=0$, $cos 120 deg=-frac(1,2)$, $cos 180 deg=-1$.',
+    'maths-ps-normal': 'À retenir : $vec(n)$ est normal à une droite $d$ s\'il est non nul et si $vec(n) dot vec(u)=0$ pour un vecteur directeur $vec(u)$ de $d$.',
     'maths-proba-suite': 'Méthode : probabilités totales avec la partition $(C_n,bar(C_n))$ : $u_{n+1}=P(C_n)*P_{C_n}(C_{n+1})+P(bar(C_n))*P_{bar(C_n)}(C_{n+1})$. Chaque branche est multipliée par la probabilité de son point de départ.'
   };
   Object.keys(NIVEAU).forEach(function (nom) {
