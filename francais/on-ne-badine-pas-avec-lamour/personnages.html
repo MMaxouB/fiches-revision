@@ -1,0 +1,159 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>On ne badine pas avec l’amour : les personnages</title><style>
+:root{--ui:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;--display:var(--ui);
+  --bg:#F4F6FB;--paper:#FFFFFF;--ink:#161C2D;--muted:#586380;--line:#D9DFEC;--soft:#EBEFF7;
+  --c1:#2D5FA8;--c2:#5E4BB0;--c3:#1F7A5A;--c4:#B85A14;--c5:#B03A5E;--c6:#4E5A74;--c7:#8A6410;
+  --l1:#2D5FA8;--l2:#5E4BB0;--l3:#1F7A5A;--l4:#B85A14;--l5:#B03A5E;--l6:#4E5A74;--l7:#8A6410}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#131A2B;--paper:#1B2438;--ink:#ECEFF6;--muted:#9AA6BF;--line:#2A3650;--soft:#222D45;
+  --l1:#7FB2F0;--l2:#B8A6F0;--l3:#7FD0A8;--l4:#F2A56B;--l5:#E58FA9;--l6:#A9B4CC;--l7:#E5C06B;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--ui);line-height:1.55;overflow-wrap:break-word;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:1.2rem 3rem}
+.wrap{max-width:72rem;margin:0 auto}
+h1{font:600 clamp(1.5rem,6vw,2.2rem)/1.15 var(--display);letter-spacing:-.01em;margin:0 0 .35rem;text-wrap:balance}
+h2{font:600 1.25rem/1.25 var(--display);margin:0 0 .7rem;text-wrap:balance}
+h3{font:600 1.08rem/1.3 var(--display);margin:0 0 .35rem}
+h4{font:600 .98rem/1.35 var(--display);margin:.8rem 0 .2rem}
+p{margin:0 0 .7rem}
+a{color:inherit}
+.lead{color:var(--muted);max-width:46rem;margin:0 0 1.3rem}
+.layout{display:block}
+nav.toc{display:flex;flex-wrap:wrap;gap:.45rem;margin:0 0 1.5rem}
+nav.toc a{display:flex;align-items:center;min-height:44px;padding:.35rem .85rem;border:1px solid var(--line);border-radius:999px;
+  background:var(--paper);text-decoration:none;font-size:.92rem;font-weight:600}
+nav.toc a:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+nav.toc .grp{flex-basis:100%;font-weight:600;color:var(--muted);font-size:.9rem;margin-top:.35rem}
+nav.toc a.num-s{justify-content:center;min-width:3.4rem;padding:.35rem .5rem}
+nav.toc .long{display:none}
+main{min-width:0;max-width:54rem}
+section,article.card{scroll-margin-top:4rem}
+section.bloc{margin:0 0 2.1rem}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:1rem 1.1rem;margin:0 0 .9rem}
+.card>:last-child{margin-bottom:0}
+.k{border-left:5px solid var(--k)}
+h2.acte{background:var(--k);color:#fff;border-radius:10px;padding:.6rem .95rem}
+p.sous{color:var(--muted);margin:-.3rem 0 .9rem}
+.num{color:var(--t);font-weight:700}
+.meta{color:var(--muted);font-size:.9rem;margin:0 0 .7rem}
+.meta b{color:var(--ink);font-weight:600}
+.comp{background:var(--soft);border-radius:9px;padding:.65rem .85rem;margin:.3rem 0 .7rem}
+.comp b.lab{display:block;color:var(--t);font-weight:600;margin-bottom:.15rem}
+.comp p{margin:0}
+figure.q{margin:.6rem 0 .2rem;padding:0 0 0 .85rem;border-left:3px solid var(--t,var(--line))}
+figure.q blockquote{margin:0;font-style:italic}
+figure.q .ref{display:block;font-size:.85rem;color:var(--muted);margin-top:.2rem}
+figure.q .ref b{color:var(--ink);font-weight:600}
+ul,ol{margin:0 0 .7rem;padding-left:1.2rem}
+li{margin:.25rem 0}
+table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-top:1px solid var(--line)}
+thead th{background:var(--soft);font-size:.88rem;font-weight:600;border-top:0}
+tbody th{font-weight:600;width:11rem}
+tbody tr:first-child>*{border-top:0}
+.tbl{margin:0 0 .9rem}
+.grid{display:grid;grid-template-columns:1fr;gap:.9rem;align-items:start}
+.grid>.card{margin:0}
+.liens{list-style:none;padding:0;display:grid;grid-template-columns:1fr;gap:.5rem}
+.liens li{margin:0;background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:.5rem .75rem}
+.liens span{color:var(--muted)}
+.qui{list-style:none;padding:0;display:grid;grid-template-columns:1fr;gap:.5rem}
+.qui li{margin:0;background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:.5rem .75rem}
+.qui b{display:block;font-weight:600}
+dl{margin:0}
+dl div{padding:.5rem 0;border-top:1px solid var(--line)}
+dl div:first-child{border-top:0}
+dt{font-weight:600}
+dd{margin:0}
+.warn{border-left:5px solid var(--l4)}
+.foot{color:var(--muted);font-size:.9rem;margin-top:1.8rem;max-width:46rem}
+@media (max-width:719px){
+  table.rep,table.rep tbody,table.rep tr,table.rep td,table.rep th{display:block;width:auto}
+  table.rep thead{display:none}
+  table.rep{border:0;background:transparent;border-radius:0;overflow:visible}
+  table.rep tr{background:var(--paper);border:1px solid var(--line);border-radius:12px;margin:0 0 .65rem;padding:.35rem 0}
+  table.rep td,table.rep th{border:0;padding:.25rem .85rem}
+  table.rep td[data-l]::before{content:attr(data-l);display:block;color:var(--muted);font-size:.82rem;font-weight:600}
+}
+@media (min-width:720px){.liens,.qui{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:900px){
+  .layout{display:grid;grid-template-columns:15rem minmax(0,1fr);gap:2.6rem;align-items:start}
+  nav.toc{position:sticky;top:3.9rem;max-height:calc(100vh - 5rem);overflow:auto;flex-direction:column;flex-wrap:nowrap;gap:.15rem;margin:0}
+  nav.toc a{min-height:36px;border:0;border-radius:9px;background:transparent;font-weight:400;font-size:.95rem;padding:.3rem .65rem}
+  nav.toc a:hover{background:var(--soft)}
+  nav.toc .grp{flex-basis:auto;padding:0 .65rem;margin-top:.8rem}
+  nav.toc a.num-s{justify-content:flex-start;padding:.3rem .65rem}
+  nav.toc .long{display:inline}
+  .grid.deux{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (min-width:1280px){html{font-size:106.25%}}
+@media (min-width:1700px){html{font-size:112.5%}}
+</style>
+<style id="veilleuse">@font-face{font-family:Figtree;src:url(../../assets/figtree-latin.woff2) format("woff2");font-weight:400 700;font-display:swap}
+@media screen{:root{--ui:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;--display:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+ --bg:#F4F6FB;--paper:#FFFFFF;--ink:#161C2D;--muted:#586380;--line:#D9DFEC;--soft:#EBEFF7;--grid:#E3E8F2;--core1:#17233D;--core2:#2D4A7A;
+ --c1:#2D5FA8;--c2:#5E4BB0;--c3:#1F7A5A;--c4:#B85A14;--c5:#B03A5E;--c6:#4E5A74;--c7:#8A6410;
+ --l1:#2D5FA8;--l2:#5E4BB0;--l3:#1F7A5A;--l4:#B85A14;--l5:#B03A5E;--l6:#4E5A74;--l7:#8A6410;
+ --fr:#2D5FA8;--eu:#5E4BB0;--gr:#1F7A5A;--rev:#B03A5E;--nat:#B85A14;--cul:#8A6410;
+ --r1:#2D5FA8;--r2:#1E4A8C;--r3:#B03A5E;--r4:#6B7A96;--band:rgba(176,58,94,.08);--ok:#E5F4EA;--okl:#1C7A3D}}
+@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#131A2B;--paper:#1B2438;--ink:#ECEFF6;--muted:#9AA6BF;--line:#2A3650;--soft:#222D45;--grid:#232E47;--core1:#1E2A47;--core2:#33466E;
+ --l1:#7FB2F0;--l2:#B8A6F0;--l3:#7FD0A8;--l4:#F2A56B;--l5:#E58FA9;--l6:#A9B4CC;--l7:#E5C06B;
+ --fr:#7FB2F0;--eu:#B8A6F0;--gr:#7FD0A8;--rev:#E58FA9;--nat:#F2A56B;--cul:#E5C06B;
+ --r1:#4A7BE0;--r2:#2F5CBF;--r3:#D4455A;--r4:#6B7A96;--band:rgba(229,143,169,.1);--ok:#16301F;--okl:#6FD694;color-scheme:dark}}
+/* carte mentale : la disposition en bulles (noyau au centre, traits) a besoin de ~1650 px pour les branches à formules larges (arbre pondéré de Ch3). De 1100 à 1699 px (portables), deux colonnes de branches empilées sous le noyau : rien n'est tronqué ; dès 1700 px, bulles et traits, sur une carte plus large */
+@media screen and (min-width:1100px) and (max-width:1699px){
+svg.lines{display:none}
+.map{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 2.6rem;align-items:start}
+.core{grid-column:1/-1;order:-1;display:block;aspect-ratio:auto;border-radius:18px;padding:1.2rem 1.3rem;margin:0 0 1.8rem}
+.col{gap:1.8rem}
+.br,.col.r .br{flex-direction:column;align-items:stretch;gap:10px;margin:0}
+.hub{order:-1;width:auto;height:auto;border-radius:14px;display:block;text-align:left;padding:.7rem 1rem}
+.hub b{font-size:1.02rem}
+}
+@media screen and (min-width:1700px){.map{max-width:1640px}}
+/* « Pour bien comprendre » (sous la carte) : sur ordinateur, les groupes s'étalent sur la largeur, les explications en 2 ou 3 colonnes de cartes ; téléphone : une colonne */
+@media screen and (min-width:900px){
+.detail{max-width:84rem}
+.detail>p{max-width:46rem;font-size:1.05rem}
+.dg{display:grid;grid-template-columns:repeat(auto-fill,minmax(22rem,1fr));gap:1rem 2.4rem;margin:0 0 2.4rem}
+.dg h3{grid-column:1/-1;margin:0}
+.dg article{margin:0}
+.dg article h4{font-size:1.08rem}
+.dg article p{font-size:1.02rem}
+}
+@media screen{body{margin:0;padding-top:0}
+.hub small,.core small,.dg h3 small,section.s>h2 small,.tag,.concl .h,.box h2,th{text-transform:none;letter-spacing:0}}
+.back{display:block;position:sticky;top:0;z-index:50;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 1rem;padding:.7rem max(16px,env(safe-area-inset-left,0px));background:var(--paper,#1B2438);color:var(--ink,#ECEFF6);border-bottom:1px solid var(--line,#2A3650);font:600 .9rem var(--ui,system-ui),sans-serif;text-decoration:none}
+/* formule plus large que l'écran (320 px) : elle défile dans sa case au lieu d'élargir la page */
+@media screen{.fm,.leaf p,.dg p,.lv p{max-width:100%;overflow-x:auto;overflow-y:hidden}.leaf p math,.dg p math{padding:.2em 0}}
+.back:active{background:var(--soft,#222D45)}
+.back:focus-visible{outline:2px solid var(--ink,#F2C46B);outline-offset:-2px}
+</style>
+<style>@page{size:A4;margin:11mm}@page land{size:A4 landscape;margin:8mm}@page port{size:A4;margin:11mm}
+@media print{
+:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--paper:#fff;--ink:#111;--muted:#444;--line:#bbb;--soft:#f3f3f3;
+  --core1:#1b2a41;--core2:#27486b;--l1:#2f62c9;--l2:#7240c0;--l3:#0e7c77;--l4:#bf5b08;--l5:#c42f45;--l6:#566176;--l7:#94650f;color-scheme:light}
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:#fff!important;padding:0!important;font-size:10pt}
+.back,.ctl,svg.lines{display:none!important}
+.top{display:none!important}
+.map{page:land;display:grid!important;grid-template-columns:repeat(3,1fr);gap:7px 11px;max-width:none!important;align-items:start;font-size:9pt;zoom:.88}
+.col{display:contents!important}
+.core{grid-column:1/-1;order:-3;margin:0!important;padding:.45rem 1rem!important}
+.core h2{font-size:1.15rem!important;margin:.1rem 0!important}.core p{display:none!important}
+.br{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:6px!important;margin:0!important;break-inside:avoid}
+.hub{order:-1;width:auto!important;height:auto!important;border-radius:10px!important;display:block!important;text-align:left!important;padding:.4rem .8rem!important}
+.lv{gap:6px!important}
+.leaf{break-inside:avoid;padding:.3rem .65rem .35rem!important}.leaf b{font-size:.9rem!important}.leaf p{font-size:.78rem!important;margin-top:.1rem!important}
+.rev .leaf p{display:block!important}
+.rev .leaf:not(.open) b::after{content:""!important}
+.detail{page:port;break-before:page;margin:0!important;max-width:none!important}
+.dg,.dg article{break-inside:avoid}
+.dg h3{break-after:avoid}
+.foot{page:port;margin-top:.8rem!important}
+}
+</style>
+<a class="back" href="./">‹ Retour à la fiche, On ne badine pas avec l’amour</a></head><body><div class="wrap"><header><h1>Les personnages †</h1><p class="lead">Qui ils sont, ce qu’ils veulent, comment ils changent, dans quelles scènes on les voit.</p></header><div class="layout"><nav class="toc" aria-label="Sommaire"><a href="#liens">Qui est lié à qui ?</a><span class="grp">Les deux jeunes gens</span><a href="#p-perdican">Perdican</a><a href="#p-camille">Camille</a><span class="grp">La victime</span><a href="#p-rosette">Rosette</a><span class="grp">Les adultes grotesques</span><a href="#p-le-baron">Le Baron</a><a href="#p-maitre-blazius">Maître Blazius</a><a href="#p-maitre-bridaine">Maître Bridaine</a><a href="#p-dame-pluche">Dame Pluche</a><span class="grp">Le témoin collectif</span><a href="#p-le-choeur">Le Chœur</a><span class="grp">Et aussi</span><a href="#autres">Les autres figures</a></nav><main><section class="bloc" id="liens"><h2>Qui est lié à qui ?</h2><ul class="liens"><li><strong>Le Baron</strong> <span>père de</span> <strong>Perdican</strong></li><li><strong>Le Baron</strong> <span>oncle et tuteur de</span> <strong>Camille</strong></li><li><strong>Camille</strong> <span>cousine de</span> <strong>Perdican</strong></li><li><strong>Rosette</strong> <span>sœur de lait de</span> <strong>Camille</strong></li><li><strong>Maître Blazius</strong> <span>gouverneur de</span> <strong>Perdican</strong></li><li><strong>Dame Pluche</strong> <span>gouvernante de</span> <strong>Camille</strong></li><li><strong>Maître Bridaine</strong> <span>curé et ami du</span> <strong>Baron</strong></li><li><strong>Maître Blazius</strong> <span>rival de table de</span> <strong>Maître Bridaine</strong></li><li><strong>La sœur Louise</strong> <span>amie et influence de</span> <strong>Camille</strong></li></ul></section><section class="bloc"><h2 class="acte" style="--k:var(--c1)">Les deux jeunes gens</h2><p class="sous">Perdican et Camille : le cœur de la pièce.</p><div class="grid deux"><article class="card k" id="p-perdican" style="--k:var(--c1);--t:var(--l1)"><h3>Perdican</h3><p class="meta">Le fils du baron, 21 ans, docteur</p><h4>Qui est-il ?</h4><p>Élevé au château auprès des paysans, parti depuis une dizaine d’années, il revient de Paris diplômé (littérature, botanique, droit romain et droit canon dans le texte de 1834 ; « philosophie » au lieu de « botanique » dans l’édition de 1884). Blazius est son gouverneur depuis qu’il a quatre ans.</p><h4>Caractère</h4><p>Chaleureux, spontané, nostalgique de son enfance, sensible à la nature, sans pédanterie malgré ses diplômes. Il a eu des maîtresses, dit ne pas croire à la vie éternelle. Mais il est <strong>orgueilleux</strong> et capable de cruauté : il se sert de Rosette pour blesser Camille.</p><h4>Ce qu’il veut</h4><p>D’abord retrouver l’enfance et Camille ; après la lettre, lui prouver qu’il en aime une autre.</p><h4>Évolution</h4><p>Joie du retour, tristesse, colère contre le couvent, vengeance, entêtement, aveu, puis effroi au cri de Rosette : il reconnaît sa faute avant d’apprendre qu’elle est morte.</p><h4>Ses scènes</h4><p>I.2, I.3, I.4, II.1, II.3, II.5, III.1, III.2, III.3, III.6, III.7, III.8</p><h4>Ses mots</h4><figure class="q"><blockquote>« ces arbres et ces prairies enseignent à haute voix la plus belle de toutes, l’oubli de ce qu’on sait. »</blockquote><span class="ref"><b>Perdican</b>, Acte I, scène 4</span></figure><figure class="q"><blockquote>« On est souvent trompé en amour, souvent blessé et souvent malheureux ; mais on aime »</blockquote><span class="ref"><b>Perdican</b>, Acte II, scène 5</span></figure><figure class="q"><blockquote>« Orgueil, le plus fatal des conseillers humains, qu’es-tu venu faire entre cette fille et moi ? »</blockquote><span class="ref"><b>Perdican</b>, Acte III, scène 8</span></figure></article><article class="card k" id="p-camille" style="--k:var(--c1);--t:var(--l1)"><h3>Camille</h3><p class="meta">La nièce du baron, 18 ans, élevée au couvent</p><h4>Qui est-elle ?</h4><p>Elle sort du couvent pour recueillir le bien de sa mère, morte, qui a demandé ce mariage dans son testament. Le baron est son tuteur. Rosette est sa sœur de lait.</p><h4>Caractère</h4><p>Intelligente, fière, raisonneuse, froide en apparence mais passionnée. Les récits des religieuses, surtout de la sœur Louise, lui ont appris à craindre la souffrance : elle veut un amour absolu qui ne trahisse pas. Elle aussi est <strong>orgueilleuse</strong> et sait mentir et piéger.</p><h4>Ce qu’elle veut</h4><p>Prendre le voile ; puis, piquée par la scène de la fontaine, l’emporter sur Perdican.</p><h4>Évolution</h4><p>Refus, interrogatoire, lettre où elle se vante, jalousie, riposte, trouble, aveu au pied de l’autel, adieu.</p><h4>Ses scènes</h4><p>I.2, I.3, II.1, II.5, III.3, III.4, III.6, III.7, III.8</p><h4>Ses mots</h4><figure class="q"><blockquote>« Je veux aimer, mais je ne veux pas souffrir »</blockquote><span class="ref"><b>Camille</b>, Acte II, scène 5</span></figure><figure class="q"><blockquote>« Voilà mon amant. »</blockquote><span class="ref"><b>Camille</b>, Acte II, scène 5</span></figure><figure class="q"><blockquote>« tu épouseras cette fille, ou tu n’es qu’un lâche ! »</blockquote><span class="ref"><b>Camille</b>, Acte III, scène 6</span></figure><figure class="q"><blockquote>« il y a quinze ans qu’il le sait. »</blockquote><span class="ref"><b>Camille</b>, Acte III, scène 8</span></figure></article></div></section><section class="bloc"><h2 class="acte" style="--k:var(--c5)">La victime</h2><p class="sous">Rosette : celle qui prend les paroles au sérieux.</p><div class="grid"><article class="card k" id="p-rosette" style="--k:var(--c5);--t:var(--l5)"><h3>Rosette</h3><p class="meta">La paysanne, sœur de lait de Camille</p><h4>Qui est-elle ?</h4><p>Une jeune fille du village qui vit chez sa mère. Elle ne sait pas lire. « Sœur de lait » : elle a été nourrie par la même femme que Camille.</p><h4>Caractère</h4><p>Simple, sincère, douce et pudique. Elle dit manquer d’esprit, mais comprend que les gestes comptent autant que les mots, et elle croit ce qu’on lui promet.</p><h4>Rôle</h4><p>L’<strong>innocente sacrifiée</strong> au jeu des deux cousins : instrument de la vengeance de Perdican (III.3), puis de la riposte de Camille (III.6), objet des moqueries du village (III.7).</p><h4>Évolution</h4><p>De la réserve à la dignité (elle veut rendre le collier), puis la mort.</p><h4>Ses scènes</h4><p>I.4, II.3, III.2, III.3, III.6, III.7 ; son cri en III.8</p><h4>Ses mots</h4><figure class="q"><blockquote>« Des mots sont des mots et des baisers sont des baisers. »</blockquote><span class="ref"><b>Rosette</b>, Acte II, scène 3</span></figure><figure class="q"><blockquote>« je vous aimerai comme je pourrai. »</blockquote><span class="ref"><b>Rosette</b>, Acte III, scène 3</span></figure><figure class="q"><blockquote>« Permettez-moi de vous rendre le collier que vous m’avez donné, et de vivre en paix chez ma mère. »</blockquote><span class="ref"><b>Rosette</b>, Acte III, scène 7</span></figure></article></div></section><section class="bloc"><h2 class="acte" style="--k:var(--c4)">Les adultes grotesques</h2><p class="sous">Le Baron, Blazius, Bridaine, Pluche : des figures comiques, presque des marionnettes.</p><div class="grid deux"><article class="card k" id="p-le-baron" style="--k:var(--c4);--t:var(--l4)"><h3>Le Baron</h3><p class="meta">Père de Perdican, oncle de Camille</p><h4>Qui est-il ?</h4><p>Le seigneur du château, que le roi a nommé <strong>receveur</strong> (il perçoit l’argent des impôts). Il passe au château trois mois d’hiver et trois mois d’été.</p><h4>Caractère</h4><p>Solennel, vaniteux, attaché aux convenances, terrorisé par le désordre et la solitude. Face à ce qu’il ne veut pas voir, il répète « Cela est impossible ».</p><h4>Rôle</h4><p>Il croit organiser le mariage (jusqu’aux portes d’entrée des cousins) mais ne maîtrise rien. Quand tout s’effondre, il s’enferme : il n’agit pas.</p><h4>Ses scènes</h4><p>I.2, I.3, I.5, II.4, III.1, III.5, III.7</p><h4>Ses mots</h4><figure class="q"><blockquote>« Si cela se fait, je deviendrai fou. »</blockquote><span class="ref"><b>Le Baron</b>, Acte III, scène 7</span></figure></article><article class="card k" id="p-maitre-blazius" style="--k:var(--c4);--t:var(--l4)"><h3>Maître Blazius</h3><p class="meta">Le gouverneur de Perdican</p><h4>Qui est-il ?</h4><p>Le précepteur de Perdican depuis que celui-ci a quatre ans ; le baron l’appelle « monsieur l’abbé ».</p><h4>Caractère</h4><p>Gros, ivrogne, gourmand, bavard, pédant, curieux. Il s’embrouille et ment mal.</p><h4>Rôle</h4><p>Il dénonce la « correspondance secrète » de Camille ; chassé (III.1), il veut se racheter en volant la lettre : c’est ainsi que Perdican la lit (III.2).</p><h4>Ses scènes</h4><p>I.1, I.2, I.5, II.1, II.4, III.1, III.2</p><h4>Ses mots</h4><figure class="q"><blockquote>« Votre nièce a une correspondance secrète. »</blockquote><span class="ref"><b>Maître Blazius</b>, Acte II, scène 4</span></figure></article><article class="card k" id="p-maitre-bridaine" style="--k:var(--c4);--t:var(--l4)"><h3>Maître Bridaine</h3><p class="meta">Le curé de la paroisse</p><h4>Qui est-il ?</h4><p>Le curé, ami du baron, promis pour bénir le mariage.</p><h4>Caractère</h4><p>Glouton, buveur, envieux, égoïste : le double de Blazius. Sa grande affaire est la place d’honneur à table.</p><h4>Rôle</h4><p>Rival de Blazius ; il refuse de l’aider et rapporte au baron les faits et gestes de Perdican (I.5, III.5).</p><h4>Ses scènes</h4><p>I.2, I.5, II.2, III.2, III.5</p><h4>Ses mots</h4><figure class="q"><blockquote>« j’aime mieux, comme César, être le premier au village que le second dans Rome. »</blockquote><span class="ref"><b>Maître Bridaine</b>, Acte II, scène 2</span></figure></article><article class="card k" id="p-dame-pluche" style="--k:var(--c4);--t:var(--l4)"><h3>Dame Pluche</h3><p class="meta">La gouvernante de Camille</p><h4>Qui est-elle ?</h4><p>La vieille demoiselle qui accompagne Camille depuis le couvent.</p><h4>Caractère</h4><p>Maigre, sèche, dévote, prude et acariâtre ; tout ce qui est gai lui paraît inconvenant.</p><h4>Rôle</h4><p>Messagère malgré elle (billet, lettre), elle se bat avec Blazius pour la garder ; elle est horrifiée quand Camille jure.</p><h4>Ses scènes</h4><p>I.1, I.2, I.3, II.1, III.2, III.4, III.6</p><h4>Ses mots</h4><figure class="q"><blockquote>« Seigneur Jésus ! Camille a juré ! »</blockquote><span class="ref"><b>Dame Pluche</b>, Acte III, scène 4</span></figure></article></div></section><section class="bloc"><h2 class="acte" style="--k:var(--c3)">Le témoin collectif</h2><p class="sous">Le Chœur des paysans.</p><div class="grid"><article class="card k" id="p-le-choeur" style="--k:var(--c3);--t:var(--l3)"><h3>Le Chœur</h3><p class="meta">Les paysans, qui parlent d’une seule voix</p><h4>Qui est-il ?</h4><p>Un personnage collectif, hérité du théâtre antique : les gens du village.</p><h4>Rôle</h4><p>Il décrit les arrivées avec ironie (I.1), commente les querelles (I.3), accueille Perdican avec tendresse (I.4) et pressent le danger que court Rosette (III.4).</p><h4>Ses scènes</h4><p>I.1, I.3, I.4, III.4</p><h4>Ses mots</h4><figure class="q"><blockquote>« la pauvre fille ne sait pas quel danger elle court »</blockquote><span class="ref"><b>Le Chœur</b>, Acte III, scène 4</span></figure></article></div></section><section class="bloc" id="autres"><h2>Les autres figures</h2><div class="card"><dl><div><dt>La sœur Louise</dt><dd>L’amie de couvent de Camille, 30 ans, qui n’apparaît jamais. Ses malheurs ont façonné la peur de l’amour de Camille ; c’est à elle qu’est adressée la lettre de III.2.</dd></div><div><dt>La mère de Camille</dt><dd>Morte : son testament ordonnait le mariage et Camille vient recueillir son bien.</dd></div><div><dt>La mère de Rosette</dt><dd>Elle vit avec sa fille ; on parle d’elle sans la voir.</dd></div><div><dt>La grand-tante Isabelle</dt><dd>Un portrait en habit religieux, que Camille admire à son arrivée (I.2).</dd></div><div><dt>Un paysan et un valet</dt><dd>Ils portent les messages (III.2, III.3, III.7).</dd></div></dl></div></section><p class="foot">† = ce qui ne vient pas du cours (texte de la pièce et sources indiquées dans « L’essentiel »).</p></main></div></div></body></html>
